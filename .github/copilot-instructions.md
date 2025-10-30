@@ -8,7 +8,7 @@ This is a **WordPress plugin** called "Silver Assist ACF Clone Fields" - a sophi
 **Tech Stack**: WordPress 5.0+, **PHP 8.2+ (Required)**, ACF Pro, SilverAssist Packages  
 **PHP Features**: PSR-4 Autoloading, LoadableInterface Pattern, Modern PHP 8.2 Features  
 **License**: PolyForm Noncommercial License 1.0.0  
-**Last Updated**: January 2025 (SilverAssist Standards Applied)
+**Last Updated**: October 2025 (Updated for Current Codebase)
 
 ## 🚀 Essential Commands & Quick Start
 
@@ -58,7 +58,7 @@ gh pr status | cat                   # PR status without pager
 **Design Patterns**:
 - **PSR-4 Namespace**: `SilverAssist\ACFCloneFields\` → `includes/` (PascalCase files/dirs)
 - **LoadableInterface**: All components implement priority-based loading system
-- **Singleton Pattern**: Service classes use singleton with `get_instance()` method
+- **Singleton Pattern**: Service classes use singleton with `instance()` method
 - **SilverAssist Packages**: Integration with `wp-github-updater` and `wp-settings-hub`
 - **WordPress Standards**: Full WPCS compliance with custom PHPCS ruleset
 
@@ -93,7 +93,7 @@ use SilverAssist\ACFCloneFields\Core\Interfaces\LoadableInterface;
 class YourService {
     private static ?YourService $instance = null;
     
-    public static function get_instance(): YourService {
+    public static function instance(): YourService {
         if (self::$instance === null) {
             self::$instance = new self();
         }
@@ -112,9 +112,10 @@ php -d memory_limit=512M vendor/bin/phpstan analyse includes/YourComponent/ --no
 
 ### **Component Integration**
 - Add new components to appropriate namespace
-- Register in `includes/Core/Plugin.php::init()` method
+- Register in `includes/Core/Plugin.php::load_components()` method
 - Follow LoadableInterface pattern for consistent initialization
 - Set priority: Core (10), Services (20), Admin (30), Assets (40)
+- Components are loaded via Loader classes (`Services\Loader`, `Admin\Loader`)
 
 ## 🔧 Plugin Architecture
 
@@ -133,17 +134,14 @@ includes/
 │   ├── MetaBox.php                # Post edit screen integration
 │   ├── Settings.php               # Plugin settings management
 │   └── Ajax.php                   # AJAX request handling
-├── Utils/                          # Utility classes
-│   ├── Helpers.php                # Global helper functions
-│   └── Logger.php                 # Logging functionality
-└── Assets/                         # Frontend asset management
-    └── AssetLoader.php            # CSS/JS loading
+└── Utils/                          # Utility classes
+    ├── Helpers.php                # Global helper functions
+    └── Logger.php                 # Logging functionality
 
-# Frontend assets
+# Frontend assets (no compilation needed)
 assets/
 ├── css/admin.css                  # Admin interface styles
-├── js/admin.js                    # Admin interface functionality
-└── images/                        # Plugin icons and images
+└── js/admin.js                    # Admin interface functionality
 ```
 
 **No compilation needed** - CSS and JS files are used as-is for simplicity and maintainability.
@@ -188,23 +186,27 @@ silver-assist-acf-clone-fields/
 - Centralizes all SilverAssist plugins in unified admin menu
 - Provides consistent settings interface across plugins
 - Shared branding and navigation patterns
+- Uses `SettingsHub::get_instance()` (note different pattern from plugin singletons)
 
 ### **Component Loading Pattern**
 ```php
-// All components implement LoadableInterface
+// All components implement LoadableInterface with priority-based loading
 class ComponentName implements LoadableInterface {
     public function init(): void {
-        // Component initialization
+        // Component initialization - called by Plugin::load_components()
     }
     
     public function get_priority(): int {
-        return 20; // Loading priority
+        return 20; // Loading priority (10=Core, 20=Services, 30=Admin, 40=Assets)
     }
     
     public function should_load(): bool {
-        return is_admin(); // Conditional loading
+        return is_admin(); // Conditional loading based on context
     }
 }
+
+// Components are loaded via Loader classes (Admin\Loader, Services\Loader)
+// which are automatically discovered and initialized by Plugin::load_components()
 ```
 
 ## 🎨 User Interface Specifications
@@ -256,10 +258,18 @@ class FieldCloner {
 ```
 
 ### **AJAX Integration**
-- **Get Source Posts**: Dynamic loading of posts for selection
-- **Preview Fields**: Real-time field preview for source post
-- **Clone Fields**: Execute cloning operation with progress feedback
-- **Validation**: Server-side validation of clone operations
+- **Get Source Posts**: `acf_clone_get_source_posts` - Dynamic loading of posts for selection
+- **Preview Fields**: `acf_clone_get_source_fields` - Real-time field preview for source post
+- **Clone Fields**: `acf_clone_execute_clone` - Execute cloning operation with progress feedback
+- **Validation**: `acf_clone_validate_selection` - Server-side validation of clone operations
+
+### **Modal Interface Architecture**
+The plugin uses a 3-step modal interface implemented via `assets/js/admin.js`:
+1. **Source Selection**: Choose post to clone from (same post type only)
+2. **Field Selection**: Granular field selection with conflict detection
+3. **Execution**: Clone operation with real-time progress feedback
+
+**Critical**: All AJAX endpoints require proper nonce verification (`wp_ajax_*` actions) and `edit_posts` capability checks.
 
 ## 🧪 Testing Strategy
 
@@ -275,7 +285,7 @@ class FieldCloner {
 composer phpcbf          # Auto-fix standards
 composer phpcs           # Check standards
 composer phpstan         # Static analysis level 8
-composer test            # Run PHPUnit tests
+composer test            # Run all tests (phpcs + phpstan + phpunit)
 ```
 
 ## 🔐 Security Implementation
@@ -420,14 +430,15 @@ _n('%s field cloned', '%s fields cloned', $count, SILVER_ACF_CLONE_TEXT_DOMAIN)
 ```bash
 cd wp-content/plugins/silver-assist-acf-clone-fields
 composer install --no-interaction
-composer quality  # Run all quality checks
+composer test    # Run all quality checks (phpcs + phpstan + phpunit)
 ```
 
 ### **Testing Commands**
 ```bash
-composer test                    # Run all tests
-composer test:coverage          # Generate coverage report
+composer test                    # Run all tests (phpcs + phpstan + phpunit)
+composer phpunit                 # Run PHPUnit tests only
 phpunit tests/Unit/PluginTest.php  # Run specific test
+vendor/bin/phpunit --coverage-html coverage/  # Generate coverage report
 ```
 
 ### **Quality Assurance**
