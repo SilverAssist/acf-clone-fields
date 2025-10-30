@@ -66,7 +66,7 @@ jobs:
         if: matrix.php-version == '8.2'
         uses: codecov/codecov-action@v5
         with:
-          file: ./coverage.xml
+          files: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: false
@@ -216,10 +216,10 @@ jobs:
       - name: Test build process
         run: |
           # Simulate build process
-          mkdir -p build-test
-          cp -r . build-test/
+          mkdir -p /tmp/build-test
+          cp -r . /tmp/build-test/plugin
           
-          cd build-test
+          cd /tmp/build-test/plugin
           
           # Remove development files
           rm -rf .git .github scripts tests node_modules
