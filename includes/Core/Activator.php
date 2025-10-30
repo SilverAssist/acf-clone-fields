@@ -107,9 +107,10 @@ class Activator {
 	 */
 	private static function check_requirements(): void {
 		// Check PHP version.
+		// @phpstan-ignore-next-line if.alwaysFalse
 		if ( version_compare( PHP_VERSION, '8.2', '<' ) ) {
-			if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) && SILVER_ACF_CLONE_BASENAME ) {
-				deactivate_plugins( (string) SILVER_ACF_CLONE_BASENAME );
+			if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) ) {
+				\deactivate_plugins( (string) SILVER_ACF_CLONE_BASENAME );
 			}
 
 			/* translators: %s: required PHP version */
@@ -125,8 +126,8 @@ class Activator {
 		// Check WordPress version.
 		global $wp_version;
 		if ( version_compare( $wp_version, '5.0', '<' ) ) {
-			if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) && SILVER_ACF_CLONE_BASENAME ) {
-				deactivate_plugins( (string) SILVER_ACF_CLONE_BASENAME );
+			if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) ) {
+				\deactivate_plugins( (string) SILVER_ACF_CLONE_BASENAME );
 			}
 
 			/* translators: %s: required WordPress version */
@@ -140,9 +141,9 @@ class Activator {
 		}
 
 		// Check ACF availability.
-		if ( ! function_exists( 'acf_add_local_field_group' ) || ! class_exists( 'acf' ) ) {
-			if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) && SILVER_ACF_CLONE_BASENAME ) {
-				deactivate_plugins( (string) SILVER_ACF_CLONE_BASENAME );
+		if ( ! \function_exists( 'acf_add_local_field_group' ) || ! \class_exists( 'acf' ) ) {
+			if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) ) {
+				\deactivate_plugins( (string) SILVER_ACF_CLONE_BASENAME );
 			}
 			throw new \Exception(
 				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception messages don't require escaping.

@@ -215,20 +215,7 @@ class Settings implements LoadableInterface {
 		);
 	}
 
-	/**
-	 * Add standalone settings page
-	 *
-	 * @return void
-	 */
-	private function add_standalone_settings_page(): void {
-		add_options_page(
-			__( 'ACF Clone Fields Settings', 'silver-assist-acf-clone-fields' ),
-			__( 'ACF Clone Fields', 'silver-assist-acf-clone-fields' ),
-			'manage_options',
-			$this->page_slug,
-			[ $this, 'render_settings_page' ]
-		);
-	}
+
 
 	/**
 	 * Initialize settings sections and fields

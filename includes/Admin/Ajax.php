@@ -35,17 +35,7 @@ class Ajax implements LoadableInterface {
 	 */
 	private static ?Ajax $instance = null;
 
-	/**
-	 * AJAX actions map
-	 *
-	 * @var array<string, string>
-	 */
-	private array $ajax_actions = [
-		'acf_clone_get_source_posts'   => 'handle_get_source_posts',
-		'acf_clone_get_source_fields'  => 'handle_get_source_fields',
-		'acf_clone_execute_clone'      => 'handle_execute_clone',
-		'acf_clone_validate_selection' => 'handle_validate_selection',
-	];
+
 
 	/**
 	 * Get singleton instance
@@ -92,9 +82,10 @@ class Ajax implements LoadableInterface {
 	 * @return void
 	 */
 	private function register_ajax_handlers(): void {
-		foreach ( $this->ajax_actions as $action => $handler ) {
-			add_action( "wp_ajax_{$action}", [ $this, $handler ] );
-		}
+		\add_action( 'wp_ajax_acf_clone_get_source_posts', [ $this, 'handle_get_source_posts' ] );
+		\add_action( 'wp_ajax_acf_clone_get_source_fields', [ $this, 'handle_get_source_fields' ] );
+		\add_action( 'wp_ajax_acf_clone_execute_clone', [ $this, 'handle_execute_clone' ] );
+		\add_action( 'wp_ajax_acf_clone_validate_selection', [ $this, 'handle_validate_selection' ] );
 	}
 
 	/**
