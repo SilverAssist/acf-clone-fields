@@ -66,20 +66,19 @@ class Logger implements LoadableInterface {
 	 * Private constructor
 	 */
 	private function __construct() {
-		$upload_dir     = wp_upload_dir();
-		$this->log_file = $upload_dir['basedir'] . '/silver-acf-clone-debug.log';
-	}
+		$upload_dir = \wp_upload_dir();
 
-	/**
-	 * Initialize the logger
-	 *
-	 * @return void
-	 */
+		$this->log_file = $upload_dir['basedir'] . '/silver-acf-clone-debug.log';
+	}   /**
+		 * Initialize the logger
+		 *
+		 * @return void
+		 */
 	public function init(): void {
 		// Create log directory if it doesn't exist.
 		$log_dir = dirname( $this->log_file );
 		if ( ! file_exists( $log_dir ) ) {
-			wp_mkdir_p( $log_dir );
+			\wp_mkdir_p( $log_dir );
 		}
 	}
 
@@ -237,7 +236,7 @@ class Logger implements LoadableInterface {
 		$formatted = sprintf( '[%s] [%s] %s', $timestamp, strtoupper( $level ), $message );
 
 		if ( ! empty( $context ) ) {
-			$formatted .= ' | Context: ' . wp_json_encode( $context, JSON_UNESCAPED_SLASHES );
+			$formatted .= ' | Context: ' . \wp_json_encode( $context, JSON_UNESCAPED_SLASHES );
 		}
 
 		return $formatted . PHP_EOL;

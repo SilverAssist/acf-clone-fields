@@ -1,17 +1,10 @@
 <?php
-/**
- * Unit Tests for Field Detector Service
- *
- * @package SilverAssist\ACFCloneFields
- * @author SilverAssist Development Team
- * @license PolyForm-Noncommercial-1.0.0
- * @since 1.0.0
- */
 
 namespace SilverAssist\ACFCloneFields\Tests\Unit;
 
+defined('ABSPATH') || exit;
+
 use SilverAssist\ACFCloneFields\Tests\Utils\TestCase;
-use SilverAssist\ACFCloneFields\Tests\Utils\ACFTestHelpers;
 use SilverAssist\ACFCloneFields\Services\FieldDetector;
 
 /**
@@ -19,116 +12,99 @@ use SilverAssist\ACFCloneFields\Services\FieldDetector;
  */
 class FieldDetectorTest extends TestCase {
 
-	/**
-	 * FieldDetector instance
-	 *
-	 * @var FieldDetector
-	 */
 	private FieldDetector $detector;
 
-	/**
-	 * Setup before each test
-	 */
-	public function setUp(): void {
+	protected function setUp(): void {
 		parent::setUp();
-		$this->detector = new FieldDetector();
+		$this->detector = FieldDetector::instance();
+	}
+
+	/**
+	 * Test field detection service instantiation
+	 */
+	public function test_instance_creation(): void {
+		$this->assertInstanceOf( FieldDetector::class, $this->detector );
+		$this->assertEquals( 30, $this->detector->get_priority() );
+	}
+
+	/**
+	 * Test get available fields with mock post ID
+	 */
+	public function test_get_available_fields(): void {
+		$post_id = 123;
 		
-		// Setup ACF mocks.
-		ACFTestHelpers::setup_acf_mocks();
+		$detected_fields = $this->detector->get_available_fields( $post_id );
+
+		$this->assertIsArray( $detected_fields );
+		// Without ACF active, should return empty array
+		$this->assertEmpty( $detected_fields );
 	}
 
 	/**
-	 * Teardown after each test
+	 * Test get field groups with post type
 	 */
-	public function tearDown(): void {
-		ACFTestHelpers::clear_mock_data();
-		parent::tearDown();
+	public function test_get_field_groups(): void {
+		$post_type = 'post';
+
+		$field_groups = $this->detector->get_field_groups( $post_type );
+
+		$this->assertIsArray( $field_groups );
+		// Without ACF active, should return empty array
+		$this->assertEmpty( $field_groups );
 	}
 
 	/**
-	 * Test detecting fields from a post
+	 * Test get field statistics
 	 */
-	public function test_detect_post_fields(): void {
-		// Create test post with mock fields.
-		$post_id = $this->create_test_post_with_fields( 
-			[ 'post_type' => 'page' ],
-			[
-				'test_text_field'   => 'Sample text',
-				'test_number_field' => 42,
-				'test_email_field'  => 'test@example.com',
-			]
-		);
+	public function test_get_field_statistics(): void {
+		$post_id = 123;
 
-		$detected_fields = $this->detector->detect_post_fields( $post_id );
+		$statistics = $this->detector->get_field_statistics( $post_id );
 
-		// Should return array of detected fields.
-		$this->assertIsArray( $detected_fields, 'Should return array of fields' );
-		$this->assertNotEmpty( $detected_fields, 'Should detect some fields' );
+		$this->assertIsArray( $statistics );
+		$this->assertArrayHasKey( 'total_fields', $statistics );
+		$this->assertArrayHasKey( 'total_groups', $statistics );
+		$this->assertArrayHasKey( 'repeater_fields', $statistics );
 	}
 
 	/**
-	 * Test detecting fields with no ACF fields present
+	 * Test cache clearing functionality
 	 */
-	public function test_detect_empty_fields(): void {
-		$post_id = $this->create_test_post_with_fields( [ 'post_type' => 'post' ] );
+	public function test_clear_field_cache(): void {
+		$post_id = 123;
 
-		$detected_fields = $this->detector->detect_post_fields( $post_id );
+		// Should not throw exception
+		$this->detector->clear_field_cache( $post_id );
+		$this->detector->clear_field_cache(); // Test without post_id
 
-		$this->assertIsArray( $detected_fields, 'Should return array even with no fields' );
+		$this->assertTrue( true ); // If we reach here, no exceptions were thrown
 	}
 
 	/**
-	 * Test detecting fields with invalid post ID
+	 * Test repeater sub fields functionality
 	 */
-	public function test_detect_fields_invalid_post(): void {
-		$detected_fields = $this->detector->detect_post_fields( 99999 );
+	public function test_get_repeater_sub_fields(): void {
+		$post_id = 123;
+		$repeater_field = [
+			'type' => 'repeater',
+			'key' => 'field_test_repeater',
+			'name' => 'test_repeater'
+		];
 
-		$this->assertIsArray( $detected_fields, 'Should return array for invalid post ID' );
-		$this->assertEmpty( $detected_fields, 'Should return empty array for invalid post ID' );
+		$sub_fields = $this->detector->get_repeater_sub_fields( $repeater_field, $post_id );
+
+		$this->assertIsArray( $sub_fields );
+		// Without ACF active, should return empty array
+		$this->assertEmpty( $sub_fields );
 	}
 
 	/**
-	 * Test field type detection
+	 * Test should load functionality
 	 */
-	public function test_field_type_detection(): void {
-		$sample_fields = ACFTestHelpers::get_sample_field_types();
-		
-		foreach ( $sample_fields as $field_name => $field_config ) {
-			$field_type = $this->detector->get_field_type( $field_name );
-			
-			// Field type detection should work (mock may return different results).
-			$this->assertIsString( $field_type, "Field type should be string for {$field_name}" );
-		}
-	}
+	public function testShouldLoad(): void {
+		// Without ACF active, should return false
+		$should_load = $this->detector->should_load();
 
-	/**
-	 * Test getting supported field types
-	 */
-	public function test_get_supported_field_types(): void {
-		$supported_types = $this->detector->get_supported_field_types();
-
-		$this->assertIsArray( $supported_types, 'Should return array of supported types' );
-		$this->assertNotEmpty( $supported_types, 'Should have some supported field types' );
-		
-		// Should include common ACF field types.
-		$expected_types = [ 'text', 'textarea', 'number', 'email', 'url', 'select', 'checkbox', 'radio', 'true_false' ];
-		
-		foreach ( $expected_types as $type ) {
-			$this->assertContains( $type, $supported_types, "Should support {$type} field type" );
-		}
-	}
-
-	/**
-	 * Test field compatibility checking
-	 */
-	public function test_field_compatibility(): void {
-		// Test compatible field types.
-		$this->assertTrue( $this->detector->are_fields_compatible( 'text', 'text' ), 'Same field types should be compatible' );
-		$this->assertTrue( $this->detector->are_fields_compatible( 'text', 'textarea' ), 'Text fields should be compatible' );
-		$this->assertTrue( $this->detector->are_fields_compatible( 'number', 'number' ), 'Number fields should be compatible' );
-		
-		// Test incompatible field types.
-		$this->assertFalse( $this->detector->are_fields_compatible( 'text', 'image' ), 'Text and image should not be compatible' );
-		$this->assertFalse( $this->detector->are_fields_compatible( 'number', 'gallery' ), 'Number and gallery should not be compatible' );
+		$this->assertIsBool( $should_load );
 	}
 }

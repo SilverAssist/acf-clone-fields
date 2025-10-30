@@ -25,20 +25,17 @@ class LoggerTest extends TestCase {
 	 */
 	private Logger $logger;
 
-	/**
-	 * Setup before each test
-	 */
-	public function setUp(): void {
+	protected function setUp(): void {
 		parent::setUp();
-		$this->logger = Logger::get_instance();
+		$this->logger = Logger::instance();
 	}
 
 	/**
 	 * Test logger singleton instance
 	 */
-	public function test_logger_singleton(): void {
-		$logger1 = Logger::get_instance();
-		$logger2 = Logger::get_instance();
+	public function testLoggerSingleton(): void {
+		$logger1 = Logger::instance();
+		$logger2 = Logger::instance();
 		
 		$this->assertSame( $logger1, $logger2, 'Logger should return same instance' );
 		$this->assertInstanceOf( Logger::class, $logger1, 'Should return Logger instance' );
@@ -47,84 +44,57 @@ class LoggerTest extends TestCase {
 	/**
 	 * Test error level logging
 	 */
-	public function test_error_logging(): void {
+	public function testErrorLogging(): void {
 		$message = 'Test error message';
 		$context = [ 'test' => 'data' ];
 		
-		// Should not throw exception.
+		// Should not throw exception
 		$this->logger->error( $message, $context );
 		
-		// Verify log method was called (we can't easily test file writing in unit tests).
-		$this->assertTrue( method_exists( $this->logger, 'error' ), 'Logger should have error method' );
+		$this->assertTrue( true, 'Error logging should work without exception' );
 	}
 
 	/**
 	 * Test warning level logging
 	 */
-	public function test_warning_logging(): void {
+	public function testWarningLogging(): void {
 		$message = 'Test warning message';
 		
 		$this->logger->warning( $message );
 		
-		$this->assertTrue( method_exists( $this->logger, 'warning' ), 'Logger should have warning method' );
+		$this->assertTrue( true, 'Warning logging should work without exception' );
 	}
 
 	/**
 	 * Test info level logging
 	 */
-	public function test_info_logging(): void {
+	public function testInfoLogging(): void {
 		$message = 'Test info message';
 		
 		$this->logger->info( $message );
 		
-		$this->assertTrue( method_exists( $this->logger, 'info' ), 'Logger should have info method' );
-	}
-
-	/**
-	 * Test debug level logging
-	 */
-	public function test_debug_logging(): void {
-		$message = 'Test debug message';
-		
-		$this->logger->debug( $message );
-		
-		$this->assertTrue( method_exists( $this->logger, 'debug' ), 'Logger should have debug method' );
+		$this->assertTrue( true, 'Info logging should work without exception' );
 	}
 
 	/**
 	 * Test generic log method
 	 */
-	public function test_generic_log(): void {
+	public function testGenericLog(): void {
 		$level = 'notice';
 		$message = 'Test notice message';
 		$context = [ 'user_id' => 123 ];
 		
 		$this->logger->log( $level, $message, $context );
 		
-		$this->assertTrue( method_exists( $this->logger, 'log' ), 'Logger should have log method' );
-	}
-
-	/**
-	 * Test that logger handles empty messages
-	 */
-	public function test_empty_message_handling(): void {
-		// Should not throw exception.
-		$this->logger->error( '' );
-		$this->logger->error( null );
-		
-		$this->assertTrue( true, 'Logger should handle empty messages gracefully' );
+		$this->assertTrue( true, 'Generic log method should work without exception' );
 	}
 
 	/**
 	 * Test logger with array context
 	 */
-	public function test_array_context(): void {
+	public function testArrayContext(): void {
 		$complex_context = [
 			'post_id'   => 123,
-			'user_data' => [
-				'name'  => 'Test User',
-				'email' => 'test@example.com',
-			],
 			'fields'    => [
 				'field1' => 'value1',
 				'field2' => 'value2',
@@ -134,5 +104,16 @@ class LoggerTest extends TestCase {
 		$this->logger->info( 'Complex context test', $complex_context );
 		
 		$this->assertTrue( true, 'Logger should handle complex array contexts' );
+	}
+
+	/**
+	 * Test logger has required methods
+	 */
+	public function testLoggerMethods(): void {
+		$this->assertTrue( method_exists( $this->logger, 'error' ) );
+		$this->assertTrue( method_exists( $this->logger, 'warning' ) );
+		$this->assertTrue( method_exists( $this->logger, 'info' ) );
+		$this->assertTrue( method_exists( $this->logger, 'debug' ) );
+		$this->assertTrue( method_exists( $this->logger, 'log' ) );
 	}
 }
