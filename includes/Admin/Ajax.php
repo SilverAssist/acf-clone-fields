@@ -53,7 +53,7 @@ class Ajax implements LoadableInterface {
 	 * @return Ajax
 	 */
 	public static function instance(): Ajax {
-		if ( self::$instance === null ) {
+		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -392,7 +392,7 @@ class Ajax implements LoadableInterface {
 				'id'           => $post->ID,
 				'title'        => $post->post_title,
 				'status'       => $post->post_status,
-				'modified'     => get_the_modified_gmdate( 'Y-m-d H:i:s', $post->ID ),
+				'modified'     => get_post_modified_time( 'Y-m-d H:i:s', false, $post->ID ),
 				'modified_ago' => human_time_diff( (int) get_post_modified_time( 'U', false, $post->ID ), time() ) . ' ago',
 				'field_count'  => $field_stats['total_fields'] ?? 0,
 				'field_stats'  => $field_stats,
@@ -539,6 +539,7 @@ class Ajax implements LoadableInterface {
 			case 'repeater':
 				$count = $field_data['row_count'] ?? 0;
 				return sprintf(
+					/* translators: %d: number of rows */
 					_n( '%d row', '%d rows', $count, 'silver-assist-acf-clone-fields' ),
 					$count
 				);
@@ -546,6 +547,7 @@ class Ajax implements LoadableInterface {
 			case 'group':
 				$count = count( $field_data['sub_fields'] ?? [] );
 				return sprintf(
+					/* translators: %d: number of fields */
 					_n( '%d field', '%d fields', $count, 'silver-assist-acf-clone-fields' ),
 					$count
 				);
@@ -553,6 +555,7 @@ class Ajax implements LoadableInterface {
 			case 'flexible_content':
 				$count = count( $field_data['layouts'] ?? [] );
 				return sprintf(
+					/* translators: %d: number of layouts */
 					_n( '%d layout', '%d layouts', $count, 'silver-assist-acf-clone-fields' ),
 					$count
 				);

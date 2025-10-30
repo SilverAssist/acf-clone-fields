@@ -52,7 +52,7 @@ class Plugin implements LoadableInterface {
 	 * @return Plugin
 	 */
 	public static function instance(): Plugin {
-		if ( self::$instance === null ) {
+		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -390,7 +390,7 @@ class Plugin implements LoadableInterface {
 	 * @return array<string>
 	 */
 	public function add_row_meta( array $meta, string $file ): array {
-		if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) && $file === (string) SILVER_ACF_CLONE_BASENAME ) {
+		if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) && (string) SILVER_ACF_CLONE_BASENAME === $file ) {
 			$meta[] = '<a href="https://github.com/SilverAssist/acf-clone-fields" target="_blank">' .
 						__( 'GitHub Repository', 'silver-assist-acf-clone-fields' ) . '</a>';
 			$meta[] = '<a href="https://github.com/SilverAssist/acf-clone-fields/issues" target="_blank">' .

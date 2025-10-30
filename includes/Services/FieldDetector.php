@@ -45,7 +45,7 @@ class FieldDetector implements LoadableInterface {
 	 * @return FieldDetector
 	 */
 	public static function instance(): FieldDetector {
-		if ( self::$instance === null ) {
+		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -137,7 +137,7 @@ class FieldDetector implements LoadableInterface {
 			]
 		);
 
-		return $field_groups ?: [];
+		return $field_groups ? $field_groups : [];
 	}
 
 	/**
@@ -320,14 +320,14 @@ class FieldDetector implements LoadableInterface {
 		}
 
 		$attachment = get_post( (int) $attachment_id );
-		if ( ! $attachment || $attachment->post_type !== 'attachment' ) {
+		if ( ! $attachment || 'attachment' !== $attachment->post_type ) {
 			return null;
 		}
 
 		return [
 			'id'       => $attachment_id,
 			'title'    => $attachment->post_title,
-			'filename' => basename( get_attached_file( (int) $attachment_id ) ?: '' ),
+			'filename' => basename( get_attached_file( (int) $attachment_id ) ? get_attached_file( (int) $attachment_id ) : '' ),
 			'url'      => wp_get_attachment_url( (int) $attachment_id ),
 		];
 	}

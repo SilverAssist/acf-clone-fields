@@ -37,7 +37,7 @@ class Helpers implements LoadableInterface {
 	 * @return Helpers
 	 */
 	public static function instance(): Helpers {
-		if ( self::$instance === null ) {
+		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -310,7 +310,7 @@ class Helpers implements LoadableInterface {
 				$log_entry .= ' Context: ' . wp_json_encode( $context );
 			}
 
-			// error_log( $log_entry );
+			// Log entry can be output here if needed..
 		}
 	}
 
@@ -385,7 +385,7 @@ class Helpers implements LoadableInterface {
 		}
 
 		// Additional check for published posts.
-		if ( $post->post_status === 'publish' && ! user_can( $user_id, $post_type_object->cap->edit_published_posts ) ) {
+		if ( 'publish' === $post->post_status && ! user_can( $user_id, $post_type_object->cap->edit_published_posts ) ) {
 			return false;
 		}
 

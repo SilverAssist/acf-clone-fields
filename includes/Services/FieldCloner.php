@@ -163,7 +163,7 @@ class FieldCloner implements LoadableInterface {
 		// Get source field value.
 		$source_value = get_field( $field_key, $source_post_id, false );
 
-		if ( $source_value === false || null === $source_value ) {
+		if ( false === $source_value || null === $source_value ) {
 			return [
 				'success'  => false,
 				'message'  => sprintf( 'Field %s not found in source post', $field_key ),
@@ -422,7 +422,7 @@ class FieldCloner implements LoadableInterface {
 
 			if ( $layout_config && isset( $layout_config['sub_fields'] ) ) {
 				foreach ( $layout_data as $field_name => $field_value ) {
-					if ( $field_name === 'acf_fc_layout' ) {
+					if ( 'acf_fc_layout' === $field_name ) {
 						continue;
 					}
 
@@ -634,7 +634,7 @@ class FieldCloner implements LoadableInterface {
 		$required   = $field_object['required'] ?? false;
 
 		// Check required fields.
-		if ( $required && ( null === $value || $value === '' || $value === [] ) ) {
+		if ( $required && ( null === $value || '' === $value || [] === $value ) ) {
 			return false;
 		}
 
@@ -681,7 +681,7 @@ class FieldCloner implements LoadableInterface {
 
 		foreach ( $field_keys as $field_key ) {
 			$existing_value = get_field( $field_key, $post_id, false );
-			if ( $existing_value !== false ) {
+			if ( false !== $existing_value ) {
 				$backup[ $field_key ] = $existing_value;
 			}
 		}
@@ -700,7 +700,7 @@ class FieldCloner implements LoadableInterface {
 		$error_count   = count( $result['errors'] );
 		$warning_count = count( $result['warnings'] );
 
-		if ( $error_count === 0 ) {
+		if ( 0 === $error_count ) {
 			$message = sprintf( 'Successfully cloned %d field(s)', $cloned_count );
 			if ( $warning_count > 0 ) {
 				$message .= sprintf( ' with %d warning(s)', $warning_count );

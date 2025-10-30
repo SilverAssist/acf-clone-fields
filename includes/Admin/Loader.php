@@ -36,7 +36,7 @@ class Loader implements LoadableInterface {
 	 * @return Loader
 	 */
 	public static function instance(): Loader {
-		if ( self::$instance === null ) {
+		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -104,26 +104,20 @@ class Loader implements LoadableInterface {
 	 * @return void
 	 */
 	private function init_components(): void {
-		// error_log( 'ACF Clone Fields Admin\\Loader: Initializing admin components' );
-
 		// Initialize Settings (always load in admin).
 		if ( class_exists( 'SilverAssist\\ACFCloneFields\\Admin\\Settings' ) ) {
-			// error_log( 'ACF Clone Fields Admin\\Loader: Initializing Settings' );
+			// Initializing Settings component.
 			Settings::instance()->init();
 		}
 
 		// Initialize MetaBox (only on edit screens).
 		if ( class_exists( 'SilverAssist\\ACFCloneFields\\Admin\\MetaBox' ) ) {
-			// error_log( 'ACF Clone Fields Admin\\Loader: Calling MetaBox::instance()->init()' );
 			MetaBox::instance()->init();
 		}
 
 		// Initialize Ajax (always in admin to handle AJAX requests).
 		if ( class_exists( 'SilverAssist\\ACFCloneFields\\Admin\\Ajax' ) ) {
-			// error_log( 'ACF Clone Fields Admin\\Loader: Initializing Ajax' );
 			Ajax::instance()->init();
 		}
-
-		// error_log( 'ACF Clone Fields Admin\\Loader: All components initialized' );
 	}
 }

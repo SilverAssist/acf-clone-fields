@@ -36,7 +36,7 @@ class Loader implements LoadableInterface {
 	 * @return Loader
 	 */
 	public static function instance(): Loader {
-		if ( self::$instance === null ) {
+		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;

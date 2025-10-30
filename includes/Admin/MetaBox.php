@@ -47,7 +47,7 @@ class MetaBox implements LoadableInterface {
 	 * @return MetaBox
 	 */
 	public static function instance(): MetaBox {
-		if ( self::$instance === null ) {
+		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -206,8 +206,11 @@ class MetaBox implements LoadableInterface {
 			<div class="acf-clone-info">
 				<h4><?php esc_html_e( 'Current Post Fields', 'silver-assist-acf-clone-fields' ); ?></h4>
 				<ul class="acf-clone-stats">
+					<?php /* translators: %d: number of field groups */ ?>
 					<li><?php printf( esc_html__( 'Field Groups: %d', 'silver-assist-acf-clone-fields' ), intval( $field_stats['total_groups'] ) ); ?></li>
+					<?php /* translators: %d: total number of fields */ ?>
 					<li><?php printf( esc_html__( 'Total Fields: %d', 'silver-assist-acf-clone-fields' ), intval( $field_stats['total_fields'] ) ); ?></li>
+					<?php /* translators: %d: number of fields with values */ ?>
 					<li><?php printf( esc_html__( 'Fields with Values: %d', 'silver-assist-acf-clone-fields' ), intval( $field_stats['fields_with_values'] ) ); ?></li>
 				</ul>
 			</div>
@@ -222,7 +225,9 @@ class MetaBox implements LoadableInterface {
 					</button>
 					<p class="description">
 						<?php
+						/* translators: %1$d: number of available posts, %2$s: post type name */
 						printf(
+							/* translators: %1$d: number of available posts, %2$s: post type name */
 							esc_html__( 'Clone fields from %1$d available %2$s post(s)', 'silver-assist-acf-clone-fields' ),
 							intval( $source_count ),
 							esc_html( get_post_type_object( $post->post_type )->labels->name ?? $post->post_type )

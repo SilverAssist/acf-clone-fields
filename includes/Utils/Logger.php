@@ -56,7 +56,7 @@ class Logger implements LoadableInterface {
 	 * @return Logger
 	 */
 	public static function instance(): Logger {
-		if ( self::$instance === null ) {
+		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;

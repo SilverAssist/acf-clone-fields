@@ -60,15 +60,6 @@
 	<!-- Check for PHP cross-version compatibility. -->
 	<config name="minimum_supported_wp_version" value="6.5"/>
 
-	<!-- Temporarily exclude some rules to allow CI to pass while we fix incrementally -->
-	<rule ref="WordPress.PHP.YodaConditions.NotYoda">
-		<severity>3</severity> <!-- Reduce to warning -->
-	</rule>
-
-	<rule ref="WordPress.WP.I18n.MissingTranslatorsComment">
-		<severity>3</severity> <!-- Reduce to warning -->
-	</rule>
-
 	<!-- Verify that everything in the global namespace is prefixed. -->
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>

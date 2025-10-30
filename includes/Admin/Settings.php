@@ -52,7 +52,7 @@ class Settings implements LoadableInterface {
 	 * @return Settings
 	 */
 	public static function instance(): Settings {
-		if ( self::$instance === null ) {
+		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -150,19 +150,15 @@ class Settings implements LoadableInterface {
 	 * @return void
 	 */
 	public function register_with_settings_hub(): void {
-		// Debug: Log the attempt with timing info.
-		// error_log( 'ACF Clone Fields: Attempting to register with Settings Hub at hook: ' . current_filter() );
-		// error_log( 'ACF Clone Fields: Checking if SettingsHub class exists: ' . ( class_exists( SettingsHub::class ) ? 'YES' : 'NO' ) );
 
 		// Check if Settings Hub is available.
 		if ( ! class_exists( SettingsHub::class ) ) {
-			// error_log( 'ACF Clone Fields: Settings Hub class not available, using fallback standalone page' );
 			// Fallback: Register standalone settings page if hub is not available.
 			add_action( 'admin_menu', [ $this, 'add_settings_page' ] );
 			return;
 		}
 
-		// error_log( 'ACF Clone Fields: Settings Hub class found, getting instance and registering...' );
+		// Settings Hub class found, getting instance and registering.
 
 		// Get the hub instance.
 		$hub = SettingsHub::get_instance();
@@ -183,7 +179,7 @@ class Settings implements LoadableInterface {
 			]
 		);
 
-		// error_log( 'ACF Clone Fields: Plugin registered successfully with Settings Hub' );
+		// Plugin registered successfully with Settings Hub..
 	}
 
 	/**
@@ -575,7 +571,7 @@ class Settings implements LoadableInterface {
 
 		foreach ( $boolean_options as $option ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in render_settings_page() before calling this method.
-			$value = isset( $_POST[ $option ] ) && $_POST[ $option ] === '1';
+			$value = isset( $_POST[ $option ] ) && '1' === $_POST[ $option ];
 			update_option( $option, $value );
 		}
 

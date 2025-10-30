@@ -111,13 +111,12 @@ class Activator {
 			if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) && SILVER_ACF_CLONE_BASENAME ) {
 				deactivate_plugins( (string) SILVER_ACF_CLONE_BASENAME );
 			}
+
+			/* translators: %s: required PHP version */
 			throw new \Exception(
 				sprintf(
-					/*
-					 * Translators: %s: required PHP version.
-					 */
-					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- wp_die() handles escaping internally.
-					__( 'Silver Assist - ACF Clone Fields requires PHP %s or higher.', 'silver-assist-acf-clone-fields' ),
+				/* translators: %s: required PHP version */
+					esc_html__( 'Silver Assist - ACF Clone Fields requires PHP %s or higher.', 'silver-assist-acf-clone-fields' ),
 					'8.2'
 				)
 			);
@@ -129,13 +128,12 @@ class Activator {
 			if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) && SILVER_ACF_CLONE_BASENAME ) {
 				deactivate_plugins( (string) SILVER_ACF_CLONE_BASENAME );
 			}
+
+			/* translators: %s: required WordPress version */
 			throw new \Exception(
 				sprintf(
-					/*
-					 * Translators: %s: required WordPress version.
-					 */
-					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- wp_die() handles escaping internally.
-					__( 'Silver Assist - ACF Clone Fields requires WordPress %s or higher.', 'silver-assist-acf-clone-fields' ),
+					/* translators: %s: required WordPress version */
+					esc_html__( 'Silver Assist - ACF Clone Fields requires WordPress %s or higher.', 'silver-assist-acf-clone-fields' ),
 					'5.0'
 				)
 			);
