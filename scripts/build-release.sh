@@ -80,10 +80,10 @@ print_status "Copying plugin files..."
 # Main plugin file
 cp "${PROJECT_ROOT}/silver-assist-acf-clone-fields.php" "$PACKAGE_DIR/"
 
-# Source code (Includes directory)
-if [ -d "${PROJECT_ROOT}/Includes" ]; then
-    cp -r "${PROJECT_ROOT}/Includes" "$PACKAGE_DIR/"
-    print_status "  ✓ Source code (Includes/) copied"
+# Source code (includes directory)
+if [ -d "${PROJECT_ROOT}/includes" ]; then
+    cp -r "${PROJECT_ROOT}/includes" "$PACKAGE_DIR/"
+    print_status "  ✓ Source code (includes/) copied"
 fi
 
 # Languages
@@ -421,11 +421,11 @@ else
 fi
 
 # Check if required directories exist
-if [ ! -d "${PACKAGE_DIR}/Includes" ]; then
-    print_error "Includes/ directory missing from package"
+if [ ! -d "${PACKAGE_DIR}/includes" ]; then
+    print_error "includes/ directory missing from package"
     exit 1
 else
-    print_status "  ✓ Includes/ directory included"
+    print_status "  ✓ includes/ directory included"
 fi
 
 # Check if assets directory exists
