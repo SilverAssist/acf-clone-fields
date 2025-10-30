@@ -98,11 +98,21 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-                  extensions: curl, json, mbstring
+                  extensions: mbstring, intl, mysql, pdo_mysql
+                  coverage: xdebug
                   tools: composer:v2
 
+            - name: 📦 Cache Composer dependencies
+              uses: actions/cache@v4
+              with:
+                  path: vendor
+                  key: composer-${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: |
+                      composer-${{ matrix.php }}-
+                      composer-
+
             - name: 📦 Install dependencies for testing
-              run: composer install --optimize-autoloader --no-progress
+              run: composer install --no-interaction --no-progress --optimize-autoloader
 
             - name: 🧪 Run Quality Checks (PHPCS + PHPStan + PHPUnit + Syntax)
               run: |

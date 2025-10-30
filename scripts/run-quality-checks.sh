@@ -144,7 +144,8 @@ run_phpunit() {
         print_info "Using WordPress Test Suite: $WP_TESTS_DIR"
     fi
     
-    vendor/bin/phpunit --testdox
+    # Use same configuration as CI workflow for consistency
+    vendor/bin/phpunit --testsuite=unit --coverage-text --coverage-clover=coverage.xml
     
     print_success "All tests passed"
 }
