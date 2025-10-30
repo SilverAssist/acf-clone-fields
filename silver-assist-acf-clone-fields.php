@@ -41,7 +41,7 @@ define( 'SILVER_ACF_CLONE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SILVER_ACF_CLONE_URL', plugin_dir_url( __FILE__ ) );
 define( 'SILVER_ACF_CLONE_BASENAME', plugin_basename( __FILE__ ) );
 define( 'SILVER_ACF_CLONE_SLUG', 'silver-assist-acf-clone-fields' );
-define( ''silver - assist - acf - clone - fields'', 'silver-assist-acf-clone-fields' );
+define( 'SILVER_ACF_CLONE_TEXT_DOMAIN', 'silver-assist-acf-clone-fields' );
 
 /**
  * Composer autoloader

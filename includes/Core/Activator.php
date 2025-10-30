@@ -102,7 +102,7 @@ class Activator {
 	 *
 	 * Verifies that the system meets minimum requirements for the plugin.
 	 *
-	 * @throws \Exception If requirements are not met
+	 * @throws \Exception If requirements are not met.
 	 * @return void
 	 */
 	private static function check_requirements(): void {
@@ -114,7 +114,8 @@ class Activator {
 			throw new \Exception(
 				sprintf(
 					/*
-					translators: %s: required PHP version */
+					 * Translators: %s: required PHP version.
+					 */
 					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- wp_die() handles escaping internally.
 					__( 'Silver Assist - ACF Clone Fields requires PHP %s or higher.', 'silver-assist-acf-clone-fields' ),
 					'8.2'
@@ -131,7 +132,8 @@ class Activator {
 			throw new \Exception(
 				sprintf(
 					/*
-					translators: %s: required WordPress version */
+					 * Translators: %s: required WordPress version.
+					 */
 					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- wp_die() handles escaping internally.
 					__( 'Silver Assist - ACF Clone Fields requires WordPress %s or higher.', 'silver-assist-acf-clone-fields' ),
 					'5.0'
