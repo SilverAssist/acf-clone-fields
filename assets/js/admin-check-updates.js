@@ -22,11 +22,27 @@ function silverAssistACFCloneCheckUpdates() {
     var $ = jQuery;
     var data = silverAssistACFCloneCheckUpdatesData;
     
-    // Find the check updates button
+    console.log('ACF Clone Fields: Starting update check...');
+    console.log('Available data:', data);
+    
+    // Find the check updates button - try multiple selectors for compatibility
     var checkUpdatesBtn = $('.silverassist-plugin-card[data-plugin="acf-clone-fields"] .button-primary');
     
+    // Fallback selectors if the main one doesn't work
     if (!checkUpdatesBtn.length) {
-        console.error('ACF Clone Fields: Check updates button not found');
+        checkUpdatesBtn = $('[data-plugin="acf-clone-fields"] .button-primary:contains("Check Updates")');
+    }
+    if (!checkUpdatesBtn.length) {
+        checkUpdatesBtn = $('.silverassist-plugin-card .button-primary:contains("Check Updates")');
+    }
+    if (!checkUpdatesBtn.length) {
+        checkUpdatesBtn = $('.button-primary:contains("Check Updates")');
+    }
+    
+    if (!checkUpdatesBtn.length) {
+        console.error('ACF Clone Fields: Check updates button not found. Available buttons:', $('.button-primary').length);
+        console.log('Available plugin cards:', $('.silverassist-plugin-card').length);
+        console.log('Cards with data-plugin:', $('[data-plugin]').map(function() { return $(this).attr('data-plugin'); }).get());
         return false;
     }
 
