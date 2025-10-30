@@ -105,7 +105,7 @@ class Loader implements LoadableInterface {
 	 */
 	private function init_components(): void {
 		error_log( 'ACF Clone Fields Admin\\Loader: Initializing admin components' );
-		
+
 		// Initialize Settings (always load in admin).
 		if ( class_exists( 'SilverAssist\\ACFCloneFields\\Admin\\Settings' ) ) {
 			error_log( 'ACF Clone Fields Admin\\Loader: Initializing Settings' );
@@ -123,7 +123,7 @@ class Loader implements LoadableInterface {
 			error_log( 'ACF Clone Fields Admin\\Loader: Initializing Ajax' );
 			Ajax::instance()->init();
 		}
-		
+
 		error_log( 'ACF Clone Fields Admin\\Loader: All components initialized' );
 	}
 }

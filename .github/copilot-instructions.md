@@ -30,6 +30,29 @@ php -d memory_limit=512M vendor/bin/phpstan analyse --no-progress  # Level 8 sta
 php -d memory_limit=512M vendor/bin/phpstan analyse includes/Services/ --no-progress
 ```
 
+## 📋 GitHub CLI Usage (MANDATORY)
+
+**CRITICAL**: Always use `PAGER=cat` or pipe to `cat` when using `gh` CLI to avoid interactive pager issues:
+
+```bash
+# ✅ CORRECT: GitHub CLI commands (use one of these patterns)
+PAGER=cat gh run list --limit 10
+gh run list --limit 10 | cat
+PAGER=cat gh workflow list
+gh pr list | cat
+PAGER=cat gh repo view --json description
+
+# ❌ INCORRECT: Never use gh without pager control
+gh run list --limit 10              # May hang waiting for pager input
+gh workflow list                     # Interactive pager causes issues
+
+# Common GitHub CLI operations
+PAGER=cat gh run list --limit 5      # Check recent workflow runs
+PAGER=cat gh workflow list           # List all workflows
+PAGER=cat gh release list --limit 3  # Check releases
+gh pr status | cat                   # PR status without pager
+```
+
 ## 🏗️ Core Architecture (SilverAssist Standards)
 
 **Design Patterns**:

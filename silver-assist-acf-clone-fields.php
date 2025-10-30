@@ -144,7 +144,7 @@ add_action(
 	function () {
 		// Prevent multiple initialization.
 		static $already_initialized = false;
-		
+
 		if ( $already_initialized ) {
 			return;
 		}

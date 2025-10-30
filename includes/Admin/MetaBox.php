@@ -78,7 +78,7 @@ class MetaBox implements LoadableInterface {
 			Logger::instance()->warning( 'MetaBox already initialized, skipping duplicate init' );
 			return;
 		}
-		
+
 		$this->load_settings();
 		$this->init_hooks();
 		$this->initialized = true;
@@ -120,7 +120,7 @@ class MetaBox implements LoadableInterface {
 	private function init_hooks(): void {
 		// CRITICAL FIX: Prevent duplicate hook registration across all instances
 		static $enqueue_hook_registered = false;
-		
+
 		// Add meta boxes (safe to register multiple times).
 		add_action( 'add_meta_boxes', [ $this, 'add_meta_boxes' ] );
 
@@ -386,12 +386,12 @@ class MetaBox implements LoadableInterface {
 			'acf-clone-fields-admin',
 			'acfCloneFields',
 			[
-				'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
-				'nonce'      => wp_create_nonce( 'acf_clone_fields_ajax' ),
-				'postId'     => $post->ID,
-				'postType'   => $post->post_type,
-				'debugMode'  => defined( 'WP_DEBUG' ) && WP_DEBUG,
-				'strings' => [
+				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
+				'nonce'     => wp_create_nonce( 'acf_clone_fields_ajax' ),
+				'postId'    => $post->ID,
+				'postType'  => $post->post_type,
+				'debugMode' => defined( 'WP_DEBUG' ) && WP_DEBUG,
+				'strings'   => [
 					'loading'          => __( 'Loading...', SILVER_ACF_CLONE_TEXT_DOMAIN ),
 					'error'            => __( 'An error occurred. Please try again.', SILVER_ACF_CLONE_TEXT_DOMAIN ),
 					'confirmClone'     => __( 'Are you sure you want to clone the selected fields? This will overwrite existing field values.', SILVER_ACF_CLONE_TEXT_DOMAIN ),
