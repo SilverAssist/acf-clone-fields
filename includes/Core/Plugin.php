@@ -190,7 +190,7 @@ class Plugin implements LoadableInterface {
 		);
 
 		// Add plugin action links.
-		// @phpstan-ignore-next-line deadCode.unreachable
+		// @phpstan-ignore-next-line deadCode.unreachable.
 		add_filter( 'plugin_action_links_' . SILVER_ACF_CLONE_BASENAME, [ $this, 'add_action_links' ] );
 
 		// Add plugin row meta.

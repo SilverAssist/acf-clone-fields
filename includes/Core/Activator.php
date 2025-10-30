@@ -107,7 +107,7 @@ class Activator {
 	 */
 	private static function check_requirements(): void {
 		// Check PHP version.
-		// @phpstan-ignore-next-line if.alwaysFalse
+		// @phpstan-ignore-next-line if.alwaysFalse.
 		if ( version_compare( PHP_VERSION, '8.2', '<' ) ) {
 			if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) ) {
 				\deactivate_plugins( (string) SILVER_ACF_CLONE_BASENAME );
