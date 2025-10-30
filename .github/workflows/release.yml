@@ -121,7 +121,7 @@ jobs:
                   echo "✅ All quality checks passed"
 
                   # Verify plugin header
-                  if grep -q "Plugin Name: Silver Assist ACF Clone Fields" silver-assist-acf-clone-fields.php; then
+                  if grep -q "Plugin Name: ACF Clone Fields" silver-assist-acf-clone-fields.php; then
                     echo "✅ Plugin header validation passed"
                   else
                     echo "❌ Plugin header validation failed"
