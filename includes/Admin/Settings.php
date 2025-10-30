@@ -44,7 +44,7 @@ class Settings implements LoadableInterface {
 	 *
 	 * @var string
 	 */
-	private string $settings_group = 'acf_clone_fields_settings';
+	private string $settings_group = 'silver_assist_acf_clone_fields_settings';
 
 	/**
 	 * Get singleton instance
@@ -102,7 +102,7 @@ class Settings implements LoadableInterface {
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_settings_assets' ] );
 
 		// Settings validation.
-		add_filter( 'pre_update_option_acf_clone_fields_enabled_post_types', [ $this, 'validate_enabled_post_types' ] );
+		add_filter( 'pre_update_option_silver_assist_acf_clone_fields_enabled_post_types', [ $this, 'validate_enabled_post_types' ] );
 
 		// Plugin action links.
 		add_filter( 'plugin_action_links_silver-assist-acf-clone-fields/silver-assist-acf-clone-fields.php', [ $this, 'add_plugin_action_links' ] );
@@ -131,13 +131,13 @@ class Settings implements LoadableInterface {
 	 */
 	private function get_default_settings(): array {
 		return [
-			'acf_clone_fields_enabled_post_types' => [ 'post', 'page' ],
-			'acf_clone_fields_default_overwrite'  => false,
-			'acf_clone_fields_create_backup'      => true,
-			'acf_clone_fields_copy_attachments'   => true,
-			'acf_clone_fields_validate_data'      => true,
-			'acf_clone_fields_log_operations'     => true,
-			'acf_clone_fields_max_source_posts'   => 50,
+			'silver_assist_acf_clone_fields_enabled_post_types' => [ 'post', 'page' ],
+			'silver_assist_acf_clone_fields_default_overwrite' => false,
+			'silver_assist_acf_clone_fields_create_backup' => true,
+			'silver_assist_acf_clone_fields_copy_attachments' => true,
+			'silver_assist_acf_clone_fields_validate_data' => true,
+			'silver_assist_acf_clone_fields_log_operations' => true,
+			'silver_assist_acf_clone_fields_max_source_posts' => 50,
 		];
 	}
 
@@ -151,18 +151,18 @@ class Settings implements LoadableInterface {
 	 */
 	public function register_with_settings_hub(): void {
 		// Debug: Log the attempt with timing info.
-		error_log( 'ACF Clone Fields: Attempting to register with Settings Hub at hook: ' . current_filter() );
-		error_log( 'ACF Clone Fields: Checking if SettingsHub class exists: ' . ( class_exists( SettingsHub::class ) ? 'YES' : 'NO' ) );
+		// error_log( 'ACF Clone Fields: Attempting to register with Settings Hub at hook: ' . current_filter() );
+		// error_log( 'ACF Clone Fields: Checking if SettingsHub class exists: ' . ( class_exists( SettingsHub::class ) ? 'YES' : 'NO' ) );
 
 		// Check if Settings Hub is available.
 		if ( ! class_exists( SettingsHub::class ) ) {
-			error_log( 'ACF Clone Fields: Settings Hub class not available, using fallback standalone page' );
+			// error_log( 'ACF Clone Fields: Settings Hub class not available, using fallback standalone page' );
 			// Fallback: Register standalone settings page if hub is not available.
 			add_action( 'admin_menu', [ $this, 'add_settings_page' ] );
 			return;
 		}
 
-		error_log( 'ACF Clone Fields: Settings Hub class found, getting instance and registering...' );
+		// error_log( 'ACF Clone Fields: Settings Hub class found, getting instance and registering...' );
 
 		// Get the hub instance.
 		$hub = SettingsHub::get_instance();
@@ -173,17 +173,17 @@ class Settings implements LoadableInterface {
 		// Register our plugin with the hub.
 		$hub->register_plugin(
 			$this->page_slug,
-			__( 'ACF Clone Fields', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+			__( 'ACF Clone Fields', 'silver-assist-acf-clone-fields' ),
 			[ $this, 'render_settings_page' ],
 			[
-				'description' => __( 'Advanced ACF field cloning system that allows selective copying of custom fields between posts of the same type. Features granular field selection, sidebar interface, and intelligent repeater field cloning.', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+				'description' => __( 'Advanced ACF field cloning system that allows selective copying of custom fields between posts of the same type. Features granular field selection, sidebar interface, and intelligent repeater field cloning.', 'silver-assist-acf-clone-fields' ),
 				'version'     => SILVER_ACF_CLONE_VERSION,
-				'tab_title'   => __( 'ACF Clone Fields', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+				'tab_title'   => __( 'ACF Clone Fields', 'silver-assist-acf-clone-fields' ),
 				'actions'     => $actions,
 			]
 		);
 
-		error_log( 'ACF Clone Fields: Plugin registered successfully with Settings Hub' );
+		// error_log( 'ACF Clone Fields: Plugin registered successfully with Settings Hub' );
 	}
 
 	/**
@@ -196,7 +196,7 @@ class Settings implements LoadableInterface {
 
 		// Add "View Documentation" button.
 		$actions[] = [
-			'label' => __( 'View Documentation', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+			'label' => __( 'View Documentation', 'silver-assist-acf-clone-fields' ),
 			'url'   => 'https://github.com/SilverAssist/acf-clone-fields#readme',
 			'class' => 'button',
 		];
@@ -211,8 +211,8 @@ class Settings implements LoadableInterface {
 	 */
 	public function add_settings_page(): void {
 		add_options_page(
-			__( 'ACF Clone Fields Settings', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-			__( 'ACF Clone Fields', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+			__( 'ACF Clone Fields Settings', 'silver-assist-acf-clone-fields' ),
+			__( 'ACF Clone Fields', 'silver-assist-acf-clone-fields' ),
 			'manage_options',
 			$this->page_slug,
 			[ $this, 'render_settings_page' ]
@@ -328,13 +328,13 @@ class Settings implements LoadableInterface {
 		);
 
 		// Register all settings.
-		register_setting( $this->settings_group, 'acf_clone_fields_enabled_post_types' );
-		register_setting( $this->settings_group, 'acf_clone_fields_default_overwrite' );
-		register_setting( $this->settings_group, 'acf_clone_fields_create_backup' );
-		register_setting( $this->settings_group, 'acf_clone_fields_copy_attachments' );
-		register_setting( $this->settings_group, 'acf_clone_fields_validate_data' );
-		register_setting( $this->settings_group, 'acf_clone_fields_log_operations' );
-		register_setting( $this->settings_group, 'acf_clone_fields_max_source_posts' );
+		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_enabled_post_types' );
+		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_default_overwrite' );
+		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_create_backup' );
+		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_copy_attachments' );
+		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_validate_data' );
+		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_log_operations' );
+		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_max_source_posts' );
 	}
 
 	/**
@@ -405,7 +405,7 @@ class Settings implements LoadableInterface {
 					</tr>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Enabled Post Types', 'silver-assist-acf-clone-fields' ); ?></th>
-						<td><strong><?php echo esc_html( (string) count( get_option( 'acf_clone_fields_enabled_post_types', [] ) ) ); ?></strong> <?php esc_html_e( 'post types configured', 'silver-assist-acf-clone-fields' ); ?></td>
+						<td><strong><?php echo esc_html( (string) count( get_option( 'silver_assist_acf_clone_fields_enabled_post_types', [] ) ) ); ?></strong> <?php esc_html_e( 'post types configured', 'silver-assist-acf-clone-fields' ); ?></td>
 					</tr>
 				</table>
 			</div>
@@ -446,14 +446,14 @@ class Settings implements LoadableInterface {
 	 * @return void
 	 */
 	public function render_post_types_field(): void {
-		$enabled_post_types = get_option( 'acf_clone_fields_enabled_post_types', [ 'post', 'page' ] );
+		$enabled_post_types = get_option( 'silver_assist_acf_clone_fields_enabled_post_types', [ 'post', 'page' ] );
 		$all_post_types     = get_post_types( [ 'public' => true ], 'objects' );
 
 		echo '<fieldset>';
 		foreach ( $all_post_types as $post_type ) {
 			$checked = in_array( $post_type->name, $enabled_post_types, true ) ? 'checked' : '';
 			printf(
-				'<label><input type="checkbox" name="acf_clone_fields_enabled_post_types[]" value="%s" %s> %s</label><br>',
+				'<label><input type="checkbox" name="silver_assist_acf_clone_fields_enabled_post_types[]" value="%s" %s> %s</label><br>',
 				esc_attr( $post_type->name ),
 				esc_attr( $checked ),
 				esc_html( $post_type->labels->name ?? $post_type->name )
@@ -469,9 +469,9 @@ class Settings implements LoadableInterface {
 	 * @return void
 	 */
 	public function render_overwrite_field(): void {
-		$value = get_option( 'acf_clone_fields_default_overwrite', false );
+		$value = get_option( 'silver_assist_acf_clone_fields_default_overwrite', false );
 		printf(
-			'<label><input type="checkbox" name="acf_clone_fields_default_overwrite" value="1" %s> %s</label>',
+			'<label><input type="checkbox" name="silver_assist_acf_clone_fields_default_overwrite" value="1" %s> %s</label>',
 			checked( $value, true, false ),
 			esc_html__( 'Allow overwriting existing field values by default', 'silver-assist-acf-clone-fields' )
 		);
@@ -484,9 +484,9 @@ class Settings implements LoadableInterface {
 	 * @return void
 	 */
 	public function render_backup_field(): void {
-		$value = get_option( 'acf_clone_fields_create_backup', true );
+		$value = get_option( 'silver_assist_acf_clone_fields_create_backup', true );
 		printf(
-			'<label><input type="checkbox" name="acf_clone_fields_create_backup" value="1" %s> %s</label>',
+			'<label><input type="checkbox" name="silver_assist_acf_clone_fields_create_backup" value="1" %s> %s</label>',
 			checked( $value, true, false ),
 			esc_html__( 'Create backup of existing field values before cloning', 'silver-assist-acf-clone-fields' )
 		);
@@ -499,9 +499,9 @@ class Settings implements LoadableInterface {
 	 * @return void
 	 */
 	public function render_attachments_field(): void {
-		$value = get_option( 'acf_clone_fields_copy_attachments', true );
+		$value = get_option( 'silver_assist_acf_clone_fields_copy_attachments', true );
 		printf(
-			'<label><input type="checkbox" name="acf_clone_fields_copy_attachments" value="1" %s> %s</label>',
+			'<label><input type="checkbox" name="silver_assist_acf_clone_fields_copy_attachments" value="1" %s> %s</label>',
 			checked( $value, true, false ),
 			esc_html__( 'Include image and file attachments when cloning fields', 'silver-assist-acf-clone-fields' )
 		);
@@ -514,9 +514,9 @@ class Settings implements LoadableInterface {
 	 * @return void
 	 */
 	public function render_validation_field(): void {
-		$value = get_option( 'acf_clone_fields_validate_data', true );
+		$value = get_option( 'silver_assist_acf_clone_fields_validate_data', true );
 		printf(
-			'<label><input type="checkbox" name="acf_clone_fields_validate_data" value="1" %s> %s</label>',
+			'<label><input type="checkbox" name="silver_assist_acf_clone_fields_validate_data" value="1" %s> %s</label>',
 			checked( $value, true, false ),
 			esc_html__( 'Validate field data before cloning', 'silver-assist-acf-clone-fields' )
 		);
@@ -529,9 +529,9 @@ class Settings implements LoadableInterface {
 	 * @return void
 	 */
 	public function render_logging_field(): void {
-		$value = get_option( 'acf_clone_fields_log_operations', true );
+		$value = get_option( 'silver_assist_acf_clone_fields_log_operations', true );
 		printf(
-			'<label><input type="checkbox" name="acf_clone_fields_log_operations" value="1" %s> %s</label>',
+			'<label><input type="checkbox" name="silver_assist_acf_clone_fields_log_operations" value="1" %s> %s</label>',
 			checked( $value, true, false ),
 			esc_html__( 'Log field cloning operations for debugging', 'silver-assist-acf-clone-fields' )
 		);
@@ -544,9 +544,9 @@ class Settings implements LoadableInterface {
 	 * @return void
 	 */
 	public function render_max_posts_field(): void {
-		$value = get_option( 'acf_clone_fields_max_source_posts', 50 );
+		$value = get_option( 'silver_assist_acf_clone_fields_max_source_posts', 50 );
 		printf(
-			'<input type="number" name="acf_clone_fields_max_source_posts" value="%d" min="10" max="200" class="small-text">',
+			'<input type="number" name="silver_assist_acf_clone_fields_max_source_posts" value="%d" min="10" max="200" class="small-text">',
 			(int) $value
 		);
 		echo '<p class="description">' . esc_html__( 'Maximum number of source posts to show in the clone interface. Higher values may impact performance.', 'silver-assist-acf-clone-fields' ) . '</p>';
@@ -559,35 +559,35 @@ class Settings implements LoadableInterface {
 	 */
 	private function save_settings(): void {
 		// Save enabled post types.
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in render_settings_page() before calling this method
-		$post_types = $_POST['acf_clone_fields_enabled_post_types'] ?? [];
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in render_settings_page() before calling this method.
+		$post_types = $_POST['silver_assist_acf_clone_fields_enabled_post_types'] ?? [];
 		$post_types = array_map( 'sanitize_text_field', $post_types );
-		update_option( 'acf_clone_fields_enabled_post_types', $post_types );
+		update_option( 'silver_assist_acf_clone_fields_enabled_post_types', $post_types );
 
 		// Save boolean options.
 		$boolean_options = [
-			'acf_clone_fields_default_overwrite',
-			'acf_clone_fields_create_backup',
-			'acf_clone_fields_copy_attachments',
-			'acf_clone_fields_validate_data',
-			'acf_clone_fields_log_operations',
+			'silver_assist_acf_clone_fields_default_overwrite',
+			'silver_assist_acf_clone_fields_create_backup',
+			'silver_assist_acf_clone_fields_copy_attachments',
+			'silver_assist_acf_clone_fields_validate_data',
+			'silver_assist_acf_clone_fields_log_operations',
 		];
 
 		foreach ( $boolean_options as $option ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in render_settings_page() before calling this method
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in render_settings_page() before calling this method.
 			$value = isset( $_POST[ $option ] ) && $_POST[ $option ] === '1';
 			update_option( $option, $value );
 		}
 
 		// Save numeric options.
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in render_settings_page() before calling this method
-		$max_posts = (int) ( $_POST['acf_clone_fields_max_source_posts'] ?? 50 );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in render_settings_page() before calling this method.
+		$max_posts = (int) ( $_POST['silver_assist_acf_clone_fields_max_source_posts'] ?? 50 );
 		$max_posts = max( 10, min( 200, $max_posts ) ); // Clamp between 10-200.
-		update_option( 'acf_clone_fields_max_source_posts', $max_posts );
+		update_option( 'silver_assist_acf_clone_fields_max_source_posts', $max_posts );
 
 		add_settings_error(
-			'acf_clone_fields_messages',
-			'acf_clone_fields_message',
+			'silver_assist_acf_clone_fields_messages',
+			'silver_assist_acf_clone_fields_message',
 			__( 'Settings saved.', 'silver-assist-acf-clone-fields' ),
 			'updated'
 		);
@@ -667,13 +667,13 @@ class Settings implements LoadableInterface {
 	 */
 	public function get_settings(): array {
 		return [
-			'enabled_post_types' => get_option( 'acf_clone_fields_enabled_post_types', [ 'post', 'page' ] ),
-			'default_overwrite'  => get_option( 'acf_clone_fields_default_overwrite', false ),
-			'create_backup'      => get_option( 'acf_clone_fields_create_backup', true ),
-			'copy_attachments'   => get_option( 'acf_clone_fields_copy_attachments', true ),
-			'validate_data'      => get_option( 'acf_clone_fields_validate_data', true ),
-			'log_operations'     => get_option( 'acf_clone_fields_log_operations', true ),
-			'max_source_posts'   => get_option( 'acf_clone_fields_max_source_posts', 50 ),
+			'enabled_post_types' => get_option( 'silver_assist_acf_clone_fields_enabled_post_types', [ 'post', 'page' ] ),
+			'default_overwrite'  => get_option( 'silver_assist_acf_clone_fields_default_overwrite', false ),
+			'create_backup'      => get_option( 'silver_assist_acf_clone_fields_create_backup', true ),
+			'copy_attachments'   => get_option( 'silver_assist_acf_clone_fields_copy_attachments', true ),
+			'validate_data'      => get_option( 'silver_assist_acf_clone_fields_validate_data', true ),
+			'log_operations'     => get_option( 'silver_assist_acf_clone_fields_log_operations', true ),
+			'max_source_posts'   => get_option( 'silver_assist_acf_clone_fields_max_source_posts', 50 ),
 		];
 	}
 

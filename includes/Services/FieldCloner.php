@@ -41,7 +41,7 @@ class FieldCloner implements LoadableInterface {
 	 * @return FieldCloner
 	 */
 	public static function instance(): FieldCloner {
-		if ( self::$instance === null ) {
+		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
 		return self::$instance;
@@ -54,8 +54,8 @@ class FieldCloner implements LoadableInterface {
 	 */
 	public function init(): void {
 		// Actions for logging clone operations.
-		add_action( 'acf_clone_fields_before_clone', $this->log_clone_operation( ... ), 10, 3 );
-		add_action( 'acf_clone_fields_after_clone', $this->clear_clone_cache( ... ), 10, 1 );
+		add_action( 'silver_assist_acf_clone_fields_before_clone', $this->log_clone_operation( ... ), 10, 3 );
+		add_action( 'silver_assist_acf_clone_fields_after_clone', $this->clear_clone_cache( ... ), 10, 1 );
 	}
 
 	/**
@@ -120,7 +120,7 @@ class FieldCloner implements LoadableInterface {
 		];
 
 		// Fire before clone action.
-		do_action( 'acf_clone_fields_before_clone', $source_post_id, $target_post_id, $field_keys, $options );
+		do_action( 'silver_assist_acf_clone_fields_before_clone', $source_post_id, $target_post_id, $field_keys, $options );
 
 		// Process each field.
 		foreach ( $field_keys as $field_key ) {
@@ -142,7 +142,7 @@ class FieldCloner implements LoadableInterface {
 		$result['message'] = $this->generate_result_message( $result );
 
 		// Fire after clone action.
-		do_action( 'acf_clone_fields_after_clone', $target_post_id, $result );
+		do_action( 'silver_assist_acf_clone_fields_after_clone', $target_post_id, $result );
 
 		// Log operation.
 		$this->log_clone_result( $source_post_id, $target_post_id, $result );
@@ -185,7 +185,7 @@ class FieldCloner implements LoadableInterface {
 
 		// Check if target field exists and handle overwrite logic.
 		$existing_value = get_field( $field_key, $target_post_id, false );
-		if ( $existing_value !== false && null !== $existing_value && ! $options['overwrite_existing'] ) {
+		if ( false !== $existing_value && null !== $existing_value && ! $options['overwrite_existing'] ) {
 			return [
 				'success'  => false,
 				'message'  => sprintf( 'Field %s already has a value and overwrite is disabled', $field_object['label'] ),

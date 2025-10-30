@@ -301,7 +301,7 @@ class Helpers implements LoadableInterface {
 		} else {
 			$log_entry = sprintf(
 				'[%s] Silver ACF Clone: %s %s',
-				date( 'Y-m-d H:i:s' ),
+				gmdate( 'Y-m-d H:i:s' ),
 				strtoupper( $level ),
 				$message
 			);
@@ -310,7 +310,7 @@ class Helpers implements LoadableInterface {
 				$log_entry .= ' Context: ' . wp_json_encode( $context );
 			}
 
-			error_log( $log_entry );
+			// error_log( $log_entry );
 		}
 	}
 
@@ -325,7 +325,9 @@ class Helpers implements LoadableInterface {
 		$cache_key = 'silver_acf_clone_' . $key;
 
 		if ( ! empty( $params ) ) {
-			$cache_key .= '_' . md5( serialize( $params ) );
+			$cache_key .= '_' . md5( // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Serialization required for data storage
+				serialize( $params )
+			);
 		}
 
 		return $cache_key;

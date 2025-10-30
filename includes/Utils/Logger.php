@@ -233,7 +233,7 @@ class Logger implements LoadableInterface {
 	 * @return string
 	 */
 	private function format_log_entry( string $level, string $message, array $context ): string {
-		$timestamp = date( 'Y-m-d H:i:s' );
+		$timestamp = gmdate( 'Y-m-d H:i:s' );
 		$formatted = sprintf( '[%s] [%s] %s', $timestamp, strtoupper( $level ), $message );
 
 		if ( ! empty( $context ) ) {
@@ -251,7 +251,8 @@ class Logger implements LoadableInterface {
 	 */
 	private function write_to_file( string $log_entry ): void {
 		// Check if file exists and is writable.
-		if ( file_exists( $this->log_file ) && ! is_writable( $this->log_file ) ) {
+		if ( file_exists( $this->log_file ) && ! // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- Direct check required
+		is_writable( $this->log_file ) ) {
 			return;
 		}
 
@@ -261,8 +262,9 @@ class Logger implements LoadableInterface {
 		}
 
 		// Write to file.
-		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Error handling managed
-		@file_put_contents( $this->log_file, $log_entry, FILE_APPEND | LOCK_EX );
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Error handling managed.
+		@// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Direct file operation required
+		file_put_contents( $this->log_file, $log_entry, FILE_APPEND | LOCK_EX );
 	}
 
 	/**
@@ -279,13 +281,15 @@ class Logger implements LoadableInterface {
 
 		// Remove old backup if exists.
 		if ( file_exists( $backup_file ) ) {
-			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Error handling managed
-			@unlink( $backup_file );
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Error handling managed.
+			@// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Direct file operation required
+			unlink( $backup_file );
 		}
 
 		// Move current log to backup.
-		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Error handling managed
-		@rename( $this->log_file, $backup_file );
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Error handling managed.
+		@// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Direct file operation required
+		rename( $this->log_file, $backup_file );
 	}
 
 	/**
@@ -304,8 +308,9 @@ class Logger implements LoadableInterface {
 	 */
 	public function clear_log(): bool {
 		if ( file_exists( $this->log_file ) ) {
-			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Error handling managed
-			return @unlink( $this->log_file );
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Error handling managed.
+			return @// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Direct file operation required
+			unlink( $this->log_file );
 		}
 		return true;
 	}

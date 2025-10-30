@@ -41,7 +41,7 @@ define( 'SILVER_ACF_CLONE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SILVER_ACF_CLONE_URL', plugin_dir_url( __FILE__ ) );
 define( 'SILVER_ACF_CLONE_BASENAME', plugin_basename( __FILE__ ) );
 define( 'SILVER_ACF_CLONE_SLUG', 'silver-assist-acf-clone-fields' );
-define( 'SILVER_ACF_CLONE_TEXT_DOMAIN', 'silver-assist-acf-clone-fields' );
+define( ''silver - assist - acf - clone - fields'', 'silver-assist-acf-clone-fields' );
 
 /**
  * Composer autoloader
@@ -100,7 +100,7 @@ function silver_acf_clone_check_dependencies(): bool {
 				$plugin_names = implode( ', ', $missing_plugins );
 				$message      = sprintf(
 				/* translators: %s: comma-separated list of required plugins */
-					__( 'Silver Assist - ACF Clone Fields requires the following plugins to be active: %s', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+					__( 'Silver Assist - ACF Clone Fields requires the following plugins to be active: %s', 'silver-assist-acf-clone-fields' ),
 					$plugin_names
 				);
 
@@ -165,7 +165,7 @@ add_action(
 	'init',
 	function () {
 		load_plugin_textdomain(
-			SILVER_ACF_CLONE_TEXT_DOMAIN,
+			'silver-assist-acf-clone-fields',
 			false,
 			dirname( SILVER_ACF_CLONE_BASENAME ) . '/languages'
 		);

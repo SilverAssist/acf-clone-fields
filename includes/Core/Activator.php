@@ -115,8 +115,8 @@ class Activator {
 				sprintf(
 					/*
 					translators: %s: required PHP version */
-					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- wp_die() handles escaping internally
-					__( 'Silver Assist - ACF Clone Fields requires PHP %s or higher.', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- wp_die() handles escaping internally.
+					__( 'Silver Assist - ACF Clone Fields requires PHP %s or higher.', 'silver-assist-acf-clone-fields' ),
 					'8.2'
 				)
 			);
@@ -132,8 +132,8 @@ class Activator {
 				sprintf(
 					/*
 					translators: %s: required WordPress version */
-					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- wp_die() handles escaping internally
-					__( 'Silver Assist - ACF Clone Fields requires WordPress %s or higher.', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- wp_die() handles escaping internally.
+					__( 'Silver Assist - ACF Clone Fields requires WordPress %s or higher.', 'silver-assist-acf-clone-fields' ),
 					'5.0'
 				)
 			);
@@ -145,8 +145,8 @@ class Activator {
 				deactivate_plugins( (string) SILVER_ACF_CLONE_BASENAME );
 			}
 			throw new \Exception(
-				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception messages don't require escaping
-				__( 'Silver Assist - ACF Clone Fields requires Advanced Custom Fields Pro to be active.', SILVER_ACF_CLONE_TEXT_DOMAIN )
+				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception messages don't require escaping.
+				__( 'Silver Assist - ACF Clone Fields requires Advanced Custom Fields Pro to be active.', 'silver-assist-acf-clone-fields' )
 			);
 		}
 	}
@@ -162,9 +162,9 @@ class Activator {
 		$default_settings = [
 			'enabled_post_types'   => [ 'post', 'page' ],
 			'show_in_sidebar'      => true,
-			'clone_button_text'    => __( 'Clone Custom Fields', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-			'confirmation_message' => __( 'This will overwrite existing custom fields. Continue?', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-			'success_message'      => __( 'Custom fields cloned successfully!', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+			'clone_button_text'    => __( 'Clone Custom Fields', 'silver-assist-acf-clone-fields' ),
+			'confirmation_message' => __( 'This will overwrite existing custom fields. Continue?', 'silver-assist-acf-clone-fields' ),
+			'success_message'      => __( 'Custom fields cloned successfully!', 'silver-assist-acf-clone-fields' ),
 			'logging_enabled'      => false,
 			'cache_enabled'        => true,
 		];

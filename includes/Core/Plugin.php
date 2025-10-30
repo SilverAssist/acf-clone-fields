@@ -98,8 +98,8 @@ class Plugin implements LoadableInterface {
 		// Load plugin textdomain.
 		$this->load_textdomain();
 
-		// Admin assets are handled by Admin\MetaBox class
-		// No need to initialize them here to prevent duplication
+		// Admin assets are handled by Admin\MetaBox class.
+		// No need to initialize them here to prevent duplication.
 
 		// Mark as initialized.
 		$this->initialized = true;
@@ -217,7 +217,7 @@ class Plugin implements LoadableInterface {
 					'asset_pattern'      => 'acf-clone-fields-v{version}.zip',
 					'ajax_action'        => 'silver_acf_clone_check_version',
 					'ajax_nonce'         => 'silver_acf_clone_version_nonce',
-					'text_domain'        => SILVER_ACF_CLONE_TEXT_DOMAIN,
+					'text_domain'        => 'silver-assist-acf-clone-fields',
 				]
 			);
 
@@ -239,15 +239,15 @@ class Plugin implements LoadableInterface {
 					$hub = \SilverAssist\SettingsHub\SettingsHub::get_instance();
 					$hub->register_plugin(
 						SILVER_ACF_CLONE_SLUG,
-						__( 'ACF Clone Fields', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+						__( 'ACF Clone Fields', 'silver-assist-acf-clone-fields' ),
 						[ $this, 'render_settings_page' ],
 						[
-							'description' => __( 'Advanced ACF field cloning with granular selection', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+							'description' => __( 'Advanced ACF field cloning with granular selection', 'silver-assist-acf-clone-fields' ),
 							'version'     => SILVER_ACF_CLONE_VERSION,
-							'tab_title'   => __( 'ACF Clone Fields', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+							'tab_title'   => __( 'ACF Clone Fields', 'silver-assist-acf-clone-fields' ),
 							'actions'     => [
 								[
-									'label' => __( 'View Documentation', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+									'label' => __( 'View Documentation', 'silver-assist-acf-clone-fields' ),
 									'url'   => 'https://github.com/SilverAssist/acf-clone-fields#readme',
 									'class' => 'button',
 								],
@@ -289,7 +289,7 @@ class Plugin implements LoadableInterface {
 	 */
 	private function load_textdomain(): void {
 		load_plugin_textdomain(
-			SILVER_ACF_CLONE_TEXT_DOMAIN,
+			'silver-assist-acf-clone-fields',
 			false,
 			dirname( (string) SILVER_ACF_CLONE_BASENAME ) . '/languages'
 		);
@@ -346,12 +346,12 @@ class Plugin implements LoadableInterface {
 				'postType'  => get_post_type(),
 				'debugMode' => defined( 'WP_DEBUG' ) && WP_DEBUG,
 				'strings'   => [
-					'confirm'      => __( 'This will overwrite existing custom fields. Continue?', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-					'success'      => __( 'Custom fields cloned successfully!', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-					'error'        => __( 'An error occurred while cloning fields.', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-					'loading'      => __( 'Cloning fields...', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-					'noFields'     => __( 'No fields available to clone.', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-					'selectSource' => __( 'Please select a source post.', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+					'confirm'      => __( 'This will overwrite existing custom fields. Continue?', 'silver-assist-acf-clone-fields' ),
+					'success'      => __( 'Custom fields cloned successfully!', 'silver-assist-acf-clone-fields' ),
+					'error'        => __( 'An error occurred while cloning fields.', 'silver-assist-acf-clone-fields' ),
+					'loading'      => __( 'Cloning fields...', 'silver-assist-acf-clone-fields' ),
+					'noFields'     => __( 'No fields available to clone.', 'silver-assist-acf-clone-fields' ),
+					'selectSource' => __( 'Please select a source post.', 'silver-assist-acf-clone-fields' ),
 				],
 			]
 		);
@@ -376,7 +376,7 @@ class Plugin implements LoadableInterface {
 	public function add_action_links( array $links ): array {
 		$plugin_links = [
 			'<a href="' . admin_url( 'options-general.php?page=silver-acf-clone-fields' ) . '">' .
-			__( 'Settings', SILVER_ACF_CLONE_TEXT_DOMAIN ) . '</a>',
+			__( 'Settings', 'silver-assist-acf-clone-fields' ) . '</a>',
 		];
 
 		return array_merge( $plugin_links, $links );
@@ -392,9 +392,9 @@ class Plugin implements LoadableInterface {
 	public function add_row_meta( array $meta, string $file ): array {
 		if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) && $file === (string) SILVER_ACF_CLONE_BASENAME ) {
 			$meta[] = '<a href="https://github.com/SilverAssist/acf-clone-fields" target="_blank">' .
-						__( 'GitHub Repository', SILVER_ACF_CLONE_TEXT_DOMAIN ) . '</a>';
+						__( 'GitHub Repository', 'silver-assist-acf-clone-fields' ) . '</a>';
 			$meta[] = '<a href="https://github.com/SilverAssist/acf-clone-fields/issues" target="_blank">' .
-						__( 'Support', SILVER_ACF_CLONE_TEXT_DOMAIN ) . '</a>';
+						__( 'Support', 'silver-assist-acf-clone-fields' ) . '</a>';
 		}
 
 		return $meta;
@@ -430,11 +430,11 @@ class Plugin implements LoadableInterface {
 		// Fallback basic settings page.
 		?>
 		<div class="silverassist-plugin-settings">
-			<h2><?php esc_html_e( 'ACF Clone Fields Settings', SILVER_ACF_CLONE_TEXT_DOMAIN ); ?></h2>
-			<p><?php esc_html_e( 'Configure ACF field cloning options and preferences.', SILVER_ACF_CLONE_TEXT_DOMAIN ); ?></p>
+			<h2><?php esc_html_e( 'ACF Clone Fields Settings', 'silver-assist-acf-clone-fields' ); ?></h2>
+			<p><?php esc_html_e( 'Configure ACF field cloning options and preferences.', 'silver-assist-acf-clone-fields' ); ?></p>
 			
 			<div class="notice notice-info">
-				<p><?php esc_html_e( 'Settings integration is being developed. Check back soon for configuration options.', SILVER_ACF_CLONE_TEXT_DOMAIN ); ?></p>
+				<p><?php esc_html_e( 'Settings integration is being developed. Check back soon for configuration options.', 'silver-assist-acf-clone-fields' ); ?></p>
 			</div>
 		</div>
 		<?php
@@ -447,8 +447,8 @@ class Plugin implements LoadableInterface {
 	 */
 	public function add_standalone_settings_page(): void {
 		add_options_page(
-			__( 'ACF Clone Fields', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-			__( 'ACF Clone Fields', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+			__( 'ACF Clone Fields', 'silver-assist-acf-clone-fields' ),
+			__( 'ACF Clone Fields', 'silver-assist-acf-clone-fields' ),
 			'manage_options',
 			SILVER_ACF_CLONE_SLUG,
 			[ $this, 'render_settings_page' ]

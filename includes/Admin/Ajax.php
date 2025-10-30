@@ -109,9 +109,9 @@ class Ajax implements LoadableInterface {
 		}
 
 		// Get and validate parameters.
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_nonce()
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_nonce().
 		$post_type = sanitize_text_field( $_POST['post_type'] ?? '' );
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_nonce()
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_nonce().
 		$current_post_id = (int) ( $_POST['post_id'] ?? 0 );
 
 		if ( ! $post_type || ! $current_post_id ) {
@@ -127,7 +127,7 @@ class Ajax implements LoadableInterface {
 			// Get source posts.
 			$args = [
 				'exclude'        => [ $current_post_id ],
-				'posts_per_page' => get_option( 'acf_clone_fields_max_source_posts', 50 ),
+				'posts_per_page' => get_option( 'silver_assist_acf_clone_fields_max_source_posts', 50 ),
 				'post_status'    => [ 'publish', 'draft', 'pending' ],
 				'orderby'        => 'modified',
 				'order'          => 'DESC',
@@ -169,9 +169,9 @@ class Ajax implements LoadableInterface {
 		}
 
 		// Get and validate parameters.
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_nonce()
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_nonce().
 		$source_post_id = (int) ( $_POST['source_post_id'] ?? 0 );
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_nonce()
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in verify_ajax_nonce().
 		$target_post_id = (int) ( $_POST['target_post_id'] ?? 0 );
 
 		if ( ! $source_post_id || ! $target_post_id ) {
@@ -249,13 +249,13 @@ class Ajax implements LoadableInterface {
 		}
 
 		// Get and validate parameters.
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce()
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce().
 		$source_post_id = (int) ( $_POST['source_post_id'] ?? 0 );
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce()
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce().
 		$target_post_id = (int) ( $_POST['target_post_id'] ?? 0 );
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce()
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce().
 		$field_keys = $_POST['field_keys'] ?? [];
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce()
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce().
 		$options = $_POST['options'] ?? [];
 
 		// Validate required parameters.
@@ -336,11 +336,11 @@ class Ajax implements LoadableInterface {
 		}
 
 		// Get and validate parameters.
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce()
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce().
 		$source_post_id = (int) ( $_POST['source_post_id'] ?? 0 );
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce()
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce().
 		$target_post_id = (int) ( $_POST['target_post_id'] ?? 0 );
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce()
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above via verify_ajax_nonce().
 		$field_keys = $_POST['field_keys'] ?? [];
 
 		if ( ! $source_post_id || ! $target_post_id || ! is_array( $field_keys ) ) {
@@ -373,7 +373,7 @@ class Ajax implements LoadableInterface {
 	 */
 	private function verify_ajax_nonce(): bool {
 		$nonce = $_POST['nonce'] ?? '';
-		return (bool) wp_verify_nonce( $nonce, 'acf_clone_fields_ajax' );
+		return (bool) wp_verify_nonce( $nonce, 'silver_assist_acf_clone_fields_ajax' );
 	}
 
 	/**
@@ -392,7 +392,7 @@ class Ajax implements LoadableInterface {
 				'id'           => $post->ID,
 				'title'        => $post->post_title,
 				'status'       => $post->post_status,
-				'modified'     => get_the_modified_date( 'Y-m-d H:i:s', $post->ID ),
+				'modified'     => get_the_modified_gmdate( 'Y-m-d H:i:s', $post->ID ),
 				'modified_ago' => human_time_diff( (int) get_post_modified_time( 'U', false, $post->ID ), time() ) . ' ago',
 				'field_count'  => $field_stats['total_fields'] ?? 0,
 				'field_stats'  => $field_stats,
@@ -495,7 +495,7 @@ class Ajax implements LoadableInterface {
 	 */
 	private function get_field_preview( array $field_data ): string {
 		if ( ! $field_data['has_value'] ) {
-			return __( '(empty)', SILVER_ACF_CLONE_TEXT_DOMAIN );
+			return __( '(empty)', 'silver-assist-acf-clone-fields' );
 		}
 
 		$value = $field_data['value'];
@@ -506,7 +506,7 @@ class Ajax implements LoadableInterface {
 			case 'textarea':
 			case 'email':
 			case 'url':
-				return is_string( $value ) ? wp_trim_words( strip_tags( $value ), 8 ) : '';
+				return is_string( $value ) ? wp_trim_words( wp_strip_all_tags( $value ), 8 ) : '';
 
 			case 'number':
 			case 'range':
@@ -524,41 +524,41 @@ class Ajax implements LoadableInterface {
 				return '';
 
 			case 'true_false':
-				return $value ? __( 'Yes', SILVER_ACF_CLONE_TEXT_DOMAIN ) : __( 'No', SILVER_ACF_CLONE_TEXT_DOMAIN );
+				return $value ? __( 'Yes', 'silver-assist-acf-clone-fields' ) : __( 'No', 'silver-assist-acf-clone-fields' );
 
 			case 'image':
 				return isset( $field_data['attachment_info']['title'] )
 					? $field_data['attachment_info']['title']
-					: __( 'Image', SILVER_ACF_CLONE_TEXT_DOMAIN );
+					: __( 'Image', 'silver-assist-acf-clone-fields' );
 
 			case 'file':
 				return isset( $field_data['attachment_info']['filename'] )
 					? $field_data['attachment_info']['filename']
-					: __( 'File', SILVER_ACF_CLONE_TEXT_DOMAIN );
+					: __( 'File', 'silver-assist-acf-clone-fields' );
 
 			case 'repeater':
 				$count = $field_data['row_count'] ?? 0;
 				return sprintf(
-					_n( '%d row', '%d rows', $count, SILVER_ACF_CLONE_TEXT_DOMAIN ),
+					_n( '%d row', '%d rows', $count, 'silver-assist-acf-clone-fields' ),
 					$count
 				);
 
 			case 'group':
 				$count = count( $field_data['sub_fields'] ?? [] );
 				return sprintf(
-					_n( '%d field', '%d fields', $count, SILVER_ACF_CLONE_TEXT_DOMAIN ),
+					_n( '%d field', '%d fields', $count, 'silver-assist-acf-clone-fields' ),
 					$count
 				);
 
 			case 'flexible_content':
 				$count = count( $field_data['layouts'] ?? [] );
 				return sprintf(
-					_n( '%d layout', '%d layouts', $count, SILVER_ACF_CLONE_TEXT_DOMAIN ),
+					_n( '%d layout', '%d layouts', $count, 'silver-assist-acf-clone-fields' ),
 					$count
 				);
 
 			default:
-				return __( 'Has value', SILVER_ACF_CLONE_TEXT_DOMAIN );
+				return __( 'Has value', 'silver-assist-acf-clone-fields' );
 		}
 	}
 
@@ -570,10 +570,10 @@ class Ajax implements LoadableInterface {
 	 */
 	private function prepare_clone_options( array $request_options ): array {
 		$default_options = [
-			'overwrite_existing' => get_option( 'acf_clone_fields_default_overwrite', false ),
-			'create_backup'      => get_option( 'acf_clone_fields_create_backup', true ),
-			'copy_attachments'   => get_option( 'acf_clone_fields_copy_attachments', true ),
-			'validate_data'      => get_option( 'acf_clone_fields_validate_data', true ),
+			'overwrite_existing' => get_option( 'silver_assist_acf_clone_fields_default_overwrite', false ),
+			'create_backup'      => get_option( 'silver_assist_acf_clone_fields_create_backup', true ),
+			'copy_attachments'   => get_option( 'silver_assist_acf_clone_fields_copy_attachments', true ),
+			'validate_data'      => get_option( 'silver_assist_acf_clone_fields_validate_data', true ),
 		];
 
 		// Override with request options.

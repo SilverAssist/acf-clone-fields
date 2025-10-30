@@ -64,7 +64,7 @@ class MetaBox implements LoadableInterface {
 	 * Private constructor to prevent direct instantiation
 	 */
 	private function __construct() {
-		// Empty - initialization happens in init()
+		// Empty - initialization happens in init().
 	}
 
 	/**
@@ -109,7 +109,7 @@ class MetaBox implements LoadableInterface {
 	 * @return void
 	 */
 	private function load_settings(): void {
-		$this->enabled_post_types = get_option( 'acf_clone_fields_enabled_post_types', [ 'post', 'page' ] );
+		$this->enabled_post_types = get_option( 'silver_assist_acf_clone_fields_enabled_post_types', [ 'post', 'page' ] );
 	}
 
 	/**
@@ -118,7 +118,7 @@ class MetaBox implements LoadableInterface {
 	 * @return void
 	 */
 	private function init_hooks(): void {
-		// CRITICAL FIX: Prevent duplicate hook registration across all instances
+		// CRITICAL FIX: Prevent duplicate hook registration across all instances.
 		static $enqueue_hook_registered = false;
 
 		// Add meta boxes (safe to register multiple times).
@@ -127,7 +127,7 @@ class MetaBox implements LoadableInterface {
 		// Ensure metabox shows in Gutenberg (safe to register multiple times).
 		add_filter( 'use_block_editor_for_post_type', [ $this, 'ensure_metabox_compatibility' ], 10, 2 );
 
-		// CRITICAL: Use static method callback to prevent instance duplication issues
+		// CRITICAL: Use static method callback to prevent instance duplication issues.
 		if ( ! $enqueue_hook_registered ) {
 			add_action( 'admin_enqueue_scripts', [ self::class, 'static_enqueue_admin_assets' ] );
 			$enqueue_hook_registered = true;
@@ -162,7 +162,7 @@ class MetaBox implements LoadableInterface {
 		foreach ( $this->enabled_post_types as $post_type ) {
 			add_meta_box(
 				'acf_clone_fields',
-				__( 'Clone Custom Fields', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+				__( 'Clone Custom Fields', 'silver-assist-acf-clone-fields' ),
 				[ $this, 'render_meta_box' ],
 				$post_type,
 				'side',
@@ -198,17 +198,17 @@ class MetaBox implements LoadableInterface {
 		// Get current post field statistics.
 		$field_stats = FieldDetector::instance()->get_field_statistics( $post->ID );
 
-		wp_nonce_field( 'acf_clone_fields_meta_box', 'acf_clone_fields_nonce' );
+		wp_nonce_field( 'silver_assist_acf_clone_fields_meta_box', 'silver_assist_acf_clone_fields_nonce' );
 		?>
 		<div class="acf-clone-fields-metabox">
 			
 			<!-- Current Post Info -->
 			<div class="acf-clone-info">
-				<h4><?php esc_html_e( 'Current Post Fields', SILVER_ACF_CLONE_TEXT_DOMAIN ); ?></h4>
+				<h4><?php esc_html_e( 'Current Post Fields', 'silver-assist-acf-clone-fields' ); ?></h4>
 				<ul class="acf-clone-stats">
-					<li><?php printf( esc_html__( 'Field Groups: %d', SILVER_ACF_CLONE_TEXT_DOMAIN ), intval( $field_stats['total_groups'] ) ); ?></li>
-					<li><?php printf( esc_html__( 'Total Fields: %d', SILVER_ACF_CLONE_TEXT_DOMAIN ), intval( $field_stats['total_fields'] ) ); ?></li>
-					<li><?php printf( esc_html__( 'Fields with Values: %d', SILVER_ACF_CLONE_TEXT_DOMAIN ), intval( $field_stats['fields_with_values'] ) ); ?></li>
+					<li><?php printf( esc_html__( 'Field Groups: %d', 'silver-assist-acf-clone-fields' ), intval( $field_stats['total_groups'] ) ); ?></li>
+					<li><?php printf( esc_html__( 'Total Fields: %d', 'silver-assist-acf-clone-fields' ), intval( $field_stats['total_fields'] ) ); ?></li>
+					<li><?php printf( esc_html__( 'Fields with Values: %d', 'silver-assist-acf-clone-fields' ), intval( $field_stats['fields_with_values'] ) ); ?></li>
 				</ul>
 			</div>
 
@@ -218,12 +218,12 @@ class MetaBox implements LoadableInterface {
 					<button type="button" class="button button-secondary acf-clone-open-modal" 
 							data-post-id="<?php echo esc_attr( (string) $post->ID ); ?>"
 							data-post-type="<?php echo esc_attr( $post->post_type ); ?>">
-						<?php esc_html_e( 'Clone Custom Fields', SILVER_ACF_CLONE_TEXT_DOMAIN ); ?>
+						<?php esc_html_e( 'Clone Custom Fields', 'silver-assist-acf-clone-fields' ); ?>
 					</button>
 					<p class="description">
 						<?php
 						printf(
-							esc_html__( 'Clone fields from %1$d available %2$s post(s)', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+							esc_html__( 'Clone fields from %1$d available %2$s post(s)', 'silver-assist-acf-clone-fields' ),
 							intval( $source_count ),
 							esc_html( get_post_type_object( $post->post_type )->labels->name ?? $post->post_type )
 						);
@@ -231,10 +231,10 @@ class MetaBox implements LoadableInterface {
 					</p>
 				<?php else : ?>
 					<p class="acf-clone-no-sources">
-						<?php esc_html_e( 'No other posts available to clone from.', SILVER_ACF_CLONE_TEXT_DOMAIN ); ?>
+						<?php esc_html_e( 'No other posts available to clone from.', 'silver-assist-acf-clone-fields' ); ?>
 					</p>
 					<p class="description">
-						<?php esc_html_e( 'Create more posts of this type to enable field cloning.', SILVER_ACF_CLONE_TEXT_DOMAIN ); ?>
+						<?php esc_html_e( 'Create more posts of this type to enable field cloning.', 'silver-assist-acf-clone-fields' ); ?>
 					</p>
 				<?php endif; ?>
 			</div>
@@ -254,8 +254,8 @@ class MetaBox implements LoadableInterface {
 	private function render_acf_not_available(): void {
 		?>
 		<div class="acf-clone-error">
-			<p><strong><?php esc_html_e( 'ACF Pro Required', SILVER_ACF_CLONE_TEXT_DOMAIN ); ?></strong></p>
-			<p><?php esc_html_e( 'Advanced Custom Fields Pro must be active to use field cloning.', SILVER_ACF_CLONE_TEXT_DOMAIN ); ?></p>
+			<p><strong><?php esc_html_e( 'ACF Pro Required', 'silver-assist-acf-clone-fields' ); ?></strong></p>
+			<p><?php esc_html_e( 'Advanced Custom Fields Pro must be active to use field cloning.', 'silver-assist-acf-clone-fields' ); ?></p>
 		</div>
 		<?php
 	}
@@ -268,7 +268,7 @@ class MetaBox implements LoadableInterface {
 	private function render_no_permissions(): void {
 		?>
 		<div class="acf-clone-error">
-			<p><?php esc_html_e( 'You do not have permission to clone fields for this post.', SILVER_ACF_CLONE_TEXT_DOMAIN ); ?></p>
+			<p><?php esc_html_e( 'You do not have permission to clone fields for this post.', 'silver-assist-acf-clone-fields' ); ?></p>
 		</div>
 		<?php
 	}
@@ -287,7 +287,7 @@ class MetaBox implements LoadableInterface {
 		}
 		?>
 		<div class="acf-clone-recent-activity">
-			<h4><?php esc_html_e( 'Recent Activity', SILVER_ACF_CLONE_TEXT_DOMAIN ); ?></h4>
+			<h4><?php esc_html_e( 'Recent Activity', 'silver-assist-acf-clone-fields' ); ?></h4>
 			<ul class="acf-clone-activity-list">
 				<?php foreach ( $recent_activity as $activity ) : ?>
 					<li>
@@ -341,7 +341,7 @@ class MetaBox implements LoadableInterface {
 	 * @return void
 	 */
 	public static function static_enqueue_admin_assets( string $hook_suffix ): void {
-		// Get the singleton instance and delegate
+		// Get the singleton instance and delegate.
 		$instance = self::instance();
 		$instance->enqueue_admin_assets( $hook_suffix );
 	}
@@ -387,17 +387,17 @@ class MetaBox implements LoadableInterface {
 			'acfCloneFields',
 			[
 				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
-				'nonce'     => wp_create_nonce( 'acf_clone_fields_ajax' ),
+				'nonce'     => wp_create_nonce( 'silver_assist_acf_clone_fields_ajax' ),
 				'postId'    => $post->ID,
 				'postType'  => $post->post_type,
 				'debugMode' => defined( 'WP_DEBUG' ) && WP_DEBUG,
 				'strings'   => [
-					'loading'          => __( 'Loading...', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-					'error'            => __( 'An error occurred. Please try again.', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-					'confirmClone'     => __( 'Are you sure you want to clone the selected fields? This will overwrite existing field values.', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-					'noFieldsSelected' => __( 'Please select at least one field to clone.', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-					'cloneSuccess'     => __( 'Fields cloned successfully!', SILVER_ACF_CLONE_TEXT_DOMAIN ),
-					'cloneError'       => __( 'Error cloning fields. Please check the console for details.', SILVER_ACF_CLONE_TEXT_DOMAIN ),
+					'loading'          => __( 'Loading...', 'silver-assist-acf-clone-fields' ),
+					'error'            => __( 'An error occurred. Please try again.', 'silver-assist-acf-clone-fields' ),
+					'confirmClone'     => __( 'Are you sure you want to clone the selected fields? This will overwrite existing field values.', 'silver-assist-acf-clone-fields' ),
+					'noFieldsSelected' => __( 'Please select at least one field to clone.', 'silver-assist-acf-clone-fields' ),
+					'cloneSuccess'     => __( 'Fields cloned successfully!', 'silver-assist-acf-clone-fields' ),
+					'cloneError'       => __( 'Error cloning fields. Please check the console for details.', 'silver-assist-acf-clone-fields' ),
 				],
 			]
 		);
