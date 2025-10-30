@@ -1,0 +1,13 @@
+includes:
+	- vendor/szepeviktor/phpstan-wordpress/extension.neon
+parameters:
+	level: 8
+	paths:
+		- includes
+	bootstrapFiles:
+		- silver-assist-acf-clone-fields.php
+	scanDirectories:
+		- vendor
+	excludePaths:
+		- tests/*
+		- build/*

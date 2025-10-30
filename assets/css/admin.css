@@ -1,0 +1,657 @@
+/**
+ * ACF Clone Fields - Admin Styles
+ *
+ * Styles for the ACF field cloning interface including meta box, modal, and settings page.
+ *
+ * @package SilverAssist\ACFCloneFields
+ * @since 1.0.0
+ * @version 1.0.0
+ * @author Silver Assist
+ */
+
+/* ==========================================================================
+   Meta Box Styles
+   ========================================================================== */
+
+.acf-clone-fields-metabox {
+    font-size: 13px;
+}
+
+.acf-clone-info {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+}
+
+.acf-clone-info h4 {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.acf-clone-stats {
+    margin: 0;
+    list-style: none;
+    padding: 0;
+}
+
+.acf-clone-stats li {
+    margin-bottom: 3px;
+    font-size: 12px;
+    color: #666;
+}
+
+.acf-clone-actions {
+    margin-bottom: 15px;
+}
+
+.acf-clone-open-modal {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.acf-clone-no-sources {
+    color: #666;
+    font-style: italic;
+    margin-bottom: 8px;
+}
+
+.acf-clone-error {
+    padding: 10px;
+    background-color: #ffeaa7;
+    border: 1px solid #fdcb6e;
+    border-radius: 3px;
+    color: #2d3436;
+}
+
+.acf-clone-error p {
+    margin: 0;
+}
+
+.acf-clone-recent-activity {
+    border-top: 1px solid #e5e5e5;
+    padding-top: 12px;
+}
+
+.acf-clone-recent-activity h4 {
+    margin: 0 0 8px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+}
+
+.acf-clone-activity-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.acf-clone-activity-list li {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.activity-time {
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+/* ==========================================================================
+   Modal Styles
+   ========================================================================== */
+
+.acf-clone-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 160000;
+    display: none;
+}
+
+.acf-clone-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.acf-clone-modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #e5e5e5;
+    background-color: #f9f9f9;
+    flex-shrink: 0;
+}
+
+.acf-clone-modal-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.acf-clone-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+    line-height: 1;
+    padding: 5px;
+}
+
+.acf-clone-modal-close:hover {
+    color: #333;
+}
+
+.acf-clone-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.acf-clone-modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #e5e5e5;
+    background-color: #f9f9f9;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.acf-clone-modal-footer .button {
+    margin-left: 8px;
+}
+
+/* ==========================================================================
+   Source Post Selection
+   ========================================================================== */
+
+.acf-clone-step {
+    margin-bottom: 25px;
+}
+
+.acf-clone-step-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+}
+
+.acf-clone-step-description {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.acf-clone-source-posts {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+}
+
+.acf-clone-source-post {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.acf-clone-source-post:last-child {
+    border-bottom: none;
+}
+
+.acf-clone-source-post:hover {
+    background-color: #f9f9f9;
+}
+
+.acf-clone-source-post.selected {
+    background-color: #e8f4f8;
+    border-color: #00a0d2;
+}
+
+.acf-clone-source-post input[type="radio"] {
+    margin-right: 10px;
+}
+
+.acf-clone-post-info {
+    flex: 1;
+}
+
+.acf-clone-post-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.acf-clone-post-meta {
+    font-size: 12px;
+    color: #666;
+}
+
+.acf-clone-post-stats {
+    text-align: right;
+    font-size: 12px;
+    color: #666;
+}
+
+.acf-clone-post-field-count {
+    font-weight: 600;
+    color: #0073aa;
+}
+
+/* ==========================================================================
+   Field Selection
+   ========================================================================== */
+
+.acf-clone-field-groups {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+}
+
+.acf-clone-field-group {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.acf-clone-field-group:last-child {
+    border-bottom: none;
+}
+
+.acf-clone-group-header {
+    padding: 12px 15px;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #e5e5e5;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.acf-clone-group-header:hover {
+    background-color: #f0f0f0;
+}
+
+.acf-clone-group-title {
+    font-weight: 600;
+    margin: 0;
+}
+
+.acf-clone-group-toggle {
+    font-size: 12px;
+    color: #666;
+}
+
+.acf-clone-group-fields {
+    display: none;
+}
+
+.acf-clone-group-fields.expanded {
+    display: block;
+}
+
+.acf-clone-field-item {
+    padding: 10px 15px 10px 30px;
+    border-bottom: 1px solid #f5f5f5;
+    display: flex;
+    align-items: flex-start;
+}
+
+.acf-clone-field-item:last-child {
+    border-bottom: none;
+}
+
+.acf-clone-field-checkbox {
+    margin-top: 2px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.acf-clone-field-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.acf-clone-field-label {
+    font-weight: 600;
+    margin-bottom: 2px;
+    color: #333;
+}
+
+.acf-clone-field-name {
+    font-size: 11px;
+    color: #666;
+    font-family: monospace;
+    margin-bottom: 4px;
+}
+
+.acf-clone-field-preview {
+    font-size: 12px;
+    color: #666;
+    word-break: break-word;
+}
+
+.acf-clone-field-type {
+    font-size: 11px;
+    color: #0073aa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.acf-clone-field-conflict {
+    background-color: #fff3cd;
+    border-left: 3px solid #ffc107;
+}
+
+.acf-clone-field-conflict-warning {
+    font-size: 11px;
+    color: #856404;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.acf-clone-field-status {
+    text-align: right;
+    font-size: 11px;
+    color: #666;
+    flex-shrink: 0;
+    margin-left: 10px;
+    min-width: 60px;
+}
+
+.acf-clone-field-has-value {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.acf-clone-field-empty {
+    color: #6c757d;
+}
+
+/* ==========================================================================
+   Selection Summary
+   ========================================================================== */
+
+.acf-clone-selection-summary {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 3px;
+}
+
+.acf-clone-selection-summary h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+}
+
+.acf-clone-summary-stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.acf-clone-summary-stat {
+    font-size: 12px;
+}
+
+.acf-clone-summary-stat-value {
+    font-weight: 600;
+    color: #0073aa;
+}
+
+.acf-clone-conflicts-warning {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 3px;
+    color: #856404;
+    font-size: 12px;
+}
+
+/* ==========================================================================
+   Options Panel
+   ========================================================================== */
+
+.acf-clone-options {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+}
+
+.acf-clone-options h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+}
+
+.acf-clone-option {
+    margin-bottom: 10px;
+}
+
+.acf-clone-option label {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.acf-clone-option input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.acf-clone-option-description {
+    margin-left: 20px;
+    margin-top: 4px;
+    font-size: 11px;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* ==========================================================================
+   Loading States
+   ========================================================================== */
+
+.acf-clone-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.acf-clone-loading::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e5e5e5;
+    border-radius: 50%;
+    border-top-color: #0073aa;
+    animation: acf-clone-spin 1s ease-in-out infinite;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+@keyframes acf-clone-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.acf-clone-error-message {
+    padding: 15px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 3px;
+    color: #721c24;
+    margin: 15px 0;
+}
+
+.acf-clone-success-message {
+    padding: 15px;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 3px;
+    color: #155724;
+    margin: 15px 0;
+}
+
+/* ==========================================================================
+   Settings Page Styles
+   ========================================================================== */
+
+.acf-clone-plugin-info {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.acf-status-active {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.acf-status-inactive {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media screen and (max-width: 768px) {
+    .acf-clone-modal {
+        width: 95%;
+        max-height: 95vh;
+    }
+    
+    .acf-clone-modal-header {
+        padding: 15px;
+    }
+    
+    .acf-clone-modal-body {
+        padding: 15px;
+    }
+    
+    .acf-clone-modal-footer {
+        padding: 12px 15px;
+    }
+    
+    .acf-clone-summary-stats {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .acf-clone-post-info {
+        margin-right: 10px;
+    }
+    
+    .acf-clone-post-stats {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .acf-clone-modal-title {
+        font-size: 16px;
+        padding-right: 40px;
+    }
+    
+    .acf-clone-source-post {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .acf-clone-field-item {
+        flex-direction: column;
+    }
+    
+    .acf-clone-field-status {
+        margin-left: 0;
+        margin-top: 8px;
+        text-align: left;
+    }
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+.acf-clone-hidden {
+    display: none !important;
+}
+
+.acf-clone-text-muted {
+    color: #6c757d;
+}
+
+.acf-clone-text-success {
+    color: #28a745;
+}
+
+.acf-clone-text-warning {
+    color: #ffc107;
+}
+
+.acf-clone-text-danger {
+    color: #dc3545;
+}
+
+.acf-clone-font-mono {
+    font-family: Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.acf-clone-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.acf-clone-badge-primary {
+    color: #fff;
+    background-color: #0073aa;
+}
+
+.acf-clone-badge-success {
+    color: #fff;
+    background-color: #28a745;
+}
+
+.acf-clone-badge-warning {
+    color: #212529;
+    background-color: #ffc107;
+}
+
+.acf-clone-badge-secondary {
+    color: #fff;
+    background-color: #6c757d;
+}

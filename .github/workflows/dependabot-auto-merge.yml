@@ -1,0 +1,162 @@
+name: Dependabot Auto-merge
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  dependabot-auto-merge:
+    name: Dependabot Auto-merge
+    runs-on: ubuntu-latest
+    
+    # Only run on Dependabot PRs
+    if: github.actor == 'dependabot[bot]'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          
+      - name: Auto-approve for Silver Assist packages
+        if: contains(steps.metadata.outputs.dependency-names, 'silverassist/')
+        run: |
+          echo "🔍 Silver Assist package update detected"
+          echo "📦 Dependencies: ${{ steps.metadata.outputs.dependency-names }}"
+          echo "🔄 Update type: ${{ steps.metadata.outputs.update-type }}"
+          
+          # Auto-approve Silver Assist package updates
+          gh pr review --approve "$PR_URL"
+          
+          echo "✅ Auto-approved Silver Assist package update"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Auto-merge patch and minor updates
+        if: |
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
+          steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        run: |
+          echo "🔍 Patch or minor update detected"
+          echo "📦 Dependencies: ${{ steps.metadata.outputs.dependency-names }}"
+          echo "🔄 Update type: ${{ steps.metadata.outputs.update-type }}"
+          
+          # Wait for CI to complete
+          echo "⏳ Waiting for CI checks to complete..."
+          sleep 30
+          
+          # Check if all required checks passed
+          if gh pr checks "$PR_URL" --required; then
+            echo "✅ All required checks passed"
+            
+            # Auto-approve if not already approved
+            gh pr review --approve "$PR_URL" || true
+            
+            # Auto-merge
+            gh pr merge --auto --squash "$PR_URL"
+            
+            echo "🎉 Auto-merged Dependabot PR"
+          else
+            echo "❌ Some required checks failed, skipping auto-merge"
+            
+            # Add comment about failed checks
+            gh pr comment "$PR_URL" --body "❌ **Auto-merge skipped**: Some required checks failed. Please review and fix any issues before merging."
+          fi
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Handle major updates
+        if: steps.metadata.outputs.update-type == 'version-update:semver-major'
+        run: |
+          echo "🔍 Major update detected - requires manual review"
+          echo "📦 Dependencies: ${{ steps.metadata.outputs.dependency-names }}"
+          echo "🔄 Update type: ${{ steps.metadata.outputs.update-type }}"
+          
+          # Add comment requesting manual review
+          gh pr comment "$PR_URL" --body "⚠️ **Major version update detected**: This PR requires manual review before merging.
+
+          **Dependencies updated:**
+          ${{ steps.metadata.outputs.dependency-names }}
+
+          **Update type:** ${{ steps.metadata.outputs.update-type }}
+
+          **Review checklist:**
+          - [ ] Check for breaking changes in the changelog
+          - [ ] Verify compatibility with plugin requirements
+          - [ ] Test critical functionality
+          - [ ] Update documentation if needed
+
+          Please review carefully before merging."
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+  security-updates:
+    name: Security Updates Handler
+    runs-on: ubuntu-latest
+    
+    # Only run on Dependabot security PRs
+    if: |
+      github.actor == 'dependabot[bot]' && 
+      contains(github.event.pull_request.labels.*.name, 'security')
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          
+      - name: Handle security updates
+        run: |
+          echo "🔒 Security update detected"
+          echo "📦 Dependencies: ${{ steps.metadata.outputs.dependency-names }}"
+          echo "🔄 Update type: ${{ steps.metadata.outputs.update-type }}"
+          
+          # Add priority comment for security updates
+          gh pr comment "$PR_URL" --body "🔒 **Security Update - High Priority**
+
+          This PR addresses security vulnerabilities in the following dependencies:
+          ${{ steps.metadata.outputs.dependency-names }}
+
+          **Recommended actions:**
+          1. ⚡ Review and test immediately
+          2. 🚀 Merge as soon as CI passes
+          3. 📦 Create a patch release
+          4. 🔄 Deploy to production environments
+
+          **Security updates should be prioritized** for the safety of all users."
+          
+          # Auto-approve security patches and minors after CI passes
+          if [[ "${{ steps.metadata.outputs.update-type }}" =~ ^version-update:semver-(patch|minor)$ ]]; then
+            echo "⏳ Waiting for CI to complete..."
+            sleep 60
+            
+            if gh pr checks "$PR_URL" --required; then
+              echo "✅ CI passed - auto-approving security update"
+              gh pr review --approve "$PR_URL"
+            fi
+          fi
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,105 @@
+# WordPress Plugin .gitignore
+
+# Dependencies
+node_modules/
+vendor/
+
+# Package managers
+composer.lock
+package-lock.json
+yarn.lock
+
+# Build directories
+build/
+dist/
+assets/build/
+
+# Development files
+.DS_Store
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+debug.log
+error.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+.nyc_output
+
+# Test files and directories
+tests/_output/
+tests/Support/_generated
+phpunit.xml
+.phpunit.result.cache
+
+# Cache directories
+.cache/
+.parcel-cache/
+.sass-cache/
+.php_cs.cache
+.phpcs-cache
+.phpstan-cache/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# WordPress specific
+wp-config.php
+wp-content/uploads/
+wp-content/cache/
+wp-content/backup/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+
+# Plugin specific ignores
+*.zip
+*.tar.gz
+releases/
+backup/
+
+# IDE and editor files
+.vscode/settings.json
+.fleet/
+*.code-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Security
+*.pem
+*.key
+*.crt
+.env*
