@@ -47,6 +47,13 @@ class Plugin implements LoadableInterface {
 	private array $settings = [];
 
 	/**
+	 * GitHub Updater instance
+	 *
+	 * @var \SilverAssist\WpGithubUpdater\Updater|null
+	 */
+	private ?\SilverAssist\WpGithubUpdater\Updater $updater = null;
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @return Plugin
@@ -192,9 +199,6 @@ class Plugin implements LoadableInterface {
 		// Add plugin action links.
 		// @phpstan-ignore-next-line deadCode.unreachable.
 		add_filter( 'plugin_action_links_' . SILVER_ACF_CLONE_BASENAME, [ $this, 'add_action_links' ] );
-
-		// Add plugin row meta.
-		add_filter( 'plugin_row_meta', [ $this, 'add_row_meta' ], 10, 2 );
 	}
 
 	/**
@@ -222,7 +226,7 @@ class Plugin implements LoadableInterface {
 				]
 			);
 
-			new \SilverAssist\WpGithubUpdater\Updater( $config );
+			$this->updater = new \SilverAssist\WpGithubUpdater\Updater( $config );
 		}
 	}
 
@@ -283,29 +287,11 @@ class Plugin implements LoadableInterface {
 	 */
 	public function add_action_links( array $links ): array {
 		$plugin_links = [
-			'<a href="' . admin_url( 'options-general.php?page=silver-acf-clone-fields' ) . '">' .
+			'<a href="' . admin_url( 'admin.php?page=acf-clone-fields' ) . '">' .
 			__( 'Settings', 'silver-assist-acf-clone-fields' ) . '</a>',
 		];
 
 		return array_merge( $plugin_links, $links );
-	}
-
-	/**
-	 * Add plugin row meta
-	 *
-	 * @param array<string> $meta Existing meta.
-	 * @param string        $file Plugin file.
-	 * @return array<string>
-	 */
-	public function add_row_meta( array $meta, string $file ): array {
-		if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) && (string) SILVER_ACF_CLONE_BASENAME === $file ) {
-			$meta[] = '<a href="https://github.com/SilverAssist/acf-clone-fields" target="_blank">' .
-						__( 'GitHub Repository', 'silver-assist-acf-clone-fields' ) . '</a>';
-			$meta[] = '<a href="https://github.com/SilverAssist/acf-clone-fields/issues" target="_blank">' .
-						__( 'Support', 'silver-assist-acf-clone-fields' ) . '</a>';
-		}
-
-		return $meta;
 	}
 
 	/**
@@ -368,5 +354,14 @@ class Plugin implements LoadableInterface {
 	 */
 	public function get_components(): array {
 		return $this->components;
+	}
+
+	/**
+	 * Get GitHub Updater instance
+	 *
+	 * @return \SilverAssist\WpGithubUpdater\Updater|null
+	 */
+	public function get_updater(): ?\SilverAssist\WpGithubUpdater\Updater {
+		return $this->updater;
 	}
 }

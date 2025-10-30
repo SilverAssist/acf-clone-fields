@@ -103,9 +103,6 @@ class Settings implements LoadableInterface {
 
 		// Settings validation.
 		add_filter( 'pre_update_option_silver_assist_acf_clone_fields_enabled_post_types', [ $this, 'validate_enabled_post_types' ] );
-
-		// Plugin action links.
-		add_filter( 'plugin_action_links_silver-assist-acf-clone-fields/silver-assist-acf-clone-fields.php', [ $this, 'add_plugin_action_links' ] );
 	}
 
 	/**
@@ -190,12 +187,15 @@ class Settings implements LoadableInterface {
 	private function get_hub_actions(): array {
 		$actions = [];
 
-		// Add "View Documentation" button.
-		$actions[] = [
-			'label' => __( 'View Documentation', 'silver-assist-acf-clone-fields' ),
-			'url'   => 'https://github.com/SilverAssist/acf-clone-fields#readme',
-			'class' => 'button',
-		];
+		// Add "Check Updates" button if updater is available.
+		$plugin = \SilverAssist\ACFCloneFields\Core\Plugin::instance();
+		if ( $plugin->get_updater() ) {
+			$actions[] = [
+				'label'    => __( 'Check Updates', 'silver-assist-acf-clone-fields' ),
+				'callback' => [ $this, 'render_check_updates_script' ],
+				'class'    => 'button button-primary',
+			];
+		}
 
 		return $actions;
 	}
@@ -601,23 +601,6 @@ class Settings implements LoadableInterface {
 	}
 
 	/**
-	 * Add plugin action links
-	 *
-	 * @param array<string> $links Existing links.
-	 * @return array<string> Modified links
-	 */
-	public function add_plugin_action_links( array $links ): array {
-		$settings_link = sprintf(
-			'<a href="%s">%s</a>',
-			admin_url( 'options-general.php?page=' . $this->page_slug ),
-			__( 'Settings', 'silver-assist-acf-clone-fields' )
-		);
-
-		array_unshift( $links, $settings_link );
-		return $links;
-	}
-
-	/**
 	 * Enqueue settings page assets
 	 *
 	 * @param string $hook_suffix Current admin page hook.
@@ -658,6 +641,52 @@ class Settings implements LoadableInterface {
 			'log_operations'     => get_option( 'silver_assist_acf_clone_fields_log_operations', true ),
 			'max_source_posts'   => get_option( 'silver_assist_acf_clone_fields_max_source_posts', 50 ),
 		];
+	}
+
+	/**
+	 * Render check updates script for Settings Hub
+	 *
+	 * @return void
+	 */
+	public function render_check_updates_script(): void {
+		$plugin  = \SilverAssist\ACFCloneFields\Core\Plugin::instance();
+		$updater = $plugin->get_updater();
+
+		if ( ! $updater ) {
+			return;
+		}
+
+		// Enqueue external JavaScript file.
+		wp_enqueue_script(
+			'acf-clone-fields-check-updates',
+			plugin_dir_url( dirname( __DIR__ ) ) . 'assets/js/admin-check-updates.js',
+			[ 'jquery' ],
+			SILVER_ACF_CLONE_VERSION,
+			true
+		);
+
+		// Localize script with configuration data.
+		wp_localize_script(
+			'acf-clone-fields-check-updates',
+			'silverAssistACFCloneCheckUpdatesData',
+			[
+				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
+				'nonce'     => wp_create_nonce( 'silver_acf_clone_version_nonce' ),
+				'updateUrl' => admin_url( 'update-core.php' ),
+				'strings'   => [
+					'checking'        => __( 'Checking for updates...', 'silver-assist-acf-clone-fields' ),
+					'updateAvailable' => __( 'Update available! Redirecting to Updates page...', 'silver-assist-acf-clone-fields' ),
+					'upToDate'        => __( "You're up to date!", 'silver-assist-acf-clone-fields' ),
+					'checkError'      => __( 'Error checking updates. Please try again.', 'silver-assist-acf-clone-fields' ),
+					'connectError'    => __( 'Error connecting to update server.', 'silver-assist-acf-clone-fields' ),
+				],
+			]
+		);
+
+		// Echo JavaScript that will be executed by Settings Hub action button.
+		// Settings Hub injects this into onclick="" attribute.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inline JavaScript function call
+		echo 'silverAssistACFCloneCheckUpdates(); return false;';
 	}
 
 	/**
