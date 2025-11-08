@@ -72,20 +72,106 @@ All contributions must pass:
 
 ## 🧪 Testing
 
+### WordPress Test Suite Integration
+
+**CRITICAL**: This plugin uses **WordPress Test Suite** with real WordPress environment, NOT mocks.
+
+#### Test Base Class: WP_UnitTestCase
+
+All tests extend `TestCase` which conditionally extends `WP_UnitTestCase`:
+
+```php
+namespace SilverAssist\ACFCloneFields\Tests\Utils;
+
+// Extends WP_UnitTestCase when WordPress is available
+if (class_exists('WP_UnitTestCase')) {
+    abstract class TestCase extends \WP_UnitTestCase {
+        // Real WordPress environment
+    }
+} else {
+    abstract class TestCase extends \PHPUnit\Framework\TestCase {
+        // Fallback for static analysis
+    }
+}
+```
+
+#### WordPress Factory Pattern (MANDATORY)
+
+**CRITICAL**: Use `static::factory()` (NOT `$this->factory`) - deprecated since WordPress 6.1+
+
+```php
+// ✅ CORRECT: static::factory() pattern
+public function setUp(): void {
+    parent::setUp();
+    
+    // Create admin user
+    $this->admin_user_id = static::factory()->user->create([
+        'role' => 'administrator',
+    ]);
+    \wp_set_current_user($this->admin_user_id);
+    
+    // Create test posts
+    $this->post_id = static::factory()->post->create([
+        'post_title'   => 'Test Post',
+        'post_status'  => 'publish',
+        'post_type'    => 'post',
+    ]);
+}
+
+// ❌ INCORRECT: Old $this->factory pattern (deprecated)
+$user_id = $this->factory->user->create(...);  // DO NOT USE
+```
+
+#### Available Factory Methods
+
+```php
+static::factory()->post->create([...]);      // Create posts
+static::factory()->user->create([...]);      // Create users
+static::factory()->comment->create([...]);   // Create comments
+static::factory()->term->create([...]);      // Create terms
+static::factory()->category->create([...]);  // Create categories
+```
+
+#### Real WordPress Functions in Tests
+
+With WP_UnitTestCase, you have access to ALL WordPress functions:
+
+```php
+// Options API
+\update_option('key', 'value');
+$value = \get_option('key');
+\delete_option('key');
+
+// User functions
+\wp_set_current_user($user_id);
+$can_edit = \current_user_can('edit_posts');
+
+// Post functions
+\wp_delete_post($post_id, true);
+$post = \get_post($post_id);
+
+// Hooks
+\has_action('hook_name', $callback);
+\has_filter('filter_name', $callback);
+\add_action('hook_name', $callback);
+\do_action('hook_name', $args);
+```
+
 ### Running Tests
 
 ```bash
-# Quick tests (with mocks)
-vendor/bin/phpunit --testsuite=unit
+# Run all tests with WordPress Test Suite
+vendor/bin/phpunit
 
-# Full tests (with WordPress)
-WP_TESTS_DIR=/tmp/wordpress-tests-lib vendor/bin/phpunit --testsuite=unit
+# Run specific test file
+vendor/bin/phpunit tests/Unit/Core/PluginTest.php
 
 # With readable output
-vendor/bin/phpunit --testsuite=unit --testdox
+vendor/bin/phpunit --testdox
 
-# Coverage report
+# Coverage report (requires xdebug)
 vendor/bin/phpunit --coverage-html coverage/
+vendor/bin/phpunit --coverage-text
 ```
 
 ### Test Structure
@@ -93,37 +179,89 @@ vendor/bin/phpunit --coverage-html coverage/
 ```
 tests/
 ├── bootstrap.php          # Auto-detects WordPress availability
-├── Unit/                  # Unit tests
+├── Unit/                  # Unit tests (isolated components)
+│   ├── Core/
+│   │   └── PluginTest.php
+│   ├── Services/
+│   │   ├── FieldClonerTest.php
+│   │   └── FieldDetectorTest.php
 │   ├── BackupSystemTest.php
-│   ├── FieldDetectorTest.php
+│   ├── HelpersTest.php
 │   └── LoggerTest.php
+├── Integration/           # Integration tests (WordPress integration)
+│   ├── AdminComponentsTest.php
+│   └── CloneOptionsTest.php
 └── Utils/                 # Testing utilities
-    ├── TestCase.php
-    ├── ACFTestHelpers.php
-    └── WordPressMocks.php
+    ├── TestCase.php       # Base test class
+    └── ACFTestHelpers.php # ACF-specific helpers
 ```
 
-### Writing Tests
+### Writing New Tests
 
-1. Create file in `tests/Unit/` with `Test.php` suffix
-2. Extend from `SilverAssist\ACFCloneFields\Tests\Utils\TestCase`
-3. Implement methods with `test_` prefix
-
-Example:
+**Complete Pattern Example:**
 
 ```php
 <?php
-namespace SilverAssist\ACFCloneFields\Tests\Unit;
+namespace SilverAssist\ACFCloneFields\Tests\Unit\Services;
 
 use SilverAssist\ACFCloneFields\Tests\Utils\TestCase;
+use SilverAssist\ACFCloneFields\Services\YourService;
 
-class MyFeatureTest extends TestCase {
-    public function test_my_feature(): void {
-        $result = $this->some_function();
+class YourServiceTest extends TestCase {
+    private YourService $service;
+    private int $test_user_id;
+    private int $test_post_id;
+    
+    public function setUp(): void {
+        parent::setUp();
+        
+        // Create test fixtures using static::factory()
+        $this->test_user_id = static::factory()->user->create([
+            'role' => 'administrator',
+        ]);
+        \wp_set_current_user($this->test_user_id);
+        
+        $this->test_post_id = static::factory()->post->create([
+            'post_title'  => 'Test Post',
+            'post_status' => 'publish',
+        ]);
+        
+        // Initialize service
+        $this->service = YourService::instance();
+    }
+    
+    public function tearDown(): void {
+        // Clean up test data
+        \wp_delete_post($this->test_post_id, true);
+        \wp_delete_user($this->test_user_id);
+        
+        parent::tearDown();
+    }
+    
+    public function test_service_functionality(): void {
+        // Use real WordPress functions
+        $result = $this->service->do_something($this->test_post_id);
+        
         $this->assertTrue($result);
+        $this->assertIsArray(\get_post_meta($this->test_post_id));
+    }
+    
+    public function test_singleton_pattern(): void {
+        $instance1 = YourService::instance();
+        $instance2 = YourService::instance();
+        
+        $this->assertSame($instance1, $instance2);
     }
 }
 ```
+
+**Key Testing Principles:**
+
+1. **Always use `static::factory()`** - Never use deprecated `$this->factory`
+2. **Clean up in tearDown()** - Delete created posts, users, options
+3. **Use real WordPress functions** - Prefix with `\` for global namespace
+4. **Test singletons** - Verify instance() returns same object
+5. **Test LoadableInterface** - Verify init(), get_priority(), should_load()
 
 See `tests/README.md` for detailed testing documentation.
 
