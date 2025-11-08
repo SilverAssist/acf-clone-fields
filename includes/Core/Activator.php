@@ -38,6 +38,9 @@ class Activator {
 		// Verify minimum requirements.
 		self::check_requirements();
 
+		// Create database tables.
+		self::create_tables();
+
 		// Set plugin version.
 		update_option( 'silver_acf_clone_version', SILVER_ACF_CLONE_VERSION );
 
@@ -95,6 +98,47 @@ class Activator {
 			// Clear any cached data.
 			wp_cache_flush();
 		}
+	}
+
+	/**
+	 * Create database tables
+	 *
+	 * Creates all required database tables for the plugin.
+	 * Public static method to allow reuse in test environments.
+	 *
+	 * Uses dbDelta() which intelligently:
+	 * - Creates table if it doesn't exist
+	 * - Updates structure if schema changed (adds columns, modifies indexes)
+	 * - Preserves existing data
+	 *
+	 * @return void
+	 */
+	public static function create_tables(): void {
+		global $wpdb;
+
+		$table_name      = $wpdb->prefix . 'acf_field_backups';
+		$charset_collate = $wpdb->get_charset_collate();
+
+		// Note: dbDelta requires specific formatting:
+		// - NO "IF NOT EXISTS" (dbDelta handles this)
+		// - Exactly 2 spaces before PRIMARY KEY
+		// - Each field on its own line
+		// - Spaces around parentheses.
+		$sql = "CREATE TABLE $table_name (
+			id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+			backup_id varchar(100) NOT NULL,
+			post_id bigint(20) UNSIGNED NOT NULL,
+			user_id bigint(20) UNSIGNED NOT NULL,
+			backup_data longtext NOT NULL,
+			created_at datetime NOT NULL,
+			PRIMARY KEY  (id),
+			KEY backup_id (backup_id),
+			KEY post_id (post_id),
+			KEY created_at (created_at)
+		) $charset_collate;";
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		\dbDelta( $sql );
 	}
 
 	/**

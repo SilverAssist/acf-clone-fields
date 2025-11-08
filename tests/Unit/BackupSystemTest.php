@@ -15,6 +15,7 @@ defined( 'ABSPATH' ) || exit;
 
 use SilverAssist\ACFCloneFields\Tests\Utils\TestCase;
 use SilverAssist\ACFCloneFields\Services\FieldCloner;
+use SilverAssist\ACFCloneFields\Core\Activator;
 
 /**
  * Test the backup system in FieldCloner
@@ -37,8 +38,11 @@ class BackupSystemTest extends TestCase {
 		parent::setUp();
 		$this->cloner = FieldCloner::instance();
 		
-		// Create backup table.
+		// Create backup table (if not exists).
 		$this->create_backup_table();
+		
+		// Clean any existing data.
+		$this->clean_backup_table();
 	}
 
 	/**
@@ -60,29 +64,29 @@ class BackupSystemTest extends TestCase {
 	/**
 	 * Create backup table for testing
 	 *
+	 * Reuses the Activator's create_tables method to ensure consistency
+	 * between production and test environments.
+	 *
 	 * @return void
 	 */
 	protected function create_backup_table(): void {
+		// Use Activator method to create tables - ensures consistency with production.
+		Activator::create_tables();
+	}
+
+	/**
+	 * Clean backup table data between tests
+	 *
+	 * Truncates the table to ensure clean state for each test.
+	 *
+	 * @return void
+	 */
+	protected function clean_backup_table(): void {
 		global $wpdb;
 		
-		$table_name      = $wpdb->prefix . 'acf_field_backups';
-		$charset_collate = $wpdb->get_charset_collate();
-		
-		$sql = "CREATE TABLE IF NOT EXISTS $table_name (
-			id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-			backup_id varchar(100) NOT NULL,
-			post_id bigint(20) UNSIGNED NOT NULL,
-			user_id bigint(20) UNSIGNED NOT NULL,
-			backup_data longtext NOT NULL,
-			created_at datetime NOT NULL,
-			PRIMARY KEY  (id),
-			KEY backup_id (backup_id),
-			KEY post_id (post_id),
-			KEY created_at (created_at)
-		) $charset_collate;";
-		
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-		dbDelta( $sql );
+		$table_name = $wpdb->prefix . 'acf_field_backups';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( "TRUNCATE TABLE $table_name" );
 	}
 
 	/**
