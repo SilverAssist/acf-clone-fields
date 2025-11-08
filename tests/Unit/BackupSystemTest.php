@@ -268,12 +268,17 @@ class BackupSystemTest extends TestCase {
 	public function test_backup_table_exists(): void {
 		global $wpdb;
 		
+		// Table should be created in setUp().
 		$table_name = $wpdb->prefix . 'acf_field_backups';
 		
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$table_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) );
 		
-		$this->assertEquals( $table_name, $table_exists );
+		$this->assertEquals(
+			$table_name,
+			$table_exists,
+			sprintf( 'Backup table %s should exist after setUp()', $table_name )
+		);
 	}
 
 	/**
