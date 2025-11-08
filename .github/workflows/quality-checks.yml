@@ -66,6 +66,8 @@ jobs:
         run: bash scripts/install-acf-for-tests.sh
         
       - name: 🧪 Run Quality Checks
+        env:
+          PHP_VERSION: ${{ inputs.php-version }}
         run: |
           if [ "${{ inputs.skip-wp-setup }}" = "true" ]; then
             echo "Running quality checks without WordPress..."
