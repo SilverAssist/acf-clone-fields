@@ -305,11 +305,165 @@ The plugin uses a 3-step modal interface implemented via `assets/js/admin.js`:
 
 ## 🧪 Testing Strategy
 
+### **WordPress Test Suite Integration**
+
+**CRITICAL**: This plugin uses **WordPress Test Suite** with real WordPress environment, NOT mocks.
+
+#### **Test Base Class: WP_UnitTestCase**
+All tests extend `TestCase` which conditionally extends `WP_UnitTestCase` when WordPress is available:
+
+```php
+namespace SilverAssist\ACFCloneFields\Tests\Utils;
+
+// Conditional base class - extends WP_UnitTestCase when available
+if (class_exists('WP_UnitTestCase')) {
+    abstract class TestCase extends \WP_UnitTestCase {
+        // Real WordPress environment
+    }
+} else {
+    abstract class TestCase extends \PHPUnit\Framework\TestCase {
+        // Fallback for static analysis
+    }
+}
+```
+
+#### **WordPress Factory Pattern (MANDATORY)**
+
+**CRITICAL**: Use `static::factory()` (NOT `$this->factory`) - deprecated since WordPress 6.1+
+
+```php
+// ✅ CORRECT: static::factory() pattern
+public function setUp(): void {
+    parent::setUp();
+    
+    // Create admin user
+    $this->admin_user_id = static::factory()->user->create([
+        'role' => 'administrator',
+    ]);
+    \wp_set_current_user($this->admin_user_id);
+    
+    // Create test posts
+    $this->post_id = static::factory()->post->create([
+        'post_title'   => 'Test Post',
+        'post_status'  => 'publish',
+        'post_type'    => 'post',
+    ]);
+}
+
+// ❌ INCORRECT: Old $this->factory pattern (deprecated)
+$user_id = $this->factory->user->create(...);  // DO NOT USE
+```
+
+#### **Factory Methods Available**
+```php
+static::factory()->post->create([...]);      // Create posts
+static::factory()->user->create([...]);      // Create users
+static::factory()->comment->create([...]);   // Create comments
+static::factory()->term->create([...]);      // Create terms
+static::factory()->category->create([...]);  // Create categories
+```
+
+#### **Real WordPress Functions in Tests**
+
+With WP_UnitTestCase, you have access to ALL WordPress functions:
+
+```php
+// Options API
+\update_option('key', 'value');
+$value = \get_option('key');
+\delete_option('key');
+
+// User functions
+\wp_set_current_user($user_id);
+$can_edit = \current_user_can('edit_posts');
+
+// Post functions
+\wp_delete_post($post_id, true);
+$post = \get_post($post_id);
+
+// Hooks
+\has_action('hook_name', $callback);
+\has_filter('filter_name', $callback);
+\add_action('hook_name', $callback);
+\do_action('hook_name', $args);
+```
+
+#### **Test Organization**
+
+```
+tests/
+├── Unit/                          # Unit tests (isolated components)
+│   ├── Core/
+│   │   └── PluginTest.php        # Plugin class tests
+│   ├── Services/
+│   │   ├── FieldClonerTest.php   # FieldCloner tests
+│   │   └── FieldDetectorTest.php # FieldDetector tests
+│   ├── BackupSystemTest.php      # Backup functionality
+│   ├── HelpersTest.php           # Utility helpers
+│   └── LoggerTest.php            # Logger functionality
+├── Integration/                   # Integration tests (WordPress integration)
+│   ├── AdminComponentsTest.php   # Admin layer integration
+│   └── CloneOptionsTest.php      # End-to-end clone operations
+└── Utils/
+    ├── TestCase.php              # Base test class
+    └── ACFTestHelpers.php        # ACF-specific test utilities
+```
+
+#### **Writing New Tests - Pattern**
+
+```php
+<?php
+namespace SilverAssist\ACFCloneFields\Tests\Unit\Services;
+
+use SilverAssist\ACFCloneFields\Tests\Utils\TestCase;
+use SilverAssist\ACFCloneFields\Services\YourService;
+
+class YourServiceTest extends TestCase {
+    private YourService $service;
+    private int $test_user_id;
+    private int $test_post_id;
+    
+    public function setUp(): void {
+        parent::setUp();
+        
+        // Create test fixtures using static::factory()
+        $this->test_user_id = static::factory()->user->create([
+            'role' => 'administrator',
+        ]);
+        \wp_set_current_user($this->test_user_id);
+        
+        $this->test_post_id = static::factory()->post->create([
+            'post_title'  => 'Test Post',
+            'post_status' => 'publish',
+        ]);
+        
+        // Initialize service
+        $this->service = YourService::instance();
+    }
+    
+    public function tearDown(): void {
+        // Clean up test data
+        \wp_delete_post($this->test_post_id, true);
+        \wp_delete_user($this->test_user_id);
+        
+        parent::tearDown();
+    }
+    
+    public function test_service_functionality(): void {
+        // Use real WordPress functions
+        $result = $this->service->do_something($this->test_post_id);
+        
+        $this->assertTrue($result);
+        $this->assertIsArray(\get_post_meta($this->test_post_id));
+    }
+}
+```
+
 ### **Test Coverage Requirements**
 - **Unit Tests**: All core classes (Plugin, FieldCloner, FieldDetector)
 - **Integration Tests**: ACF integration, WordPress hooks
 - **Admin Tests**: Meta box functionality, settings page
-- **AJAX Tests**: All AJAX endpoints with mocked requests
+- **AJAX Tests**: All AJAX endpoints with real WordPress environment
 
 ### **Quality Assurance**
 ```bash
@@ -318,6 +472,11 @@ composer phpcbf          # Auto-fix standards
 composer phpcs           # Check standards
 composer phpstan         # Static analysis level 8
 composer test            # Run all tests (phpcs + phpstan + phpunit)
+
+# Run specific tests
+vendor/bin/phpunit tests/Unit/Core/PluginTest.php
+vendor/bin/phpunit --testdox                    # Human-readable output
+vendor/bin/phpunit --coverage-text              # Coverage report (requires xdebug)
 ```
 
 ## 🔐 Security Implementation
