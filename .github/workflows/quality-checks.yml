@@ -61,6 +61,10 @@ jobs:
         if: ${{ !inputs.skip-wp-setup }}
         run: bash scripts/install-wp-tests.sh wordpress_test root 'root' localhost latest true
         
+      - name: 📦 Install ACF Plugin (if needed)
+        if: ${{ !inputs.skip-wp-setup }}
+        run: bash scripts/install-acf-for-tests.sh
+        
       - name: 🧪 Run Quality Checks
         run: |
           if [ "${{ inputs.skip-wp-setup }}" = "true" ]; then
