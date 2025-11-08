@@ -118,6 +118,8 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: wordpress_test
+        ports:
+          - 3306:3306
         options: >-
           --health-cmd="mysqladmin ping"
           --health-interval=10s
@@ -172,17 +174,10 @@ jobs:
           sed -i "s|localhost|127.0.0.1|" $WP_TESTS_DIR/wp-tests-config.php
           sed -i "s|dirname( __FILE__ ) . '/src/'|'$WP_CORE_DIR/'|" $WP_TESTS_DIR/wp-tests-config.php
           
-      - name: Wait for MySQL
+      - name: Verify MySQL Connection
         run: |
-          echo "Waiting for MySQL to be ready..."
-          for i in {1..30}; do
-            if mysqladmin ping -h"127.0.0.1" -P"3306" -u"root" -p"root" --silent; then
-              echo "MySQL is ready!"
-              break
-            fi
-            echo "Waiting for MySQL... ($i/30)"
-            sleep 2
-          done
+          # MySQL should already be healthy thanks to service health checks
+          mysql -h127.0.0.1 -uroot -proot -e "SHOW DATABASES;" || (echo "MySQL not ready" && exit 1)
           
       - name: Run tests with WordPress ${{ matrix.wordpress-version }}
         env:
