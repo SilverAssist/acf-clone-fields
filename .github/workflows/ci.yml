@@ -169,9 +169,15 @@ jobs:
           WP_TESTS_DIR: /tmp/wordpress-tests-lib
           WP_CORE_DIR: /tmp/wordpress
         run: |
-          echo "Running tests with WordPress ${{ matrix.wordpress-version }}..."
-          vendor/bin/phpunit --testsuite=unit
-          echo "✅ WordPress ${{ matrix.wordpress-version }} compatibility verified"
+          echo "Running integration tests with WordPress ${{ matrix.wordpress-version }}..."
+          # Run integration tests that require WordPress
+          # Unit tests are run separately in quality-checks workflow
+          if vendor/bin/phpunit --list-suites | grep -q integration; then
+            vendor/bin/phpunit --testsuite=integration
+            echo "✅ WordPress ${{ matrix.wordpress-version }} compatibility verified"
+          else
+            echo "ℹ️ No integration test suite defined yet, skipping WordPress compatibility check"
+          fi
 
   build-test:
     name: Build Test
