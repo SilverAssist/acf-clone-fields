@@ -64,26 +64,21 @@ class BackupSystemTest extends TestCase {
 	/**
 	 * Create backup table for testing
 	 *
-	 * Reuses the Activator's create_tables method to ensure consistency
-	 * between production and test environments.
+	 * Creates the backup table directly using raw SQL for maximum reliability
+	 * in test environments. Production uses Activator::create_tables().
 	 *
 	 * @return void
 	 */
 	protected function create_backup_table(): void {
 		global $wpdb;
 		
-		// Use Activator method to create tables - ensures consistency with production.
-		Activator::create_tables();
+		$table_name      = $wpdb->prefix . 'acf_field_backups';
+		$charset_collate = $wpdb->get_charset_collate();
 		
-		// Verify table was created (for debugging).
-		$table_name = $wpdb->prefix . 'acf_field_backups';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$table_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) );
-		
-		if ( ! $table_exists ) {
-			// Fallback: create manually if Activator failed.
-			$charset_collate = $wpdb->get_charset_collate();
-			$sql = "CREATE TABLE IF NOT EXISTS $table_name (
+		// Use raw SQL for test environment reliability.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$wpdb->query(
+			"CREATE TABLE IF NOT EXISTS {$table_name} (
 				id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 				backup_id varchar(100) NOT NULL,
 				post_id bigint(20) UNSIGNED NOT NULL,
@@ -94,11 +89,8 @@ class BackupSystemTest extends TestCase {
 				KEY backup_id (backup_id),
 				KEY post_id (post_id),
 				KEY created_at (created_at)
-			) $charset_collate;";
-			
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-			$wpdb->query( $sql );
-		}
+			) {$charset_collate}"
+		);
 	}
 
 	/**

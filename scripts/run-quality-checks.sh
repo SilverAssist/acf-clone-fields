@@ -109,27 +109,45 @@ run_composer_validate() {
     print_header "📦 Validating composer.json and composer.lock"
     
     cd "$PROJECT_ROOT"
-    composer validate --strict
     
-    print_success "Composer files validated"
+    # Run composer validate and capture exit code
+    if composer validate --strict; then
+        print_success "Composer files validated"
+        return 0
+    else
+        print_error "Composer validation failed"
+        return 1
+    fi
 }
 
 run_phpcs() {
     print_header "🎨 Running PHPCS (Code Style Check)"
     
     cd "$PROJECT_ROOT"
-    vendor/bin/phpcs --warning-severity=0
     
-    print_success "PHPCS passed - No errors found"
+    # Run PHPCS and capture exit code
+    if vendor/bin/phpcs --warning-severity=0; then
+        print_success "PHPCS passed - No errors found"
+        return 0
+    else
+        print_error "PHPCS failed - Code style errors found"
+        return 1
+    fi
 }
 
 run_phpstan() {
     print_header "🔍 Running PHPStan (Static Analysis)"
     
     cd "$PROJECT_ROOT"
-    php -d memory_limit=1G vendor/bin/phpstan analyse includes/ --no-progress
     
-    print_success "PHPStan Level 8 passed - No errors found"
+    # Run PHPStan and capture exit code
+    if php -d memory_limit=1G vendor/bin/phpstan analyse includes/ --no-progress; then
+        print_success "PHPStan Level 8 passed - No errors found"
+        return 0
+    else
+        print_error "PHPStan failed - Static analysis errors found"
+        return 1
+    fi
 }
 
 run_phpunit() {
@@ -144,10 +162,14 @@ run_phpunit() {
         print_info "Using WordPress Test Suite: $WP_TESTS_DIR"
     fi
     
-    # Use same configuration as CI workflow for consistency
-    vendor/bin/phpunit --testsuite=unit --coverage-text --coverage-clover=coverage.xml
-    
-    print_success "All tests passed"
+    # Run PHPUnit and capture exit code
+    if vendor/bin/phpunit --testsuite=unit --coverage-text --coverage-clover=coverage.xml; then
+        print_success "All tests passed"
+        return 0
+    else
+        print_error "PHPUnit tests failed"
+        return 1
+    fi
 }
 
 run_syntax_check() {
