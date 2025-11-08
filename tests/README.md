@@ -8,13 +8,26 @@ This directory contains unit tests for the plugin.
 tests/
 ├── bootstrap.php          # PHPUnit bootstrap (auto-detects WordPress)
 ├── Unit/                  # Unit tests
+│   ├── Admin/            # Admin component tests
+│   │   ├── AjaxTest.php
+│   │   ├── BackupManagerTest.php
+│   │   ├── MetaBoxTest.php
+│   │   └── SettingsTest.php
+│   ├── Core/             # Core component tests
+│   │   ├── ActivatorTest.php
+│   │   └── PluginTest.php
+│   ├── Services/         # Service tests
+│   │   └── FieldClonerTest.php
 │   ├── BackupSystemTest.php
 │   ├── FieldDetectorTest.php
+│   ├── HelpersTest.php
 │   └── LoggerTest.php
-└── Utils/                 # Testing utilities
+├── Integration/          # Integration tests
+│   ├── AdminComponentsTest.php
+│   └── CloneOptionsTest.php
+└── Utils/                # Testing utilities
     ├── TestCase.php
-    ├── ACFTestHelpers.php
-    └── WordPressMocks.php
+    └── ACFTestHelpers.php
 ```
 
 ## 🚀 Running Tests
@@ -58,25 +71,66 @@ This allows tests to work in both environments:
 
 ## 📊 Test Coverage
 
-Current tests cover:
+**Current Coverage**: 22.77% lines (474/2082), 30.15% methods (60/199)  
+**Expected After Session 2**: ~34-40% lines (pending CI verification)  
+**Target**: 50%+ lines (industry standard)
+
+### Completed Test Suites:
+
+- ✅ **Core\Activator** (12 tests) - 61.54% lines
+  - Database table creation
+  - Table schema validation
+  - WordPress integration
+  
+- ✅ **Core\Plugin** (8 tests) - 81.11% lines
+  - Plugin initialization
+  - Component loading
+  - Hook registration
+
+- ✅ **Admin\BackupManager** (22 tests) - NEW (Nov 8, 2025)
+  - Meta box registration and rendering
+  - AJAX handlers (restore, delete, cleanup)
+  - Permission and security checks
+  - Backup display with/without data
+
+- ✅ **Admin\MetaBox** (13 tests) - NEW (Nov 8, 2025)
+  - Meta box registration (enabled/disabled post types)
+  - Meta box rendering with permissions
+  - Asset enqueuing
+  - Block editor compatibility
+
+- ✅ **Admin\Settings** (23 tests) - NEW (Nov 8, 2025)
+  - Settings registration and initialization
+  - Default settings validation
+  - Settings validation and sanitization
+  - Render methods for all field types
+  - Settings page output
+
+- ✅ **Admin\Ajax** (10 tests) - 3.15% lines
+  - AJAX endpoint security
+  - Basic handler tests
+
+- ✅ **Services\FieldCloner** (15 tests) - 31.91% lines
+  - Field cloning operations
+  - Backup creation
+  - Data validation
+
+- ✅ **Services\FieldDetector** (8 tests) - 25.15% lines
+  - ACF field detection
+  - Field groups and statistics
 
 - ✅ **Backup System** (10 tests)
   - Backup creation and storage
-  - Backup recovery
-  - Backup deletion
+  - Backup recovery and deletion
   - Retention policies
-  - Data integrity
-
-- ✅ **Field Detector** (7 tests)
-  - ACF field detection
-  - Field groups
-  - Statistics
-  - Cache
 
 - ✅ **Logger** (7 tests)
   - Log levels (error, warning, info)
-  - Log context
   - Singleton pattern
+
+- ✅ **Helpers** (11 tests) - 45.13% lines
+  - Utility functions
+  - Data transformation
 
 ## 🔍 Environment Variables
 
