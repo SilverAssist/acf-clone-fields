@@ -162,12 +162,26 @@ run_phpunit() {
         print_info "Using WordPress Test Suite: $WP_TESTS_DIR"
     fi
     
-    # Run PHPUnit and capture exit code
-    if vendor/bin/phpunit --testsuite=unit --coverage-text --coverage-clover=coverage.xml; then
+    # Run PHPUnit with coverage - output goes to stdout
+    # Note: --coverage-text sends output to stdout, not stderr
+    set +e  # Don't exit on error, we want to check exit code
+    vendor/bin/phpunit --testsuite=unit --coverage-text --coverage-clover=coverage.xml
+    PHPUNIT_EXIT_CODE=$?
+    set -e
+    
+    # Check if coverage file was generated
+    if [ -f "coverage.xml" ]; then
+        print_info "Coverage report generated: coverage.xml"
+    else
+        print_warning "Coverage report not generated"
+    fi
+    
+    # Check PHPUnit exit code
+    if [ $PHPUNIT_EXIT_CODE -eq 0 ]; then
         print_success "All tests passed"
         return 0
     else
-        print_error "PHPUnit tests failed"
+        print_error "PHPUnit tests failed with exit code $PHPUNIT_EXIT_CODE"
         return 1
     fi
 }
