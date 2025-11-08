@@ -852,7 +852,7 @@ class FieldCloner implements LoadableInterface {
 		foreach ( $backup_data['field_data'] as $field_key => $field_info ) {
 			// Get field object to retrieve field name.
 			$field_object = acf_get_field( $field_key );
-			
+
 			if ( ! $field_object ) {
 				$errors[] = sprintf(
 					/* translators: %s: field label */
