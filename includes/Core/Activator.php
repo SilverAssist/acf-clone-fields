@@ -111,6 +111,8 @@ class Activator {
 	 * - Updates structure if schema changed (adds columns, modifies indexes)
 	 * - Preserves existing data
 	 *
+	 * Falls back to direct query if dbDelta is not available.
+	 *
 	 * @return void
 	 */
 	public static function create_tables(): void {
@@ -137,15 +139,23 @@ class Activator {
 			KEY created_at (created_at)
 		) $charset_collate;";
 
-		// Load dbDelta function.
-		if ( ! function_exists( 'dbDelta' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		// Try to load dbDelta function.
+		if ( ! function_exists( 'dbDelta' ) && defined( 'ABSPATH' ) ) {
+			$upgrade_file = ABSPATH . 'wp-admin/includes/upgrade.php';
+			if ( file_exists( $upgrade_file ) ) {
+				require_once $upgrade_file;
+			}
 		}
-
-		\dbDelta( $sql );
-	}
-
-	/**
+		
+		// Use dbDelta if available, otherwise use direct query.
+		if ( function_exists( 'dbDelta' ) ) {
+			\dbDelta( $sql );
+		} else {
+			// Fallback for test environments where dbDelta might not be available.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+			$wpdb->query( str_replace( 'CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $sql ) );
+		}
+	}	/**
 	 * Check plugin requirements
 	 *
 	 * Verifies that the system meets minimum requirements for the plugin.
