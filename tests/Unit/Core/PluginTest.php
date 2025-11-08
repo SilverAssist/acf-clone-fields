@@ -37,6 +37,12 @@ class PluginTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		
+		// Skip if WordPress Test Suite is not available
+		if ( ! $this->isWordPressAvailable() ) {
+			$this->markTestSkipped( 'WordPress Test Suite is required for Plugin tests' );
+			return;
+		}
+		
 		// Define plugin constants if not already defined
 		// Use real plugin file path for GitHub Updater compatibility
 		$plugin_file = dirname( dirname( dirname( __DIR__ ) ) ) . '/silver-assist-acf-clone-fields.php';
