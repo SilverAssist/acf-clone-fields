@@ -137,7 +137,11 @@ class Activator {
 			KEY created_at (created_at)
 		) $charset_collate;";
 
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		// Load dbDelta function.
+		if ( ! function_exists( 'dbDelta' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		}
+		
 		\dbDelta( $sql );
 	}
 
