@@ -137,6 +137,7 @@ class Activator
 			post_id bigint(20) UNSIGNED NOT NULL,
 			user_id bigint(20) UNSIGNED NOT NULL,
 			backup_data longtext NOT NULL,
+			field_count int(11) UNSIGNED NOT NULL DEFAULT 0,
 			created_at datetime NOT NULL,
 			PRIMARY KEY  (id),
 			KEY backup_id (backup_id),
