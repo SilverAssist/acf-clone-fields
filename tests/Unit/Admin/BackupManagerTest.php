@@ -151,7 +151,16 @@ class BackupManagerTest extends TestCase {
 	 */
 	public function test_implements_loadable_interface(): void {
 		$this->assertEquals( 40, $this->manager->get_priority(), 'Priority should be 40 for Admin components' );
+		
+		// Set admin screen context for testing should_load()
+		// In WordPress Test Suite, is_admin() returns false by default
+		// We need to simulate admin context
+		\set_current_screen( 'edit-post' );
+		
 		$this->assertTrue( $this->manager->should_load(), 'Should load in admin context' );
+		
+		// Clean up
+		\set_current_screen( 'front' );
 	}
 
 	/**
