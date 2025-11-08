@@ -179,6 +179,13 @@ jobs:
           # MySQL should already be healthy thanks to service health checks
           mysql -h127.0.0.1 -uroot -proot -e "SHOW DATABASES;" || (echo "MySQL not ready" && exit 1)
           
+      - name: Install ACF Plugin
+        env:
+          WP_PLUGINS_DIR: /tmp/wordpress/wp-content/plugins
+          WP_TESTS_DIR: /tmp/wordpress-tests-lib
+        run: |
+          bash scripts/install-acf-for-tests.sh
+          
       - name: Run tests with WordPress ${{ matrix.wordpress-version }}
         env:
           WP_TESTS_DIR: /tmp/wordpress-tests-lib
