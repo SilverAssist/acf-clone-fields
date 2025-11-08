@@ -26,7 +26,19 @@ if ( ! $_tests_dir ) {
 }
 
 // Check if WordPress test suite is available.
-$wp_tests_available = file_exists( $_tests_dir . '/includes/functions.php' );
+// Support both wordpress-tests-lib (standard) and wordpress-develop (full repo) structures.
+$wp_tests_available = false;
+$_tests_includes_dir = null;
+
+if ( file_exists( $_tests_dir . '/includes/functions.php' ) ) {
+	// Standard wordpress-tests-lib structure.
+	$wp_tests_available = true;
+	$_tests_includes_dir = $_tests_dir . '/includes';
+} elseif ( file_exists( $_tests_dir . '/tests/phpunit/includes/functions.php' ) ) {
+	// wordpress-develop repository structure.
+	$wp_tests_available = true;
+	$_tests_includes_dir = $_tests_dir . '/tests/phpunit/includes';
+}
 
 /**
  * Manually load the plugin being tested.
@@ -59,13 +71,13 @@ function _manually_load_plugin() {
 // Load WordPress test environment if available.
 if ( $wp_tests_available ) {
 	// Load WordPress test functions.
-	require_once $_tests_dir . '/includes/functions.php';
+	require_once $_tests_includes_dir . '/functions.php';
 	
 	// Hook plugin loading.
 	tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 	
 	// Load WordPress test bootstrap.
-	require $_tests_dir . '/includes/bootstrap.php';
+	require $_tests_includes_dir . '/bootstrap.php';
 } else {
 	// Mock WordPress environment for unit tests without WordPress.
 	if ( ! defined( 'ABSPATH' ) ) {
