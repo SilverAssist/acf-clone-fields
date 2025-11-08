@@ -66,12 +66,10 @@ class CloneOptionsTest extends TestCase {
 		$this->ajax   = Ajax::instance();
 		$this->cloner = FieldCloner::instance();
 
-		// Create test user with admin capabilities.
-		$this->test_user_id = wp_insert_user(
+		// Create test user with admin capabilities using factory.
+		$this->test_user_id = static::factory()->user->create(
 			[
-				'user_login' => 'test_admin_' . time(),
-				'user_pass'  => 'password',
-				'role'       => 'administrator',
+				'role' => 'administrator',
 			]
 		);
 		wp_set_current_user( $this->test_user_id );
