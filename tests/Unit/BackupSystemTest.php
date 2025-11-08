@@ -62,7 +62,7 @@ class BackupSystemTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	private function create_backup_table(): void {
+	protected function create_backup_table(): void {
 		global $wpdb;
 		
 		$table_name      = $wpdb->prefix . 'acf_field_backups';

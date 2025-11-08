@@ -100,8 +100,10 @@ if ( $wp_tests_available ) {
 		define( 'WP_DEBUG_DISPLAY', false );
 	}
 	
-	// Load WordPress mocks.
-	require_once __DIR__ . '/Utils/WordPressMocks.php';
+	// Load WordPress mocks if available (fallback for local development).
+	if ( file_exists( __DIR__ . '/Utils/WordPressMocks.php' ) ) {
+		require_once __DIR__ . '/Utils/WordPressMocks.php';
+	}
 	
 	// Load plugin directly.
 	_manually_load_plugin();
