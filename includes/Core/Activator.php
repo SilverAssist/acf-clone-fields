@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Activator
  *
@@ -14,7 +15,7 @@
 
 namespace SilverAssist\ACFCloneFields\Core;
 
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 
 /**
  * Class Activator
@@ -22,7 +23,8 @@ defined( 'ABSPATH' ) || exit;
  * Manages plugin lifecycle events including activation, deactivation,
  * and uninstall procedures.
  */
-class Activator {
+class Activator
+{
 	/**
 	 * Plugin activation handler
 	 *
@@ -34,7 +36,8 @@ class Activator {
 	 *
 	 * @return void
 	 */
-	public static function activate(): void {
+	public static function activate(): void
+	{
 		// Verify minimum requirements.
 		self::check_requirements();
 
@@ -42,13 +45,13 @@ class Activator {
 		self::create_tables();
 
 		// Set plugin version.
-		update_option( 'silver_acf_clone_version', SILVER_ACF_CLONE_VERSION );
+		update_option('silver_acf_clone_version', SILVER_ACF_CLONE_VERSION);
 
 		// Initialize default settings.
 		self::init_default_settings();
 
 		// Set activation flag for first-time setup.
-		update_option( 'silver_acf_clone_activated', time() );
+		update_option('silver_acf_clone_activated', time());
 
 		// Clear any cached data.
 		wp_cache_flush();
@@ -64,15 +67,16 @@ class Activator {
 	 *
 	 * @return void
 	 */
-	public static function deactivate(): void {
+	public static function deactivate(): void
+	{
 		// Clear any scheduled cron events.
-		wp_clear_scheduled_hook( 'silver_acf_clone_cleanup' );
+		wp_clear_scheduled_hook('silver_acf_clone_cleanup');
 
 		// Clear cached data.
 		wp_cache_flush();
 
 		// Set deactivation timestamp.
-		update_option( 'silver_acf_clone_deactivated', time() );
+		update_option('silver_acf_clone_deactivated', time());
 	}
 
 	/**
@@ -83,17 +87,18 @@ class Activator {
 	 *
 	 * @return void
 	 */
-	public static function uninstall(): void {
+	public static function uninstall(): void
+	{
 		// Check if user wants to keep data.
-		$keep_data = get_option( 'silver_acf_clone_keep_data_on_uninstall', false );
+		$keep_data = get_option('silver_acf_clone_keep_data_on_uninstall', false);
 
-		if ( ! $keep_data ) {
+		if (! $keep_data) {
 			// Remove plugin options.
-			delete_option( 'silver_acf_clone_version' );
-			delete_option( 'silver_acf_clone_settings' );
-			delete_option( 'silver_acf_clone_activated' );
-			delete_option( 'silver_acf_clone_deactivated' );
-			delete_option( 'silver_acf_clone_keep_data_on_uninstall' );
+			delete_option('silver_acf_clone_version');
+			delete_option('silver_acf_clone_settings');
+			delete_option('silver_acf_clone_activated');
+			delete_option('silver_acf_clone_deactivated');
+			delete_option('silver_acf_clone_keep_data_on_uninstall');
 
 			// Clear any cached data.
 			wp_cache_flush();
@@ -115,7 +120,8 @@ class Activator {
 	 *
 	 * @return void
 	 */
-	public static function create_tables(): void {
+	public static function create_tables(): void
+	{
 		global $wpdb;
 
 		$table_name      = $wpdb->prefix . 'acf_field_backups';
@@ -140,22 +146,24 @@ class Activator {
 		) $charset_collate;";
 
 		// Try to load dbDelta function.
-		if ( ! function_exists( 'dbDelta' ) && defined( 'ABSPATH' ) ) {
+		if (! function_exists('dbDelta') && defined('ABSPATH')) {
 			$upgrade_file = ABSPATH . 'wp-admin/includes/upgrade.php';
-			if ( file_exists( $upgrade_file ) ) {
+			if (file_exists($upgrade_file)) {
 				require_once $upgrade_file;
 			}
 		}
-		
+
 		// Use dbDelta if available, otherwise use direct query.
-		if ( function_exists( 'dbDelta' ) ) {
-			\dbDelta( $sql );
+		if (function_exists('dbDelta')) {
+			\dbDelta($sql);
 		} else {
 			// Fallback for test environments where dbDelta might not be available.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-			$wpdb->query( str_replace( 'CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $sql ) );
+			$wpdb->query(str_replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $sql));
 		}
-	}	/**
+	}
+
+	/**
 	 * Check plugin requirements
 	 *
 	 * Verifies that the system meets minimum requirements for the plugin.
@@ -163,19 +171,20 @@ class Activator {
 	 * @throws \Exception If requirements are not met.
 	 * @return void
 	 */
-	private static function check_requirements(): void {
+	private static function check_requirements(): void
+	{
 		// Check PHP version.
 		// @phpstan-ignore-next-line if.alwaysFalse.
-		if ( version_compare( PHP_VERSION, '8.2', '<' ) ) {
-			if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) ) {
-				\deactivate_plugins( (string) SILVER_ACF_CLONE_BASENAME );
+		if (version_compare(PHP_VERSION, '8.2', '<')) {
+			if (defined('SILVER_ACF_CLONE_BASENAME')) {
+				\deactivate_plugins((string) SILVER_ACF_CLONE_BASENAME);
 			}
 
 			/* translators: %s: required PHP version */
 			throw new \Exception(
 				sprintf(
-				/* translators: %s: required PHP version */
-					esc_html__( 'Silver Assist - ACF Clone Fields requires PHP %s or higher.', 'silver-assist-acf-clone-fields' ),
+					/* translators: %s: required PHP version */
+					esc_html__('Silver Assist - ACF Clone Fields requires PHP %s or higher.', 'silver-assist-acf-clone-fields'),
 					'8.2'
 				)
 			);
@@ -183,29 +192,29 @@ class Activator {
 
 		// Check WordPress version.
 		global $wp_version;
-		if ( version_compare( $wp_version, '5.0', '<' ) ) {
-			if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) ) {
-				\deactivate_plugins( (string) SILVER_ACF_CLONE_BASENAME );
+		if (version_compare($wp_version, '5.0', '<')) {
+			if (defined('SILVER_ACF_CLONE_BASENAME')) {
+				\deactivate_plugins((string) SILVER_ACF_CLONE_BASENAME);
 			}
 
 			/* translators: %s: required WordPress version */
 			throw new \Exception(
 				sprintf(
 					/* translators: %s: required WordPress version */
-					esc_html__( 'Silver Assist - ACF Clone Fields requires WordPress %s or higher.', 'silver-assist-acf-clone-fields' ),
+					esc_html__('Silver Assist - ACF Clone Fields requires WordPress %s or higher.', 'silver-assist-acf-clone-fields'),
 					'5.0'
 				)
 			);
 		}
 
 		// Check ACF availability.
-		if ( ! \function_exists( 'acf_add_local_field_group' ) || ! \class_exists( 'acf' ) ) {
-			if ( defined( 'SILVER_ACF_CLONE_BASENAME' ) ) {
-				\deactivate_plugins( (string) SILVER_ACF_CLONE_BASENAME );
+		if (! \function_exists('acf_add_local_field_group') || ! \class_exists('acf')) {
+			if (defined('SILVER_ACF_CLONE_BASENAME')) {
+				\deactivate_plugins((string) SILVER_ACF_CLONE_BASENAME);
 			}
 			throw new \Exception(
 				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception messages don't require escaping.
-				__( 'Silver Assist - ACF Clone Fields requires Advanced Custom Fields Pro to be active.', 'silver-assist-acf-clone-fields' )
+				__('Silver Assist - ACF Clone Fields requires Advanced Custom Fields Pro to be active.', 'silver-assist-acf-clone-fields')
 			);
 		}
 	}
@@ -217,20 +226,21 @@ class Activator {
 	 *
 	 * @return void
 	 */
-	private static function init_default_settings(): void {
+	private static function init_default_settings(): void
+	{
 		$default_settings = [
-			'enabled_post_types'   => [ 'post', 'page' ],
+			'enabled_post_types'   => ['post', 'page'],
 			'show_in_sidebar'      => true,
-			'clone_button_text'    => __( 'Clone Custom Fields', 'silver-assist-acf-clone-fields' ),
-			'confirmation_message' => __( 'This will overwrite existing custom fields. Continue?', 'silver-assist-acf-clone-fields' ),
-			'success_message'      => __( 'Custom fields cloned successfully!', 'silver-assist-acf-clone-fields' ),
+			'clone_button_text'    => __('Clone Custom Fields', 'silver-assist-acf-clone-fields'),
+			'confirmation_message' => __('This will overwrite existing custom fields. Continue?', 'silver-assist-acf-clone-fields'),
+			'success_message'      => __('Custom fields cloned successfully!', 'silver-assist-acf-clone-fields'),
 			'logging_enabled'      => false,
 			'cache_enabled'        => true,
 		];
 
 		// Only set if no settings exist.
-		if ( ! get_option( 'silver_acf_clone_settings' ) ) {
-			update_option( 'silver_acf_clone_settings', $default_settings );
+		if (! get_option('silver_acf_clone_settings')) {
+			update_option('silver_acf_clone_settings', $default_settings);
 		}
 	}
 }
