@@ -573,7 +573,13 @@ class Ajax implements LoadableInterface {
 		// Override with request options.
 		foreach ( $request_options as $key => $value ) {
 			if ( array_key_exists( $key, $default_options ) ) {
-				$default_options[ $key ] = (bool) $value;
+				// Handle boolean conversion - catch string 'false' and '0'.
+				if ( is_string( $value ) ) {
+					$value = filter_var( $value, FILTER_VALIDATE_BOOLEAN );
+				} else {
+					$value = (bool) $value;
+				}
+				$default_options[ $key ] = $value;
 			}
 		}
 

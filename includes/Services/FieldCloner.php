@@ -850,9 +850,23 @@ class FieldCloner implements LoadableInterface {
 
 		// Restore each field.
 		foreach ( $backup_data['field_data'] as $field_key => $field_info ) {
-			$update_result = update_field( $field_key, $field_info['value'], $post_id );
+			// Get field object to retrieve field name.
+			$field_object = acf_get_field( $field_key );
+			
+			if ( ! $field_object ) {
+				$errors[] = sprintf(
+					/* translators: %s: field label */
+					__( 'Field not found: %s', 'silver-assist-acf-clone-fields' ),
+					$field_info['label']
+				);
+				continue;
+			}
 
-			if ( $update_result ) {
+			// Use field name (not key) for update_field to work properly.
+			$field_name    = $field_object['name'];
+			$update_result = update_field( $field_name, $field_info['value'], $post_id );
+
+			if ( false !== $update_result ) {
 				$restored_fields[] = $field_info['label'];
 			} else {
 				$errors[] = sprintf(
