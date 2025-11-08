@@ -122,6 +122,79 @@ public function setUp(): void {
 $user_id = $this->factory->user->create(...);  // DO NOT USE
 ```
 
+#### Database Schema Changes (CRITICAL)
+
+**IMPORTANT**: `CREATE TABLE` statements trigger implicit MySQL `COMMIT` which breaks WordPress Test Suite's transaction-based rollback system.
+
+**The Problem:**
+- WordPress Test Suite wraps each test in a MySQL transaction (`START TRANSACTION`)
+- After each test, it rolls back the transaction (`ROLLBACK`) to restore clean state
+- `CREATE TABLE` triggers an **implicit COMMIT**, breaking this rollback mechanism
+- This causes tables to persist incorrectly or disappear unexpectedly between tests
+
+**The Solution:**
+
+```php
+// ✅ CORRECT: Use wpSetUpBeforeClass() for schema changes
+class YourTest extends TestCase {
+    /**
+     * Create shared fixtures before class
+     *
+     * Runs ONCE before any tests. Use for CREATE TABLE statements.
+     *
+     * @param WP_UnitTest_Factory $factory Factory instance.
+     */
+    public static function wpSetUpBeforeClass( $factory ): void {
+        global $wpdb;
+        
+        // CREATE TABLE happens outside transaction system
+        // Use Activator or direct CREATE TABLE here
+        Activator::create_tables();
+    }
+    
+    /**
+     * Setup test environment
+     *
+     * Runs BEFORE EACH test. DO NOT create tables here.
+     */
+    public function setUp(): void {
+        parent::setUp();
+        
+        // ✅ TRUNCATE is safe - doesn't trigger COMMIT
+        $this->clean_table_data();
+        
+        // Initialize services
+        $this->service = YourService::instance();
+    }
+    
+    protected function clean_table_data(): void {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'your_table';
+        
+        // TRUNCATE doesn't trigger COMMIT
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $wpdb->query( "TRUNCATE TABLE $table_name" );
+    }
+}
+
+// ❌ INCORRECT: Creating tables in setUp()
+public function setUp(): void {
+    parent::setUp();
+    
+    // This breaks transaction rollback!
+    $wpdb->query("CREATE TABLE IF NOT EXISTS ...");
+}
+```
+
+**MySQL Statements That Trigger Implicit COMMIT:**
+- `CREATE TABLE` / `DROP TABLE`
+- `CREATE DATABASE` / `DROP DATABASE`
+- `ALTER TABLE`
+- `RENAME TABLE`
+- `TRUNCATE TABLE` (in some contexts, but safe in WordPress Test Suite)
+
+**Reference**: [MySQL Implicit Commit Documentation](https://dev.mysql.com/doc/refman/5.7/en/implicit-commit.html) | [WordPress Testing Handbook - Database](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/#database)
+
 #### Available Factory Methods
 
 ```php

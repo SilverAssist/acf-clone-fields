@@ -409,6 +409,86 @@ tests/
     └── ACFTestHelpers.php        # ACF-specific test utilities
 ```
 
+#### **Database Schema Changes in Tests (CRITICAL)**
+
+**IMPORTANT**: `CREATE TABLE` statements trigger implicit MySQL `COMMIT` which breaks WordPress Test Suite's transaction-based rollback system.
+
+**The Problem:**
+- WordPress Test Suite wraps each test in a MySQL transaction (`START TRANSACTION`)
+- After each test, it rolls back the transaction (`ROLLBACK`) to restore clean state
+- **`CREATE TABLE` triggers an implicit COMMIT**, breaking this rollback mechanism
+- Result: Tables persist incorrectly or disappear unexpectedly between tests
+
+**The Solution - Use wpSetUpBeforeClass():**
+
+```php
+// ✅ CORRECT: Schema changes in wpSetUpBeforeClass()
+class BackupSystemTest extends TestCase {
+    /**
+     * Create shared fixtures before class
+     *
+     * Runs ONCE before any tests in the class.
+     * Use this for CREATE TABLE statements.
+     *
+     * @param WP_UnitTest_Factory $factory Factory instance.
+     */
+    public static function wpSetUpBeforeClass( $factory ): void {
+        global $wpdb;
+        
+        // CREATE TABLE happens outside transaction system
+        // Safe to use here - runs once before all tests
+        Activator::create_tables();
+    }
+    
+    /**
+     * Setup test environment
+     *
+     * Runs BEFORE EACH test. DO NOT create tables here.
+     */
+    public function setUp(): void {
+        parent::setUp();
+        
+        // ✅ TRUNCATE is safe - doesn't trigger COMMIT
+        $this->clean_table_data();
+        
+        // Initialize services
+        $this->service = FieldCloner::instance();
+    }
+    
+    protected function clean_table_data(): void {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'acf_field_backups';
+        
+        // TRUNCATE doesn't trigger COMMIT - safe for test isolation
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $wpdb->query( "TRUNCATE TABLE $table_name" );
+    }
+}
+
+// ❌ INCORRECT: Creating tables in setUp()
+public function setUp(): void {
+    parent::setUp();
+    
+    // This breaks transaction rollback!
+    $wpdb->query("CREATE TABLE IF NOT EXISTS ...");
+}
+```
+
+**MySQL Statements That Trigger Implicit COMMIT:**
+- `CREATE TABLE` / `DROP TABLE` (use wpSetUpBeforeClass)
+- `CREATE DATABASE` / `DROP DATABASE`
+- `ALTER TABLE` (use wpSetUpBeforeClass)
+- `RENAME TABLE`
+
+**Safe for setUp() / tearDown():**
+- `TRUNCATE TABLE` (safe in WordPress Test Suite context)
+- `INSERT` / `UPDATE` / `DELETE` (regular DML)
+- `SELECT` queries
+
+**Reference**: 
+- [MySQL Implicit Commit](https://dev.mysql.com/doc/refman/5.7/en/implicit-commit.html)
+- [WordPress Testing Handbook - Database](https://make.wordpress.org/core/handbook/testing/automated-testing/writing-phpunit-tests/#database)
+
 #### **Writing New Tests - Pattern**
 
 ```php
@@ -641,6 +721,61 @@ composer phpcbf     # Auto-fix coding standards
 composer phpcs      # Check coding standards  
 composer phpstan    # Static analysis
 ```
+
+### **CI/CD Error Handling Best Practices**
+
+**CRITICAL**: Quality check scripts must return proper exit codes to fail CI workflows when errors occur.
+
+#### **Problem Pattern (Bad)**
+```bash
+# ❌ INCORRECT: Command runs but doesn't fail workflow on errors
+run_phpcs() {
+    vendor/bin/phpcs --warning-severity=0
+    echo "✅ PHPCS passed"  # Always prints, even if phpcs failed!
+}
+```
+
+#### **Solution Pattern (Good)**
+```bash
+# ✅ CORRECT: Capture exit code and return appropriate value
+run_phpcs() {
+    if vendor/bin/phpcs --warning-severity=0; then
+        echo "✅ PHPCS passed - No errors found"
+        return 0
+    else
+        echo "❌ PHPCS failed - Code style errors found"
+        return 1
+    fi
+}
+```
+
+#### **Quality Check Script Pattern**
+All quality check functions in `scripts/run-quality-checks.sh` follow this pattern:
+
+```bash
+run_quality_check() {
+    print_header "🔍 Running Quality Check"
+    
+    cd "$PROJECT_ROOT"
+    
+    # Run command and capture exit code
+    if command_to_run --with-options; then
+        print_success "Check passed"
+        return 0
+    else
+        print_error "Check failed - errors found"
+        return 1
+    fi
+}
+```
+
+**Benefits:**
+- ✅ Workflows fail immediately when errors occur
+- ✅ Clear error messages in CI logs
+- ✅ Prevents merging code with quality issues
+- ✅ Consistent behavior between local and CI environments
+
+**Reference**: See `scripts/run-quality-checks.sh` for complete implementation.
 
 ## 🔄 CI/CD Workflows
 
