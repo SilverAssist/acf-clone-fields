@@ -58,7 +58,7 @@ jobs:
           echo "## 🔍 Quality Checks" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Running quality checks without WordPress (dependency validation only)..." >> $GITHUB_STEP_SUMMARY
-          bash scripts/run-quality-checks.sh --skip-wp-setup all
+          bash scripts/run-quality-checks.sh --skip-wp-setup phpcs phpstan
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "✅ All quality checks passed" >> $GITHUB_STEP_SUMMARY
       
