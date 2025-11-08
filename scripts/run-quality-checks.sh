@@ -162,10 +162,11 @@ run_phpunit() {
         print_info "Using WordPress Test Suite: $WP_TESTS_DIR"
     fi
     
-    # Run PHPUnit with coverage - output goes to stdout
-    # Note: --coverage-text sends output to stdout, not stderr
+    # Run PHPUnit with coverage - force all output to stdout
+    # Note: --coverage-text sends output to stdout, but errors go to stderr
+    # We need to capture both and preserve exit code
     set +e  # Don't exit on error, we want to check exit code
-    vendor/bin/phpunit --testsuite=unit --coverage-text --coverage-clover=coverage.xml
+    vendor/bin/phpunit --testsuite=unit --coverage-text --coverage-clover=coverage.xml 2>&1
     PHPUNIT_EXIT_CODE=$?
     set -e
     
