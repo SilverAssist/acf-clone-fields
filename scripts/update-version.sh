@@ -9,9 +9,9 @@
 # Example: ./scripts/update-version.sh 1.2.0
 #
 # @package ACFCloneFields
-# @since 1.1.0
+# @since 1.0.0
 # @author Silver Assist
-# @version 1.4.0
+# @version 1.1.0
 ###############################################################################
 
 # Note: Removed set -e to allow script to continue on minor errors/warnings

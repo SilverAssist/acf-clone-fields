@@ -1,0 +1,81 @@
+name: Quality Checks (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      php-version:
+        description: 'PHP version to use'
+        required: false
+        type: string
+        default: '8.2'
+      skip-wp-setup:
+        description: 'Skip WordPress Test Suite setup'
+        required: false
+        type: boolean
+        default: false
+      upload-coverage:
+        description: 'Upload coverage reports to Codecov'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  quality-checks:
+    name: Quality Checks (PHP ${{ inputs.php-version }})
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v5
+        
+      - name: 🐘 Setup PHP ${{ inputs.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ inputs.php-version }}
+          extensions: mbstring, intl, mysql, pdo_mysql
+          coverage: xdebug
+          tools: composer:v2
+          
+      - name: 📦 Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ inputs.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-${{ inputs.php-version }}-
+            composer-
+            
+      - name: 📦 Install Composer dependencies
+        run: composer install --no-interaction --no-progress --optimize-autoloader
+        
+      - name: 🗄️ Setup MySQL (if needed)
+        if: ${{ !inputs.skip-wp-setup }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq subversion mysql-client
+          sudo systemctl start mysql.service
+          mysql -e "DROP DATABASE IF EXISTS wordpress_test;" -uroot -proot || true
+          mysql -e "CREATE DATABASE wordpress_test;" -uroot -proot
+          
+      - name: 🐘 Install WordPress Test Suite (if needed)
+        if: ${{ !inputs.skip-wp-setup }}
+        run: bash scripts/install-wp-tests.sh wordpress_test root 'root' localhost latest true
+        
+      - name: 🧪 Run Quality Checks
+        run: |
+          if [ "${{ inputs.skip-wp-setup }}" = "true" ]; then
+            echo "Running quality checks without WordPress..."
+            bash scripts/run-quality-checks.sh --skip-wp-setup all
+          else
+            echo "Running quality checks with WordPress..."
+            bash scripts/run-quality-checks.sh all
+          fi
+          
+      - name: 📤 Upload coverage to Codecov
+        if: ${{ inputs.upload-coverage }}
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-php-${{ inputs.php-version }}
+          fail_ci_if_error: false

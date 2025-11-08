@@ -8,7 +8,7 @@
  * @package SilverAssist\ACFCloneFields
  * @subpackage Admin
  * @since 1.0.0
- * @version 1.0.0
+ * @version 1.1.0
  * @author Silver Assist
  */
 

@@ -114,9 +114,24 @@ jobs:
             - name: 📦 Install dependencies for testing
               run: composer install --no-interaction --no-progress --optimize-autoloader
 
+            - name: 🗄️ Setup MySQL for WordPress tests
+              run: |
+                  # Install system dependencies
+                  sudo apt-get update -qq
+                  sudo apt-get install -y -qq subversion mysql-client
+                  
+                  # Start MySQL service
+                  sudo systemctl start mysql.service
+                  
+                  # Create test database
+                  mysql -e "DROP DATABASE IF EXISTS wordpress_test;" -uroot -proot || true
+                  mysql -e "CREATE DATABASE wordpress_test;" -uroot -proot
+                  
+                  echo "✅ MySQL configured for WordPress tests"
+
             - name: 🧪 Run Quality Checks (PHPCS + PHPStan + PHPUnit + Syntax)
               run: |
-                  echo "� Running centralized quality checks..."
+                  echo "🔍 Running centralized quality checks with WordPress integration..."
                   bash scripts/run-quality-checks.sh all
                   echo "✅ All quality checks passed"
 

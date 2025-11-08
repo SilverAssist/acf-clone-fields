@@ -8,7 +8,7 @@
  * @package SilverAssist\ACFCloneFields
  * @subpackage Utils
  * @since 1.0.0
- * @version 1.0.0
+ * @version 1.1.0
  * @author Silver Assist
  */
 
@@ -80,6 +80,87 @@ class Helpers implements LoadableInterface {
 		$default_types = [ 'post', 'page' ];
 
 		return $settings['enabled_post_types'] ?? $default_types;
+	}
+
+	/**
+	 * Check if ACF Pro is active
+	 *
+	 * Determines if ACF Pro is installed and active. This affects which field types
+	 * are available for cloning (Pro-only fields: repeater, group, flexible_content, clone).
+	 *
+	 * @return bool True if ACF Pro is active, false if only ACF free.
+	 */
+	public static function is_acf_pro_active(): bool {
+		return function_exists( 'silver_acf_clone_is_pro' ) && silver_acf_clone_is_pro();
+	}
+
+	/**
+	 * Get supported ACF field types based on installed version
+	 *
+	 * Returns array of field types that can be cloned based on whether
+	 * ACF free or ACF Pro is installed.
+	 *
+	 * @return array<string> List of supported field type names.
+	 */
+	public static function get_supported_field_types(): array {
+		// Basic field types supported in ACF free.
+		$basic_types = [
+			'text',
+			'textarea',
+			'number',
+			'email',
+			'url',
+			'password',
+			'image',
+			'file',
+			'wysiwyg',
+			'oembed',
+			'gallery',
+			'select',
+			'checkbox',
+			'radio',
+			'button_group',
+			'true_false',
+			'link',
+			'post_object',
+			'page_link',
+			'relationship',
+			'taxonomy',
+			'user',
+			'google_map',
+			'date_picker',
+			'date_time_picker',
+			'time_picker',
+			'color_picker',
+			'message',
+			'accordion',
+			'tab',
+		];
+
+		// Pro-only field types.
+		$pro_types = [
+			'repeater',
+			'group',
+			'flexible_content',
+			'clone',
+		];
+
+		// Return all types if Pro is active, otherwise only basic types.
+		return self::is_acf_pro_active() ? array_merge( $basic_types, $pro_types ) : $basic_types;
+	}
+
+	/**
+	 * Check if field type is supported for cloning
+	 *
+	 * Verifies if a field type can be cloned based on the installed ACF version.
+	 * Pro-only fields (repeater, group, etc.) require ACF Pro.
+	 *
+	 * @param string $field_type Field type to check.
+	 * @return bool True if field type is supported, false otherwise.
+	 */
+	public static function is_field_type_supported( string $field_type ): bool {
+		$supported_types = self::get_supported_field_types();
+		return in_array( $field_type, $supported_types, true );
 	}
 
 	/**

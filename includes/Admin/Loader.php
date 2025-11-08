@@ -7,7 +7,7 @@
  * @package SilverAssist\ACFCloneFields
  * @subpackage Admin
  * @since 1.0.0
- * @version 1.0.0
+ * @version 1.1.0
  * @author Silver Assist
  */
 
@@ -88,6 +88,7 @@ class Loader implements LoadableInterface {
 			'MetaBox.php',
 			'Settings.php',
 			'Ajax.php',
+			'BackupManager.php',
 		];
 
 		foreach ( $admin_files as $file ) {
@@ -118,6 +119,11 @@ class Loader implements LoadableInterface {
 		// Initialize Ajax (always in admin to handle AJAX requests).
 		if ( class_exists( 'SilverAssist\\ACFCloneFields\\Admin\\Ajax' ) ) {
 			Ajax::instance()->init();
+		}
+
+		// Initialize BackupManager (for backup interface).
+		if ( class_exists( 'SilverAssist\\ACFCloneFields\\Admin\\BackupManager' ) ) {
+			BackupManager::instance()->init();
 		}
 	}
 }

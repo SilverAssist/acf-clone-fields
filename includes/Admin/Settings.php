@@ -8,7 +8,7 @@
  * @package SilverAssist\ACFCloneFields
  * @subpackage Admin
  * @since 1.0.0
- * @version 1.0.0
+ * @version 1.1.0
  * @author Silver Assist
  */
 
@@ -135,6 +135,8 @@ class Settings implements LoadableInterface {
 			'silver_assist_acf_clone_fields_validate_data' => true,
 			'silver_assist_acf_clone_fields_log_operations' => true,
 			'silver_assist_acf_clone_fields_max_source_posts' => 50,
+			'silver_assist_acf_clone_fields_backup_retention_days' => 30,
+			'silver_assist_acf_clone_fields_backup_max_count' => 100,
 		];
 	}
 
@@ -310,6 +312,32 @@ class Settings implements LoadableInterface {
 			'acf_clone_advanced'
 		);
 
+		// Backup Settings Section.
+		add_settings_section(
+			'acf_clone_backup',
+			__( 'Backup Settings', 'silver-assist-acf-clone-fields' ),
+			[ $this, 'render_backup_section' ],
+			$this->page_slug
+		);
+
+		// Backup Retention Days Field.
+		add_settings_field(
+			'backup_retention_days',
+			__( 'Backup Retention (Days)', 'silver-assist-acf-clone-fields' ),
+			[ $this, 'render_backup_retention_field' ],
+			$this->page_slug,
+			'acf_clone_backup'
+		);
+
+		// Backup Max Count Field.
+		add_settings_field(
+			'backup_max_count',
+			__( 'Maximum Backups', 'silver-assist-acf-clone-fields' ),
+			[ $this, 'render_backup_max_count_field' ],
+			$this->page_slug,
+			'acf_clone_backup'
+		);
+
 		// Register all settings.
 		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_enabled_post_types' );
 		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_default_overwrite' );
@@ -318,6 +346,8 @@ class Settings implements LoadableInterface {
 		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_validate_data' );
 		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_log_operations' );
 		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_max_source_posts' );
+		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_backup_retention_days' );
+		register_setting( $this->settings_group, 'silver_assist_acf_clone_fields_backup_max_count' );
 	}
 
 	/**
@@ -536,6 +566,45 @@ class Settings implements LoadableInterface {
 	}
 
 	/**
+	 * Render backup section description
+	 *
+	 * @return void
+	 */
+	public function render_backup_section(): void {
+		echo '<p>' . esc_html__( 'Configure backup retention policies for cloned field data.', 'silver-assist-acf-clone-fields' ) . '</p>';
+	}
+
+	/**
+	 * Render backup retention field
+	 *
+	 * @return void
+	 */
+	public function render_backup_retention_field(): void {
+		$value = get_option( 'silver_assist_acf_clone_fields_backup_retention_days', 30 );
+		printf(
+			'<input type="number" name="silver_assist_acf_clone_fields_backup_retention_days" value="%d" min="1" max="365" class="small-text">',
+			(int) $value
+		);
+		echo ' ' . esc_html__( 'days', 'silver-assist-acf-clone-fields' );
+		echo '<p class="description">' . esc_html__( 'Backups older than this will be automatically deleted. Recommended: 30 days.', 'silver-assist-acf-clone-fields' ) . '</p>';
+	}
+
+	/**
+	 * Render backup max count field
+	 *
+	 * @return void
+	 */
+	public function render_backup_max_count_field(): void {
+		$value = get_option( 'silver_assist_acf_clone_fields_backup_max_count', 100 );
+		printf(
+			'<input type="number" name="silver_assist_acf_clone_fields_backup_max_count" value="%d" min="10" max="1000" class="small-text">',
+			(int) $value
+		);
+		echo ' ' . esc_html__( 'backups', 'silver-assist-acf-clone-fields' );
+		echo '<p class="description">' . esc_html__( 'Maximum number of backups to keep. Oldest backups will be deleted when this limit is reached.', 'silver-assist-acf-clone-fields' ) . '</p>';
+	}
+
+	/**
 	 * Save settings
 	 *
 	 * @return void
@@ -567,6 +636,18 @@ class Settings implements LoadableInterface {
 		$max_posts = (int) ( $_POST['silver_assist_acf_clone_fields_max_source_posts'] ?? 50 );
 		$max_posts = max( 10, min( 200, $max_posts ) ); // Clamp between 10-200.
 		update_option( 'silver_assist_acf_clone_fields_max_source_posts', $max_posts );
+
+		// Save backup retention days.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in render_settings_page() before calling this method.
+		$retention_days = (int) ( $_POST['silver_assist_acf_clone_fields_backup_retention_days'] ?? 30 );
+		$retention_days = max( 1, min( 365, $retention_days ) );
+		update_option( 'silver_assist_acf_clone_fields_backup_retention_days', $retention_days );
+
+		// Save backup max count.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in render_settings_page() before calling this method.
+		$max_backups = (int) ( $_POST['silver_assist_acf_clone_fields_backup_max_count'] ?? 100 );
+		$max_backups = max( 10, min( 1000, $max_backups ) );
+		update_option( 'silver_assist_acf_clone_fields_backup_max_count', $max_backups );
 
 		add_settings_error(
 			'silver_assist_acf_clone_fields_messages',

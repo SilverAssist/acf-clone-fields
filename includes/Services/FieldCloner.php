@@ -8,7 +8,7 @@
  * @package SilverAssist\ACFCloneFields
  * @subpackage Services
  * @since 1.0.0
- * @version 1.0.0
+ * @version 1.1.0
  * @author Silver Assist
  */
 
@@ -674,19 +674,359 @@ class FieldCloner implements LoadableInterface {
 	 *
 	 * @param int           $post_id Post ID to backup.
 	 * @param array<string> $field_keys Field keys to backup.
-	 * @return void
+	 * @return string|false Backup ID on success, false on failure
 	 */
-	private function create_backup( int $post_id, array $field_keys ): void {
-		$backup = [];
+	private function create_backup( int $post_id, array $field_keys ) {
+		$backup_data = [
+			'post_id'    => $post_id,
+			'timestamp'  => current_time( 'mysql' ),
+			'user_id'    => get_current_user_id(),
+			'field_data' => [],
+		];
 
+		// Collect field values.
 		foreach ( $field_keys as $field_key ) {
 			$existing_value = get_field( $field_key, $post_id, false );
-			if ( false !== $existing_value ) {
-				$backup[ $field_key ] = $existing_value;
+			if ( false !== $existing_value && null !== $existing_value ) {
+				$field_object                            = get_field_object( $field_key, $post_id );
+				$backup_data['field_data'][ $field_key ] = [
+					'value' => $existing_value,
+					'label' => $field_object['label'] ?? $field_key,
+					'type'  => $field_object['type'] ?? 'unknown',
+				];
 			}
 		}
 
-		// Backup created but not stored (future enhancement).
+		// Don't create backup if no fields to backup.
+		if ( empty( $backup_data['field_data'] ) ) {
+			return false;
+		}
+
+		// Generate unique backup ID.
+		$backup_id = 'backup_' . $post_id . '_' . time() . '_' . wp_generate_password( 8, false );
+
+		// Store backup in database.
+		$stored = $this->store_backup( $backup_id, $backup_data );
+
+		if ( ! $stored ) {
+			Logger::instance()->error(
+				'Failed to store field backup',
+				[
+					'post_id'     => $post_id,
+					'backup_id'   => $backup_id,
+					'field_count' => count( $backup_data['field_data'] ),
+				]
+			);
+			return false;
+		}
+
+		Logger::instance()->info(
+			'Field backup created successfully',
+			[
+				'post_id'     => $post_id,
+				'backup_id'   => $backup_id,
+				'field_count' => count( $backup_data['field_data'] ),
+			]
+		);
+
+		// Clean old backups.
+		$this->cleanup_old_backups();
+
+		return $backup_id;
+	}
+
+	/**
+	 * Store backup data in database
+	 *
+	 * @param string               $backup_id Unique backup identifier.
+	 * @param array<string, mixed> $backup_data Backup data to store.
+	 * @return bool True on success, false on failure
+	 */
+	private function store_backup( string $backup_id, array $backup_data ): bool {
+		global $wpdb;
+
+		$table_name = $wpdb->prefix . 'acf_field_backups';
+
+		// Create table if it doesn't exist.
+		$this->maybe_create_backup_table();
+
+		$result = $wpdb->insert(
+			$table_name,
+			[
+				'backup_id'   => $backup_id,
+				'post_id'     => $backup_data['post_id'],
+				'user_id'     => $backup_data['user_id'],
+				'backup_data' => wp_json_encode( $backup_data ),
+				'created_at'  => $backup_data['timestamp'],
+			],
+			[ '%s', '%d', '%d', '%s', '%s' ]
+		);
+
+		return false !== $result;
+	}
+
+	/**
+	 * Create backup table if it doesn't exist
+	 *
+	 * @return void
+	 */
+	private function maybe_create_backup_table(): void {
+		global $wpdb;
+
+		$table_name      = $wpdb->prefix . 'acf_field_backups';
+		$charset_collate = $wpdb->get_charset_collate();
+
+		// Check if table exists.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$table_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) );
+
+		if ( $table_exists === $table_name ) {
+			return;
+		}
+
+		// Create table.
+		$sql = "CREATE TABLE $table_name (
+			id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+			backup_id varchar(100) NOT NULL,
+			post_id bigint(20) UNSIGNED NOT NULL,
+			user_id bigint(20) UNSIGNED NOT NULL,
+			backup_data longtext NOT NULL,
+			created_at datetime NOT NULL,
+			PRIMARY KEY  (id),
+			KEY backup_id (backup_id),
+			KEY post_id (post_id),
+			KEY created_at (created_at)
+		) $charset_collate;";
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta( $sql );
+	}
+
+	/**
+	 * Restore backup by ID
+	 *
+	 * @param string $backup_id Backup identifier.
+	 * @param bool   $delete_after_restore Delete backup after successful restore.
+	 * @return array<string, mixed> Restore result
+	 */
+	public function restore_backup( string $backup_id, bool $delete_after_restore = false ): array {
+		global $wpdb;
+
+		// Validate backup ID format.
+		if ( ! preg_match( '/^backup_\d+_\d+_[a-zA-Z0-9]+$/', $backup_id ) ) {
+			return [
+				'success' => false,
+				'message' => __( 'Invalid backup ID format', 'silver-assist-acf-clone-fields' ),
+			];
+		}
+
+		$table_name = $wpdb->prefix . 'acf_field_backups';
+
+		// Retrieve backup.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$backup_row = $wpdb->get_row(
+			$wpdb->prepare( 'SELECT * FROM %i WHERE backup_id = %s', $table_name, $backup_id )
+		);
+
+		if ( ! $backup_row ) {
+			return [
+				'success' => false,
+				'message' => __( 'Backup not found', 'silver-assist-acf-clone-fields' ),
+			];
+		}
+
+		$backup_data = json_decode( $backup_row->backup_data, true );
+
+		if ( ! $backup_data || ! isset( $backup_data['field_data'] ) ) {
+			return [
+				'success' => false,
+				'message' => __( 'Invalid backup data', 'silver-assist-acf-clone-fields' ),
+			];
+		}
+
+		$post_id         = (int) $backup_data['post_id'];
+		$restored_fields = [];
+		$errors          = [];
+
+		// Restore each field.
+		foreach ( $backup_data['field_data'] as $field_key => $field_info ) {
+			$update_result = update_field( $field_key, $field_info['value'], $post_id );
+
+			if ( $update_result ) {
+				$restored_fields[] = $field_info['label'];
+			} else {
+				$errors[] = sprintf(
+					/* translators: %s: field label */
+					__( 'Failed to restore field: %s', 'silver-assist-acf-clone-fields' ),
+					$field_info['label']
+				);
+			}
+		}
+
+		$success = empty( $errors );
+
+		// Log restore operation.
+		Logger::instance()->info(
+			'Backup restore operation completed',
+			[
+				'backup_id'       => $backup_id,
+				'post_id'         => $post_id,
+				'success'         => $success,
+				'restored_fields' => count( $restored_fields ),
+				'errors'          => count( $errors ),
+			]
+		);
+
+		// Delete backup if requested and restore was successful.
+		if ( $delete_after_restore && $success ) {
+			$this->delete_backup( $backup_id );
+		}
+
+		$message = $success
+			? sprintf(
+				/* translators: %d: number of restored fields */
+				__( 'Successfully restored %d field(s)', 'silver-assist-acf-clone-fields' ),
+				count( $restored_fields )
+			)
+			: sprintf(
+				/* translators: 1: number of restored fields, 2: number of errors */
+				__( 'Restored %1$d field(s) with %2$d error(s)', 'silver-assist-acf-clone-fields' ),
+				count( $restored_fields ),
+				count( $errors )
+			);
+
+		return [
+			'success'         => $success,
+			'message'         => $message,
+			'restored_fields' => $restored_fields,
+			'errors'          => $errors,
+		];
+	}
+
+	/**
+	 * Delete a backup
+	 *
+	 * @param string $backup_id Backup identifier.
+	 * @return bool True on success, false on failure
+	 */
+	public function delete_backup( string $backup_id ): bool {
+		global $wpdb;
+
+		$table_name = $wpdb->prefix . 'acf_field_backups';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->delete(
+			$table_name,
+			[ 'backup_id' => $backup_id ],
+			[ '%s' ]
+		);
+
+		if ( $result ) {
+			Logger::instance()->info(
+				'Backup deleted',
+				[ 'backup_id' => $backup_id ]
+			);
+		}
+
+		return false !== $result && $result > 0;
+	}
+
+	/**
+	 * Get all backups for a post
+	 *
+	 * @param int $post_id Post ID.
+	 * @return array<array<string, mixed>> Array of backups
+	 */
+	public function get_post_backups( int $post_id ): array {
+		global $wpdb;
+
+		$table_name = $wpdb->prefix . 'acf_field_backups';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$backups = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT * FROM %i WHERE post_id = %d ORDER BY created_at DESC',
+				$table_name,
+				$post_id
+			)
+		);
+
+		if ( ! $backups ) {
+			return [];
+		}
+
+		$result = [];
+		foreach ( $backups as $backup ) {
+			$backup_data = json_decode( $backup->backup_data, true );
+			$result[]    = [
+				'backup_id'   => $backup->backup_id,
+				'post_id'     => $backup->post_id,
+				'user_id'     => $backup->user_id,
+				'created_at'  => $backup->created_at,
+				'field_count' => isset( $backup_data['field_data'] ) ? count( $backup_data['field_data'] ) : 0,
+				'fields'      => isset( $backup_data['field_data'] ) ? array_keys( $backup_data['field_data'] ) : [],
+			];
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Clean up old backups based on retention policy
+	 *
+	 * @return int Number of backups deleted
+	 */
+	private function cleanup_old_backups(): int {
+		global $wpdb;
+
+		$table_name = $wpdb->prefix . 'acf_field_backups';
+
+		// Get retention settings.
+		$max_age_days = (int) get_option( 'silver_assist_acf_clone_fields_backup_retention_days', 30 );
+		$max_backups  = (int) get_option( 'silver_assist_acf_clone_fields_backup_max_count', 100 );
+
+		$deleted_count = 0;
+
+		// Delete backups older than max age.
+		if ( $max_age_days > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$deleted        = $wpdb->query(
+				$wpdb->prepare(
+					'DELETE FROM %i WHERE created_at < DATE_SUB(NOW(), INTERVAL %d DAY)',
+					$table_name,
+					$max_age_days
+				)
+			);
+			$deleted_count += $deleted ? (int) $deleted : 0;
+		}
+
+		// Delete excess backups (keep only the newest max_backups).
+		if ( $max_backups > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$total_backups = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table_name ) );
+
+			if ( $total_backups > $max_backups ) {
+				$to_delete = $total_backups - $max_backups;
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$deleted        = $wpdb->query(
+					$wpdb->prepare(
+						'DELETE FROM %i ORDER BY created_at ASC LIMIT %d',
+						$table_name,
+						$to_delete
+					)
+				);
+				$deleted_count += $deleted ? (int) $deleted : 0;
+			}
+		}
+
+		if ( $deleted_count > 0 ) {
+			Logger::instance()->info(
+				'Old backups cleaned up',
+				[ 'deleted_count' => $deleted_count ]
+			);
+		}
+
+		return $deleted_count;
 	}
 
 	/**

@@ -8,68 +8,32 @@ on:
   workflow_dispatch:
 
 jobs:
-  quality-checks:
-    name: Quality Checks (PHP ${{ matrix.php-version }})
-    runs-on: ubuntu-latest
-    
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version: ['8.2', '8.3', '8.4']
-        
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-        
-      - name: Setup PHP ${{ matrix.php-version }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: mbstring, intl, mysql, pdo_mysql
-          coverage: xdebug
-          tools: composer:v2
-          
-      - name: Cache Composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            composer-${{ matrix.php-version }}-
-            composer-
-            
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --no-progress --optimize-autoloader
-        
-      - name: Validate composer.json and composer.lock
-        run: composer validate --strict
-        
-      - name: Check PHP syntax
-        run: |
-          echo "Checking main plugin file..."
-          php -l silver-assist-acf-clone-fields.php
-          
-          echo "Checking source files..."
-          find includes -name "*.php" -exec php -l {} \;
-          
-      - name: Run PHPCS (WordPress Coding Standards)
-        run: vendor/bin/phpcs --standard=phpcs.xml --warning-severity=0 --report=summary
-        
-      - name: Run PHPStan Level 8
-        run: php -d memory_limit=1G vendor/bin/phpstan analyse --no-progress --error-format=github
-        
-      - name: Run PHPUnit Tests
-        run: |
-          vendor/bin/phpunit --testsuite=unit --coverage-text --coverage-clover=coverage.xml
-          
-      - name: Upload coverage reports to Codecov
-        if: matrix.php-version == '8.2'
-        uses: codecov/codecov-action@v5
-        with:
-          files: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
+  # Quality checks for PHP 8.2 (with coverage and WordPress integration)
+  quality-checks-82:
+    name: Quality Checks (PHP 8.2)
+    uses: ./.github/workflows/quality-checks.yml
+    with:
+      php-version: '8.2'
+      skip-wp-setup: false
+      upload-coverage: true
+  
+  # Quality checks for PHP 8.3 (with WordPress integration)
+  quality-checks-83:
+    name: Quality Checks (PHP 8.3)
+    uses: ./.github/workflows/quality-checks.yml
+    with:
+      php-version: '8.3'
+      skip-wp-setup: false
+      upload-coverage: false
+  
+  # Quality checks for PHP 8.4 (with WordPress integration)
+  quality-checks-84:
+    name: Quality Checks (PHP 8.4)
+    uses: ./.github/workflows/quality-checks.yml
+    with:
+      php-version: '8.4'
+      skip-wp-setup: false
+      upload-coverage: false
 
   security-scan:
     name: Security Scan
@@ -190,14 +154,19 @@ jobs:
           sed -i "s/password_here/root/" $WP_CORE_DIR/wp-config.php
           sed -i "s/localhost/127.0.0.1:3306/" $WP_CORE_DIR/wp-config.php
           
-      - name: Test plugin activation
+      - name: Run tests with WordPress ${{ matrix.wordpress-version }}
+        env:
+          WP_TESTS_DIR: /tmp/wordpress-tests-lib
+          WP_CORE_DIR: /tmp/wordpress
         run: |
+          echo "Running tests with WordPress ${{ matrix.wordpress-version }}..."
+          vendor/bin/phpunit --testsuite=unit
           echo "✅ WordPress ${{ matrix.wordpress-version }} compatibility verified"
 
   build-test:
     name: Build Test
     runs-on: ubuntu-latest
-    needs: [quality-checks, security-scan]
+    needs: [quality-checks-82, quality-checks-83, quality-checks-84, security-scan]
     
     steps:
       - name: Checkout code
@@ -247,19 +216,23 @@ jobs:
   notify:
     name: Notify Status
     runs-on: ubuntu-latest
-    needs: [quality-checks, security-scan, compatibility, build-test]
+    needs: [quality-checks-82, quality-checks-83, quality-checks-84, security-scan, compatibility, build-test]
     if: always()
     
     steps:
       - name: Check results
         run: |
           echo "🔍 CI Pipeline Results:"
-          echo "  Quality Checks: ${{ needs.quality-checks.result }}"
+          echo "  Quality Checks (PHP 8.2): ${{ needs.quality-checks-82.result }}"
+          echo "  Quality Checks (PHP 8.3): ${{ needs.quality-checks-83.result }}"
+          echo "  Quality Checks (PHP 8.4): ${{ needs.quality-checks-84.result }}"
           echo "  Security Scan: ${{ needs.security-scan.result }}"
           echo "  Compatibility: ${{ needs.compatibility.result }}"
           echo "  Build Test: ${{ needs.build-test.result }}"
           
-          if [ "${{ needs.quality-checks.result }}" = "success" ] && \
+          if [ "${{ needs.quality-checks-82.result }}" = "success" ] && \
+             [ "${{ needs.quality-checks-83.result }}" = "success" ] && \
+             [ "${{ needs.quality-checks-84.result }}" = "success" ] && \
              [ "${{ needs.security-scan.result }}" = "success" ] && \
              [ "${{ needs.compatibility.result }}" = "success" ] && \
              [ "${{ needs.build-test.result }}" = "success" ]; then

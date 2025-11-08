@@ -2,8 +2,8 @@
 /**
  * Plugin Name: ACF Clone Fields
  * Plugin URI: https://github.com/SilverAssist/acf-clone-fields
- * Description: Advanced ACF field cloning system that allows selective copying of custom fields between posts of the same type. Features granular field selection, sidebar interface, and intelligent repeater field cloning.
- * Version: 1.0.0
+ * Description: Clone Advanced Custom Fields between posts with precision. Compatible with ACF free (basic fields) and ACF Pro (repeater, group, flexible content). Automatic backups and smart conflict detection included.
+ * Version: 1.1.0
  * Author: Silver Assist
  * Author URI: https://silverassist.com
  * License: PolyForm-Noncommercial-1.0.0
@@ -18,24 +18,24 @@
  * GitHub Plugin URI: SilverAssist/acf-clone-fields
  *
  * Silver Assist ACF Clone Fields
- * Copyright (c) 2025 Silver Assist Development Team
+ * Copyright (c) 2025 Miguel Colmenares
  *
  * This plugin is licensed under the PolyForm Noncommercial License 1.0.0.
  * You may not use this plugin for commercial purposes without a separate commercial license.
  * For commercial licensing, contact: licensing@silverassist.com
  *
  * @package SilverAssist\ACFCloneFields
- * @author Silver Assist Development Team
+ * @author Miguel Colmenares
  * @license PolyForm-Noncommercial-1.0.0
  * @since 1.0.0
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 // Prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
 // Define plugin constants.
-define( 'SILVER_ACF_CLONE_VERSION', '1.0.0' );
+define( 'SILVER_ACF_CLONE_VERSION', '1.1.0' );
 define( 'SILVER_ACF_CLONE_FILE', __FILE__ );
 define( 'SILVER_ACF_CLONE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SILVER_ACF_CLONE_URL', plugin_dir_url( __FILE__ ) );
@@ -82,14 +82,21 @@ function silver_acf_clone_init(): ?Plugin {
 /**
  * Check plugin dependencies
  *
- * @return bool
+ * Verifies that either ACF (free) or ACF Pro is installed and active.
+ * The plugin is compatible with both versions, with enhanced features for Pro.
+ *
+ * @return bool True if ACF (free or Pro) is active, false otherwise.
  */
 function silver_acf_clone_check_dependencies(): bool {
 	$missing_plugins = [];
 
-	// Check if ACF Pro is active.
-	if ( ! function_exists( 'acf_add_local_field_group' ) || ! class_exists( 'acf' ) ) {
-		$missing_plugins[] = 'Advanced Custom Fields Pro';
+	// Check if ACF is active (either free or Pro version).
+	// Both versions provide the 'acf' class and 'acf_get_field_groups' function.
+	$has_acf      = class_exists( 'acf' );
+	$has_acf_core = function_exists( 'acf_get_field_groups' );
+
+	if ( ! $has_acf && ! $has_acf_core ) {
+		$missing_plugins[] = 'Advanced Custom Fields (free or Pro)';
 	}
 
 	// Show admin notice if dependencies are missing.
@@ -115,6 +122,18 @@ function silver_acf_clone_check_dependencies(): bool {
 	}
 
 	return true;
+}
+
+/**
+ * Check if ACF Pro is active
+ *
+ * Used to determine if Pro-only fields (repeater, group, flexible_content, clone)
+ * should be available for cloning.
+ *
+ * @return bool True if ACF Pro is active, false if only ACF free.
+ */
+function silver_acf_clone_is_pro(): bool {
+	return defined( 'ACF_PRO' ) && ACF_PRO;
 }
 
 /**

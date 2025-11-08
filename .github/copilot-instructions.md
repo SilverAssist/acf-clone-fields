@@ -4,11 +4,43 @@
 
 This is a **WordPress plugin** called "Silver Assist ACF Clone Fields" - a sophisticated ACF field cloning system with granular selection capabilities, real-time conflict detection, and professional-grade architecture following SilverAssist ecosystem standards.
 
+**IMPORTANT**: All documentation, code comments, commit messages, and technical writing **MUST be in English**.
+
 **Plugin Location**: `wp-content/plugins/silver-assist-acf-clone-fields/`  
-**Tech Stack**: WordPress 5.0+, **PHP 8.2+ (Required)**, ACF Pro, SilverAssist Packages  
+**Tech Stack**: WordPress 5.0+, **PHP 8.2+ (Required)**, ACF (free or Pro), SilverAssist Packages  
+**ACF Compatibility**: Works with **ACF free** (basic fields) and **ACF Pro** (advanced fields like repeater, group, flexible content)  
 **PHP Features**: PSR-4 Autoloading, LoadableInterface Pattern, Modern PHP 8.2 Features  
 **License**: PolyForm Noncommercial License 1.0.0  
-**Last Updated**: October 2025 (Updated for Current Codebase)
+**Version**: 1.1.0  
+**Last Updated**: January 2025
+
+## 📝 Documentation Standards
+
+**CRITICAL RULE**: All documentation MUST be written in English.
+
+- ✅ **Code comments**: English only
+- ✅ **Commit messages**: English only
+- ✅ **Documentation files**: English only
+- ✅ **PHPDoc blocks**: English only
+- ✅ **README files**: English only
+- ✅ **Error messages**: English only (user-facing messages use WordPress i18n)
+
+**Documentation Location**: 
+- `README.md` - User-facing documentation (installation, usage, troubleshooting)
+- `CONTRIBUTING.md` - Developer documentation (setup, standards, workflows, extending)
+- `docs/` - Technical documentation (workflows, API reference, release process)
+- `tests/README.md` - Testing documentation (running tests, writing tests)
+- Keep only essential, relevant documentation
+- Remove temporary analysis documents
+- Focus on user needs and developer workflows
+
+**Current Documentation**:
+- `README.md` - User guide (installation, features, usage, troubleshooting)
+- `CONTRIBUTING.md` - Developer guide (setup, coding standards, testing, extending)
+- `docs/WORKFLOWS.md` - CI/CD workflow architecture
+- `docs/AJAX_API_REFERENCE.md` - AJAX endpoints reference
+- `docs/RELEASE_PROCESS.md` - Release process guide
+- `tests/README.md` - Testing guide (running tests, coverage, troubleshooting)
 
 ## 🚀 Essential Commands & Quick Start
 
@@ -427,6 +459,7 @@ _n('%s field cloned', '%s fields cloned', $count, SILVER_ACF_CLONE_TEXT_DOMAIN)
 ## 🎓 Development Workflow
 
 ### **Setup Commands**
+
 ```bash
 cd wp-content/plugins/silver-assist-acf-clone-fields
 composer install --no-interaction
@@ -434,6 +467,7 @@ composer test    # Run all quality checks (phpcs + phpstan + phpunit)
 ```
 
 ### **Testing Commands**
+
 ```bash
 composer test                    # Run all tests (phpcs + phpstan + phpunit)
 composer phpunit                 # Run PHPUnit tests only
@@ -442,10 +476,84 @@ vendor/bin/phpunit --coverage-html coverage/  # Generate coverage report
 ```
 
 ### **Quality Assurance**
+
 ```bash
 composer phpcbf     # Auto-fix coding standards
 composer phpcs      # Check coding standards  
 composer phpstan    # Static analysis
 ```
+
+## 🔄 CI/CD Workflows
+
+**Complete documentation**: See `docs/WORKFLOWS.md`
+
+### **Workflow Overview**
+
+| Workflow | WordPress Tests | Duration | Purpose |
+|----------|----------------|----------|---------|
+| `ci.yml` | ✅ Yes | ~8-10 min | Full integration testing on PRs |
+| `release.yml` | ✅ Yes | ~10-12 min | Exhaustive validation before release |
+| `dependency-updates.yml` | ❌ No | ~2-3 min | Fast Composer package validation |
+
+### **Key Scripts**
+
+```bash
+# Local quality checks
+./scripts/run-quality-checks.sh all              # Full checks with WordPress
+./scripts/run-quality-checks.sh --skip-wp-setup phpcs phpstan  # Quick checks
+
+# Build release
+./scripts/build-release.sh <version>             # Build production ZIP
+```
+
+### **Workflow Strategy**
+
+**ci.yml** - Continuous Integration:
+- Runs on every PR and push to main
+- Full WordPress integration testing
+- Matrix: PHP 8.2, 8.3, 8.4
+- Security scan + compatibility tests
+
+**release.yml** - Release Process:
+- Triggered by git tags (`v*`) or manual dispatch
+- Validates plugin structure and version
+- Tests across PHP 8.2, 8.3, 8.4 with WordPress
+- Builds and publishes ZIP to GitHub Releases
+
+**dependency-updates.yml** - Dependency Management:
+- Weekly automated checks (Mondays 9AM Mexico City)
+- Detects outdated Composer packages
+- Security audit with CVE detection
+- Auto-merges safe updates (patch/minor)
+
+### **Testing Philosophy**
+
+**WordPress Integration**: `ci.yml` and `release.yml` use real WordPress Test Suite to:
+- Detect integration issues early
+- Validate plugin functionality with real WordPress
+- Prepare for future ACF/ACF Pro integration tests
+- Ensure professional quality standards
+
+**Mock-Only Testing**: `dependency-updates.yml` skips WordPress because:
+- Composer packages don't require WordPress validation
+- Faster feedback for automated checks
+- Enables quick auto-merge of safe updates
+
+### **Bootstrap Auto-Detection**
+
+The test bootstrap (`tests/bootstrap.php`) automatically detects WordPress availability:
+
+```php
+$_tests_dir = getenv('WP_TESTS_DIR');
+$wp_tests_available = $_tests_dir && file_exists($_tests_dir . '/includes/functions.php');
+
+if ($wp_tests_available) {
+    // Load WordPress Test Suite
+} else {
+    // Load mocks
+}
+```
+
+This allows tests to work both locally (with or without WordPress) and in CI/CD workflows.
 
 This plugin extends the WellSpring theme's ACF functionality while maintaining the same high standards of code quality, security, and performance.

@@ -8,7 +8,7 @@
  * @package SilverAssist\ACFCloneFields
  * @subpackage Services
  * @since 1.0.0
- * @version 1.0.0
+ * @version 1.1.0
  * @author Silver Assist
  */
 
@@ -177,6 +177,11 @@ class FieldDetector implements LoadableInterface {
 	 * @return array<string, mixed>|null Processed field data or null if not cloneable
 	 */
 	private function process_field( array $field, int $post_id ): ?array {
+		// Skip Pro-only fields if ACF Pro is not active.
+		if ( ! Helpers::is_field_type_supported( $field['type'] ) ) {
+			return null;
+		}
+
 		// Get current field value.
 		$current_value = function_exists( 'get_field' ) ? get_field( $field['key'], $post_id ) : null;
 
@@ -195,19 +200,25 @@ class FieldDetector implements LoadableInterface {
 			'is_cloneable' => $this->is_field_cloneable( $field ),
 		];
 
-		// Add type-specific processing.
+		// Add type-specific processing for Pro fields (only if Pro is active).
 		switch ( $field['type'] ) {
 			case 'repeater':
-				$processed_field['sub_fields'] = $this->get_repeater_sub_fields( $field, $post_id );
-				$processed_field['row_count']  = is_array( $current_value ) ? count( $current_value ) : 0;
+				if ( Helpers::is_acf_pro_active() ) {
+					$processed_field['sub_fields'] = $this->get_repeater_sub_fields( $field, $post_id );
+					$processed_field['row_count']  = is_array( $current_value ) ? count( $current_value ) : 0;
+				}
 				break;
 
 			case 'group':
-				$processed_field['sub_fields'] = $this->get_group_sub_fields( $field, $post_id );
+				if ( Helpers::is_acf_pro_active() ) {
+					$processed_field['sub_fields'] = $this->get_group_sub_fields( $field, $post_id );
+				}
 				break;
 
 			case 'flexible_content':
-				$processed_field['layouts'] = $this->get_flexible_content_layouts( $field, $post_id );
+				if ( Helpers::is_acf_pro_active() ) {
+					$processed_field['layouts'] = $this->get_flexible_content_layouts( $field, $post_id );
+				}
 				break;
 
 			case 'image':

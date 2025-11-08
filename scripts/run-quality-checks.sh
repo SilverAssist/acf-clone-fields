@@ -127,7 +127,7 @@ run_phpstan() {
     print_header "🔍 Running PHPStan (Static Analysis)"
     
     cd "$PROJECT_ROOT"
-    php -d memory_limit=1G vendor/bin/phpstan analyse Includes/ --no-progress
+    php -d memory_limit=1G vendor/bin/phpstan analyse includes/ --no-progress
     
     print_success "PHPStan Level 8 passed - No errors found"
 }
@@ -159,10 +159,10 @@ run_syntax_check() {
     print_info "Checking main plugin file..."
     php -l silver-assist-acf-clone-fields.php
     
-    # Check all PHP files in Includes directory
-    if [ -d "Includes" ]; then
-        print_info "Checking source files in Includes/..."
-        find Includes -name "*.php" -exec php -l {} \; | grep -v "No syntax errors"
+    # Check all PHP files in includes directory
+    if [ -d "includes" ]; then
+        print_info "Checking source files in includes/..."
+        find includes -name "*.php" -exec php -l {} \; | grep -v "No syntax errors"
     fi
     
     print_success "All PHP files have valid syntax"
