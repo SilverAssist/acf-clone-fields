@@ -56,7 +56,7 @@ class BackupManagerTest extends TestCase {
 	/**
 	 * Create shared fixtures before class
 	 *
-	 * @param WP_UnitTest_Factory $factory Factory instance.
+	 * @param \WP_UnitTest_Factory $factory Factory instance.
 	 * @return void
 	 */
 	public static function wpSetUpBeforeClass( $factory ): void {
@@ -292,6 +292,7 @@ class BackupManagerTest extends TestCase {
 	/**
 	 * Test handle_restore_backup without nonce (should fail)
 	 *
+	 * @group ajax
 	 * @return void
 	 */
 	public function test_handle_restore_backup_without_nonce(): void {
@@ -301,17 +302,13 @@ class BackupManagerTest extends TestCase {
 		$_POST['backup_id'] = 'test-backup-id';
 		$_POST['post_id']   = $this->test_post_id;
 
-		try {
-			$this->manager->handle_restore_backup();
-		} catch ( \WPAjaxDieContinueException $e ) {
-			// Verify it died due to nonce failure
-			throw $e;
-		}
+		$this->manager->handle_restore_backup();
 	}
 
 	/**
 	 * Test handle_restore_backup without permission
 	 *
+	 * @group ajax
 	 * @return void
 	 */
 	public function test_handle_restore_backup_without_permission(): void {
@@ -334,6 +331,7 @@ class BackupManagerTest extends TestCase {
 	/**
 	 * Test handle_restore_backup with missing backup_id
 	 *
+	 * @group ajax
 	 * @return void
 	 */
 	public function test_handle_restore_backup_missing_backup_id(): void {
@@ -349,6 +347,7 @@ class BackupManagerTest extends TestCase {
 	/**
 	 * Test handle_delete_backup without nonce
 	 *
+	 * @group ajax
 	 * @return void
 	 */
 	public function test_handle_delete_backup_without_nonce(): void {
@@ -366,6 +365,7 @@ class BackupManagerTest extends TestCase {
 	/**
 	 * Test handle_delete_backup without permission
 	 *
+	 * @group ajax
 	 * @return void
 	 */
 	public function test_handle_delete_backup_without_permission(): void {
@@ -385,6 +385,7 @@ class BackupManagerTest extends TestCase {
 	/**
 	 * Test handle_delete_backup with missing backup_id
 	 *
+	 * @group ajax
 	 * @return void
 	 */
 	public function test_handle_delete_backup_missing_backup_id(): void {
@@ -398,6 +399,7 @@ class BackupManagerTest extends TestCase {
 	/**
 	 * Test handle_cleanup_backups without nonce
 	 *
+	 * @group ajax
 	 * @return void
 	 */
 	public function test_handle_cleanup_backups_without_nonce(): void {
@@ -413,6 +415,7 @@ class BackupManagerTest extends TestCase {
 	/**
 	 * Test handle_cleanup_backups without manage_options capability
 	 *
+	 * @group ajax
 	 * @return void
 	 */
 	public function test_handle_cleanup_backups_without_permission(): void {
