@@ -160,10 +160,6 @@ run_phpunit() {
         # Set WordPress tests directory for PHPUnit
         export WP_TESTS_DIR="${WP_TESTS_DIR:-/tmp/wordpress-tests-lib}"
         print_info "Using WordPress Test Suite: $WP_TESTS_DIR"
-    else
-        # Set to non-existent path to prevent loading WordPress
-        export WP_TESTS_DIR="/tmp/wp-tests-disabled"
-        print_warning "Running tests without WordPress Test Suite (tests requiring WordPress will be skipped)"
     fi
     
     # Run PHPUnit and capture exit code

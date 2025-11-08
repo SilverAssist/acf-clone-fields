@@ -49,20 +49,17 @@ function _manually_load_plugin() {
 		require_once SILVER_ACF_CLONE_PLUGIN_DIR . '/vendor/autoload.php';
 	}
 	
-	// Only load ACF if WordPress is available (prevents errors in mock environment).
-	if ( function_exists( 'plugin_dir_path' ) ) {
-		// Load ACF plugin if available.
-		$acf_plugin_paths = [
-			'/tmp/wordpress-tests/wp-content/plugins/advanced-custom-fields/acf.php',
-			getenv( 'WP_TESTS_DIR' ) ? dirname( getenv( 'WP_TESTS_DIR' ) ) . '/wordpress/wp-content/plugins/advanced-custom-fields/acf.php' : '',
-			WP_CONTENT_DIR . '/plugins/advanced-custom-fields/acf.php',
-		];
-		
-		foreach ( $acf_plugin_paths as $acf_path ) {
-			if ( $acf_path && file_exists( $acf_path ) ) {
-				require_once $acf_path;
-				break;
-			}
+	// Load ACF plugin if available.
+	$acf_plugin_paths = [
+		'/tmp/wordpress-tests/wp-content/plugins/advanced-custom-fields/acf.php',
+		getenv( 'WP_TESTS_DIR' ) ? dirname( getenv( 'WP_TESTS_DIR' ) ) . '/wordpress/wp-content/plugins/advanced-custom-fields/acf.php' : '',
+		WP_CONTENT_DIR . '/plugins/advanced-custom-fields/acf.php',
+	];
+	
+	foreach ( $acf_plugin_paths as $acf_path ) {
+		if ( $acf_path && file_exists( $acf_path ) ) {
+			require_once $acf_path;
+			break;
 		}
 	}
 	

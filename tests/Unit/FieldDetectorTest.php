@@ -48,12 +48,6 @@ class FieldDetectorTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		
-		// Skip if WordPress Test Suite is not available
-		if ( ! $this->isWordPressAvailable() ) {
-			$this->markTestSkipped( 'WordPress Test Suite is required for FieldDetector tests' );
-			return;
-		}
-		
 		$this->detector = FieldDetector::instance();
 		
 		// Create test post using WordPress factory

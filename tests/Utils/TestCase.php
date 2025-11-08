@@ -17,15 +17,6 @@ if ( class_exists( 'WP_UnitTestCase' ) ) {
 	 */
 	abstract class TestCase extends \WP_UnitTestCase {
 		/**
-		 * Check if WordPress Test Suite is available
-		 *
-		 * @return bool
-		 */
-		protected function isWordPressAvailable(): bool {
-			return true;
-		}
-
-		/**
 		 * Create backup table for tests
 		 *
 		 * @return void
@@ -55,14 +46,6 @@ if ( class_exists( 'WP_UnitTestCase' ) ) {
 	 * Base test case using PHPUnit (fallback)
 	 */
 	abstract class TestCase extends PHPUnitTestCase {
-		/**
-		 * Check if WordPress Test Suite is available
-		 *
-		 * @return bool
-		 */
-		protected function isWordPressAvailable(): bool {
-			return false;
-		}
 
 		protected function setUp(): void {
 			parent::setUp();

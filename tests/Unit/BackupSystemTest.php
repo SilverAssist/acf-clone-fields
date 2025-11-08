@@ -54,12 +54,6 @@ class BackupSystemTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		
-		// Skip if WordPress Test Suite is not available
-		if ( ! $this->isWordPressAvailable() ) {
-			$this->markTestSkipped( 'WordPress Test Suite is required for BackupSystem tests' );
-			return;
-		}
-		
 		// Initialize FieldCloner instance.
 		$this->cloner = FieldCloner::instance();
 		

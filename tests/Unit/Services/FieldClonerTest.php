@@ -51,12 +51,6 @@ class FieldClonerTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		
-		// Skip if WordPress Test Suite is not available
-		if ( ! $this->isWordPressAvailable() ) {
-			$this->markTestSkipped( 'WordPress Test Suite is required for FieldCloner tests' );
-			return;
-		}
-		
 		// Create admin user for capability checks
 		$this->admin_user_id = static::factory()->user->create([
 			'role' => 'administrator',

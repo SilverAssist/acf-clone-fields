@@ -34,12 +34,6 @@ class ActivatorTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 
-		// Skip if WordPress Test Suite is not available
-		if ( ! $this->isWordPressAvailable() ) {
-			$this->markTestSkipped( 'WordPress Test Suite is required for Activator tests' );
-			return;
-		}
-
 		// Define constant if not already defined.
 		if ( ! defined( 'SILVER_ACF_CLONE_VERSION' ) ) {
 			define( 'SILVER_ACF_CLONE_VERSION', '1.1.0' );

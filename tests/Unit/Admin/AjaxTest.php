@@ -51,12 +51,6 @@ class AjaxTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		
-		// Skip if WordPress Test Suite is not available
-		if ( ! $this->isWordPressAvailable() ) {
-			$this->markTestSkipped( 'WordPress Test Suite is required for Ajax tests' );
-			return;
-		}
-		
 		// Create admin user
 		$this->admin_user_id = static::factory()->user->create([
 			'role' => 'administrator',
