@@ -51,8 +51,9 @@ function _manually_load_plugin() {
 		}
 	}
 	
-	// Load main plugin file.
-	require SILVER_ACF_CLONE_PLUGIN_FILE;
+	// Note: Do NOT load main plugin file here.
+	// The main plugin file uses register_activation_hook() which requires fully initialized WordPress.
+	// For unit tests, we only need the autoloader - classes are instantiated directly in tests.
 }
 
 // Load WordPress test environment if available.

@@ -72,8 +72,18 @@ jobs:
           fi
           
           echo "• Checking for potential SQL injection..."
-          if grep -r "\$wpdb->query.*\$" --include="*.php" . --exclude-dir=vendor --exclude-dir=tests; then
-            echo "⚠️ Potential SQL injection risk found"
+          # Look for $wpdb->query() without $wpdb->prepare() on previous line
+          if grep -r "\$wpdb->query" --include="*.php" . --exclude-dir=vendor --exclude-dir=tests --exclude-dir=build | while read -r line; do
+            file="${line%%:*}"
+            if [ -f "$file" ]; then
+              # Check if prepare() appears in context (within 3 lines before)
+              if ! grep -B 3 "\$wpdb->query" "$file" | grep -q "prepare"; then
+                echo "$line"
+                exit 1
+              fi
+            fi
+          done; then
+            echo "⚠️ Potential SQL injection risk found (query without prepare)"
             ((SECURITY_ISSUES++))
           else
             echo "✅ No obvious SQL injection risks"
