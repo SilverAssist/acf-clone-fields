@@ -30,67 +30,42 @@ class BackupSystemTest extends TestCase {
 	private FieldCloner $cloner;
 
 	/**
-	 * Set up test environment
+	 * Create shared fixtures before class
+	 *
+	 * This runs once before any tests in the class.
+	 * Use this for database schema changes like CREATE TABLE.
+	 *
+	 * @param WP_UnitTest_Factory $factory Factory instance.
+	 * @return void
+	 */
+	public static function wpSetUpBeforeClass( $factory ): void {
+		global $wpdb;
+		
+		// Create backup table once for all tests.
+		// Use Activator method to ensure consistency with production.
+		Activator::create_tables();
+	}
+	
+	/**
+	 * Setup test environment
 	 *
 	 * @return void
 	 */
-	protected function setUp(): void {
+	public function setUp(): void {
 		parent::setUp();
+		
+		// Initialize FieldCloner instance.
 		$this->cloner = FieldCloner::instance();
 		
-		// Create backup table (if not exists).
-		$this->create_backup_table();
-		
-		// Clean any existing data.
+		// Clean table before each test for isolation.
 		$this->clean_backup_table();
-	}
-
-	/**
+	}	/**
 	 * Clean up after tests
 	 *
 	 * @return void
 	 */
 	protected function tearDown(): void {
-		global $wpdb;
-		
-		// Clean up backup table.
-		$table_name = $wpdb->prefix . 'acf_field_backups';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-		$wpdb->query( "DROP TABLE IF EXISTS $table_name" );
-		
 		parent::tearDown();
-	}
-
-	/**
-	 * Create backup table for testing
-	 *
-	 * Creates the backup table directly using raw SQL for maximum reliability
-	 * in test environments. Production uses Activator::create_tables().
-	 *
-	 * @return void
-	 */
-	protected function create_backup_table(): void {
-		global $wpdb;
-		
-		$table_name      = $wpdb->prefix . 'acf_field_backups';
-		$charset_collate = $wpdb->get_charset_collate();
-		
-		// Use raw SQL for test environment reliability.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-		$wpdb->query(
-			"CREATE TABLE IF NOT EXISTS {$table_name} (
-				id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-				backup_id varchar(100) NOT NULL,
-				post_id bigint(20) UNSIGNED NOT NULL,
-				user_id bigint(20) UNSIGNED NOT NULL,
-				backup_data longtext NOT NULL,
-				created_at datetime NOT NULL,
-				PRIMARY KEY  (id),
-				KEY backup_id (backup_id),
-				KEY post_id (post_id),
-				KEY created_at (created_at)
-			) {$charset_collate}"
-		);
 	}
 
 	/**
