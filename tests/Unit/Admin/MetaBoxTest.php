@@ -294,14 +294,14 @@ class MetaBoxTest extends TestCase {
 	public function test_enqueue_admin_assets_not_loaded_on_other_screens(): void {
 		global $post;
 
-		// Dequeue any previously enqueued scripts/styles from other tests
-		\wp_dequeue_script( 'acf-clone-fields-admin' );
-		\wp_dequeue_style( 'acf-clone-fields-admin' );
+		// Clean up any previously enqueued scripts/styles
+		wp_dequeue_script( 'acf-clone-fields-admin' );
+		wp_dequeue_style( 'acf-clone-fields-admin' );
 
 		// Set up global post
 		$post = \get_post( $this->test_post_id );
 
-		// Use reflection to set enabled_post_types (avoids re-init guard)
+		// Use reflection to update enabled_post_types
 		$reflection = new \ReflectionClass( $this->metabox );
 		$property   = $reflection->getProperty( 'enabled_post_types' );
 		$property->setAccessible( true );
