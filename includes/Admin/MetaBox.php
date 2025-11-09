@@ -371,8 +371,8 @@ class MetaBox implements LoadableInterface {
 
 		// Enqueue styles.
 		wp_enqueue_style(
-			'acf-clone-fields-admin',
-			plugin_dir_url( dirname( __DIR__ ) ) . 'assets/css/admin.css',
+			'silver-acf-clone-fields-admin',
+			plugin_dir_url( dirname( __DIR__ ) ) . 'assets/css/silver-acf-clone-fields.css',
 			[],
 			SILVER_ACF_CLONE_VERSION
 		);

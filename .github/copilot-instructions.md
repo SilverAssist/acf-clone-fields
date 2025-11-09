@@ -172,7 +172,7 @@ includes/
 
 # Frontend assets (no compilation needed)
 assets/
-├── css/admin.css                  # Admin interface styles
+├── css/silver-acf-clone-fields.css # Admin interface styles
 └── js/admin.js                    # Admin interface functionality
 ```
 
@@ -185,7 +185,7 @@ silver-assist-acf-clone-fields/
 ├── composer.json (dependencies & autoloading)
 ├── includes/ (PSR-4 classes)
 ├── assets/
-│   ├── css/admin.css (admin interface styles)
+│   ├── css/silver-acf-clone-fields.css (admin interface styles)
 │   └── js/admin.js (frontend interactions)
 ├── languages/ (i18n files)
 ├── tests/ (PHPUnit tests)

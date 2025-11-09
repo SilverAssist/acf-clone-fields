@@ -701,7 +701,7 @@ class Settings implements LoadableInterface {
 		// Enqueue settings-specific styles.
 		wp_enqueue_style(
 			'acf-clone-fields-admin',
-			plugin_dir_url( dirname( __DIR__ ) ) . 'assets/css/admin.css',
+			plugin_dir_url( dirname( __DIR__ ) ) . 'assets/css/silver-acf-clone-fields.css',
 			[],
 			'1.0.0'
 		);
