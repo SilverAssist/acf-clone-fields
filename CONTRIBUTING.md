@@ -579,7 +579,150 @@ git push origin v1.2.0
 
 See `docs/RELEASE_PROCESS.md` for complete release documentation.
 
-## 🎯 Extending the Plugin
+## 🌍 Internationalization & Translations
+
+### Overview
+
+The plugin is fully internationalized and ready for translation into any language. All user-facing strings use WordPress i18n functions.
+
+**Text Domain**: `silver-assist-acf-clone-fields`  
+**Translation Files Location**: `languages/`  
+**POT Template**: `languages/silver-assist-acf-clone-fields.pot`  
+**Report Translation Issues**: https://github.com/SilverAssist/acf-clone-fields/issues
+
+### For Translators
+
+#### Quick Start
+
+1. **Download the POT template**:
+   ```bash
+   wget https://raw.githubusercontent.com/SilverAssist/acf-clone-fields/main/languages/silver-assist-acf-clone-fields.pot
+   ```
+
+2. **Create a translation for your language**:
+   ```bash
+   # Example for Spanish (es_ES)
+   cp silver-assist-acf-clone-fields.pot silver-assist-acf-clone-fields-es_ES.po
+   ```
+
+3. **Translate using your preferred tool**:
+   - [Poedit](https://poedit.net/) (Recommended - GUI tool)
+   - [GlotPress](https://translate.wordpress.org/) (WordPress.org platform)
+   - Any text editor
+
+4. **Compile the MO file**:
+   ```bash
+   msgfmt silver-assist-acf-clone-fields-es_ES.po -o silver-assist-acf-clone-fields-es_ES.mo
+   ```
+
+5. **Submit your translation**:
+   - Create a pull request with both `.po` and `.mo` files
+   - Email to: support@silverassist.com
+   - Submit to WordPress.org translation platform
+
+#### Translation Standards
+
+**Maintain consistency with these header values**:
+```pot
+"Report-Msgid-Bugs-To: https://github.com/SilverAssist/acf-clone-fields/issues\n"
+"Last-Translator: SilverAssist <support@silverassist.com>\n"
+"Language-Team: SilverAssist <support@silverassist.com>\n"
+```
+
+**Required file naming**:
+- Template: `silver-assist-acf-clone-fields.pot`
+- Translation: `silver-assist-acf-clone-fields-{locale}.po`
+- Compiled: `silver-assist-acf-clone-fields-{locale}.mo`
+
+Where `{locale}` is the WordPress locale code (e.g., `es_ES`, `fr_FR`, `de_DE`).
+
+### For Developers
+
+#### Generating POT File
+
+Use WP-CLI to regenerate the translation template:
+
+```bash
+wp i18n make-pot . languages/silver-assist-acf-clone-fields.pot \
+  --domain=silver-assist-acf-clone-fields \
+  --exclude=vendor,node_modules,tests,build
+```
+
+**Excluded directories**:
+- `vendor/` - Composer dependencies
+- `node_modules/` - npm dependencies
+- `tests/` - Test files
+- `build/` - Build artifacts
+
+#### Translation Functions
+
+Use proper WordPress i18n functions:
+
+```php
+// Simple translation
+__('Clone Fields', 'silver-assist-acf-clone-fields')
+
+// Echo translation
+_e('Settings', 'silver-assist-acf-clone-fields')
+
+// Plural forms
+sprintf(
+    _n('%d field', '%d fields', $count, 'silver-assist-acf-clone-fields'),
+    $count
+)
+
+// Context-specific
+_x('Post', 'noun', 'silver-assist-acf-clone-fields')
+
+// Combined with escaping
+esc_html__('Clone Fields', 'silver-assist-acf-clone-fields')
+```
+
+#### Adding Translator Comments
+
+Help translators understand context:
+
+```php
+// translators: %d: number of fields cloned
+sprintf(
+    __('Successfully cloned %d fields', 'silver-assist-acf-clone-fields'),
+    $count
+);
+
+// translators: %1$s: source post title, %2$s: target post title
+sprintf(
+    __('Cloned fields from "%1$s" to "%2$s"', 'silver-assist-acf-clone-fields'),
+    $source_title,
+    $target_title
+);
+```
+
+#### Testing Translations
+
+1. Place `.po` and `.mo` files in `languages/` directory
+2. Set WordPress language in Settings → General
+3. Clear any caching plugins
+4. Navigate through plugin interfaces to verify translations
+
+### Detailed Documentation
+
+For comprehensive i18n guidelines, technical details, and best practices, see:
+**`.github/instructions/internationalization.instructions.md`**
+
+This includes:
+- Complete translation function reference
+- POT file header standards
+- WordPress.org integration guidelines
+- CI/CD automation examples
+- Validation and testing procedures
+
+### Translation Team Contact
+
+- **Email**: support@silverassist.com
+- **Issues**: https://github.com/SilverAssist/acf-clone-fields/issues
+- **Language Team**: SilverAssist <support@silverassist.com>
+
+## Extending the Plugin
 
 ### Custom Field Type Support
 

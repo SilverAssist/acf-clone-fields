@@ -2,23 +2,20 @@
 # This file is distributed under the PolyForm-Noncommercial-1.0.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Silver Assist ACF Clone Fields 1.1.0\n"
+"Project-Id-Version: ACF Clone Fields 1.1.1\n"
 "Report-Msgid-Bugs-To: https://github.com/SilverAssist/acf-clone-fields/issues\n"
 "Last-Translator: SilverAssist <support@silverassist.com>\n"
 "Language-Team: SilverAssist <support@silverassist.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-11-08T05:51:56+00:00\n"
+"POT-Creation-Date: 2025-11-09T06:05:18+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: silver-assist-acf-clone-fields\n"
 
 #. Plugin Name of the plugin
 #: silver-assist-acf-clone-fields.php
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:171
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:176
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:213
 #: includes/Admin/Settings.php:171
 #: includes/Admin/Settings.php:176
 #: includes/Admin/Settings.php:213
@@ -45,33 +42,27 @@ msgstr ""
 msgid "https://silverassist.com"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Ajax.php:489
 #: includes/Admin/Ajax.php:489
 msgid "(empty)"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Ajax.php:518
 #: includes/Admin/Ajax.php:518
 msgid "Yes"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Ajax.php:518
 #: includes/Admin/Ajax.php:518
 msgid "No"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Ajax.php:523
 #: includes/Admin/Ajax.php:523
 msgid "Image"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Ajax.php:528
 #: includes/Admin/Ajax.php:528
 msgid "File"
 msgstr ""
 
 #. translators: %d: number of rows
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Ajax.php:534
 #: includes/Admin/Ajax.php:534
 #, php-format
 msgid "%d row"
@@ -80,7 +71,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of fields
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Ajax.php:542
 #: includes/Admin/Ajax.php:542
 #, php-format
 msgid "%d field"
@@ -89,7 +79,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of layouts
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Ajax.php:550
 #: includes/Admin/Ajax.php:550
 #, php-format
 msgid "%d layout"
@@ -97,82 +86,61 @@ msgid_plural "%d layouts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Ajax.php:555
 #: includes/Admin/Ajax.php:555
 msgid "Has value"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:100
 #: includes/Admin/BackupManager.php:100
 msgid "Field Backups"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:123
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:267
 #: includes/Admin/BackupManager.php:123
 #: includes/Admin/BackupManager.php:267
 msgid "No backups available for this post."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:128
 #: includes/Admin/BackupManager.php:128
 msgid "Backups created when fields were cloned to this post."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:139
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:307
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:311
 #: includes/Admin/BackupManager.php:139
 #: includes/Admin/BackupManager.php:307
 #: includes/Admin/BackupManager.php:311
 msgid "Clean Up Old Backups"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:155
 #: includes/Admin/BackupManager.php:155
 msgid "Unknown"
 msgstr ""
 
 #. translators: 1: number of fields, 2: user name
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:168
 #: includes/Admin/BackupManager.php:168
 #, php-format
 msgid "%1$d field(s) backed up by %2$s"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:179
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:230
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:235
 #: includes/Admin/BackupManager.php:179
 #: includes/Admin/BackupManager.php:230
 #: includes/Admin/BackupManager.php:235
 msgid "Restore"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:185
 #: includes/Admin/BackupManager.php:185
 msgid "Delete"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:205
 #: includes/Admin/BackupManager.php:205
 msgid "Are you sure you want to restore this backup? Current field values will be replaced."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:213
 #: includes/Admin/BackupManager.php:213
 msgid "Restoring..."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:229
 #: includes/Admin/BackupManager.php:229
 msgid "Failed to restore backup."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:234
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:276
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:310
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:401
 #: includes/Admin/BackupManager.php:234
 #: includes/Admin/BackupManager.php:276
 #: includes/Admin/BackupManager.php:310
@@ -180,541 +148,433 @@ msgstr ""
 msgid "An error occurred. Please try again."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:244
 #: includes/Admin/BackupManager.php:244
 msgid "Are you sure you want to delete this backup? This cannot be undone."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:271
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:378
 #: includes/Admin/BackupManager.php:271
 #: includes/Admin/BackupManager.php:378
 msgid "Failed to delete backup."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:286
 #: includes/Admin/BackupManager.php:286
 msgid "This will delete backups older than the retention period. Continue?"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:291
 #: includes/Admin/BackupManager.php:291
 msgid "Cleaning up..."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:305
 #: includes/Admin/BackupManager.php:305
 msgid "Cleanup failed."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:331
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:362
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:393
 #: includes/Admin/BackupManager.php:331
 #: includes/Admin/BackupManager.php:362
 #: includes/Admin/BackupManager.php:393
 msgid "Insufficient permissions."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:338
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:369
 #: includes/Admin/BackupManager.php:338
 #: includes/Admin/BackupManager.php:369
 msgid "Invalid backup ID."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:376
 #: includes/Admin/BackupManager.php:376
 msgid "Backup deleted successfully."
 msgstr ""
 
 #. translators: %d: number of deleted backups
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/BackupManager.php:407
 #: includes/Admin/BackupManager.php:407
 #, php-format
 msgid "Cleanup complete. %d backup(s) deleted."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:165
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:224
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Core/Activator.php:166
 #: includes/Admin/MetaBox.php:165
 #: includes/Admin/MetaBox.php:224
-#: includes/Core/Activator.php:166
+#: includes/Core/Activator.php:234
 msgid "Clone Custom Fields"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:207
 #: includes/Admin/MetaBox.php:207
 msgid "Current Post Fields"
 msgstr ""
 
 #. translators: %d: number of field groups
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:210
 #: includes/Admin/MetaBox.php:210
 #, php-format
 msgid "Field Groups: %d"
 msgstr ""
 
 #. translators: %d: total number of fields
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:212
 #: includes/Admin/MetaBox.php:212
 #, php-format
 msgid "Total Fields: %d"
 msgstr ""
 
 #. translators: %d: number of fields with values
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:214
 #: includes/Admin/MetaBox.php:214
 #, php-format
 msgid "Fields with Values: %d"
 msgstr ""
 
 #. translators: %1$d: number of available posts, %2$s: post type name
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:231
 #: includes/Admin/MetaBox.php:231
 #, php-format
 msgid "Clone fields from %1$d available %2$s post(s)"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:239
 #: includes/Admin/MetaBox.php:239
 msgid "No other posts available to clone from."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:242
 #: includes/Admin/MetaBox.php:242
 msgid "Create more posts of this type to enable field cloning."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:262
 #: includes/Admin/MetaBox.php:262
 msgid "ACF Pro Required"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:263
 #: includes/Admin/MetaBox.php:263
 msgid "Advanced Custom Fields Pro must be active to use field cloning."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:276
 #: includes/Admin/MetaBox.php:276
 msgid "You do not have permission to clone fields for this post."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:295
 #: includes/Admin/MetaBox.php:295
 msgid "Recent Activity"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:400
 #: includes/Admin/MetaBox.php:400
 msgid "Loading..."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:402
 #: includes/Admin/MetaBox.php:402
 msgid "Are you sure you want to clone the selected fields? This will overwrite existing field values."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:403
 #: includes/Admin/MetaBox.php:403
 msgid "Please select at least one field to clone."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:404
 #: includes/Admin/MetaBox.php:404
 msgid "Fields cloned successfully!"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/MetaBox.php:405
 #: includes/Admin/MetaBox.php:405
 msgid "Error cloning fields. Please check the console for details."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:174
 #: includes/Admin/Settings.php:174
 msgid "Advanced ACF field cloning system that allows selective copying of custom fields between posts of the same type. Features granular field selection, sidebar interface, and intelligent repeater field cloning."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:196
 #: includes/Admin/Settings.php:196
 msgid "Check Updates"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:212
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Core/Plugin.php:327
 #: includes/Admin/Settings.php:212
 #: includes/Core/Plugin.php:327
 msgid "ACF Clone Fields Settings"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:231
 #: includes/Admin/Settings.php:231
 msgid "General Settings"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:239
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:420
 #: includes/Admin/Settings.php:239
 #: includes/Admin/Settings.php:420
 msgid "Enabled Post Types"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:248
 #: includes/Admin/Settings.php:248
 msgid "Default Behavior"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:256
 #: includes/Admin/Settings.php:256
 msgid "Overwrite Existing Fields"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:265
 #: includes/Admin/Settings.php:265
 msgid "Create Backup"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:274
 #: includes/Admin/Settings.php:274
 msgid "Copy Attachments"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:283
 #: includes/Admin/Settings.php:283
 msgid "Advanced Settings"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:291
 #: includes/Admin/Settings.php:291
 msgid "Validate Field Data"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:300
 #: includes/Admin/Settings.php:300
 msgid "Log Clone Operations"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:309
 #: includes/Admin/Settings.php:309
 msgid "Max Source Posts"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:318
 #: includes/Admin/Settings.php:318
 msgid "Backup Settings"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:326
 #: includes/Admin/Settings.php:326
 msgid "Backup Retention (Days)"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:335
 #: includes/Admin/Settings.php:335
 msgid "Maximum Backups"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:361
 #: includes/Admin/Settings.php:361
 msgid "You do not have permission to access this page."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:362
 #: includes/Admin/Settings.php:362
 msgid "Permission Denied"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:387
 #: includes/Admin/Settings.php:387
 msgid "How It Works"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:388
 #: includes/Admin/Settings.php:388
 msgid "This plugin provides advanced ACF field cloning capabilities for:"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:390
 #: includes/Admin/Settings.php:390
 msgid "Selective field cloning with granular control"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:391
 #: includes/Admin/Settings.php:391
 msgid "Support for all ACF field types including repeaters"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:392
 #: includes/Admin/Settings.php:392
 msgid "Backup and restore functionality"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:393
 #: includes/Admin/Settings.php:393
 msgid "Batch operations with progress tracking"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:394
 #: includes/Admin/Settings.php:394
 msgid "Integration with WordPress post edit screens"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:397
 #: includes/Admin/Settings.php:397
 msgid "The plugin adds a metabox to your enabled post types, allowing you to clone ACF fields from other posts of the same type with intelligent field detection and validation."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:403
 #: includes/Admin/Settings.php:403
 msgid "Plugin Status"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:406
 #: includes/Admin/Settings.php:406
 msgid "Version"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:410
 #: includes/Admin/Settings.php:410
 msgid "ACF Pro Status"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:413
 #: includes/Admin/Settings.php:413
 msgid "Active"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:415
 #: includes/Admin/Settings.php:415
 msgid "Not Active"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:421
 #: includes/Admin/Settings.php:421
 msgid "post types configured"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:435
 #: includes/Admin/Settings.php:435
 msgid "Configure which post types should have field cloning functionality."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:444
 #: includes/Admin/Settings.php:444
 msgid "Set default behavior for field cloning operations."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:453
 #: includes/Admin/Settings.php:453
 msgid "Advanced configuration options for power users."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:476
 #: includes/Admin/Settings.php:476
 msgid "Select which post types should show the field cloning meta box."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:489
 #: includes/Admin/Settings.php:489
 msgid "Allow overwriting existing field values by default"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:491
 #: includes/Admin/Settings.php:491
 msgid "When enabled, cloning will overwrite existing field values without asking for confirmation."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:504
 #: includes/Admin/Settings.php:504
 msgid "Create backup of existing field values before cloning"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:506
 #: includes/Admin/Settings.php:506
 msgid "Recommended. Allows you to restore previous values if needed."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:519
 #: includes/Admin/Settings.php:519
 msgid "Include image and file attachments when cloning fields"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:521
 #: includes/Admin/Settings.php:521
 msgid "When enabled, image and file fields will reference the same attachments. When disabled, attachment fields will be skipped."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:534
 #: includes/Admin/Settings.php:534
 msgid "Validate field data before cloning"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:536
 #: includes/Admin/Settings.php:536
 msgid "Recommended. Ensures cloned data meets field requirements and constraints."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:549
 #: includes/Admin/Settings.php:549
 msgid "Log field cloning operations for debugging"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:551
 #: includes/Admin/Settings.php:551
 msgid "Helps troubleshoot issues. Logs are stored in the plugin directory."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:565
 #: includes/Admin/Settings.php:565
 msgid "Maximum number of source posts to show in the clone interface. Higher values may impact performance."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:574
 #: includes/Admin/Settings.php:574
 msgid "Configure backup retention policies for cloned field data."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:588
 #: includes/Admin/Settings.php:588
 msgid "days"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:589
 #: includes/Admin/Settings.php:589
 msgid "Backups older than this will be automatically deleted. Recommended: 30 days."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:603
 #: includes/Admin/Settings.php:603
 msgid "backups"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:604
 #: includes/Admin/Settings.php:604
 msgid "Maximum number of backups to keep. Oldest backups will be deleted when this limit is reached."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:655
 #: includes/Admin/Settings.php:655
 msgid "Settings saved."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:758
 #: includes/Admin/Settings.php:758
 msgid "Checking for updates..."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:759
 #: includes/Admin/Settings.php:759
 msgid "Update available! Redirecting to Updates page..."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:760
 #: includes/Admin/Settings.php:760
 msgid "You're up to date!"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:761
 #: includes/Admin/Settings.php:761
 msgid "Error checking updates. Please try again."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Admin/Settings.php:762
 #: includes/Admin/Settings.php:762
 msgid "Error connecting to update server."
 msgstr ""
 
 #. translators: %s: required PHP version
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Core/Activator.php:120
-#: includes/Core/Activator.php:120
+#: includes/Core/Activator.php:187
 #, php-format
 msgid "Silver Assist - ACF Clone Fields requires PHP %s or higher."
 msgstr ""
 
 #. translators: %s: required WordPress version
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Core/Activator.php:137
-#: includes/Core/Activator.php:137
+#: includes/Core/Activator.php:204
 #, php-format
 msgid "Silver Assist - ACF Clone Fields requires WordPress %s or higher."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Core/Activator.php:150
-#: includes/Core/Activator.php:150
+#: includes/Core/Activator.php:217
 msgid "Silver Assist - ACF Clone Fields requires Advanced Custom Fields Pro to be active."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Core/Activator.php:167
-#: includes/Core/Activator.php:167
+#: includes/Core/Activator.php:235
 msgid "This will overwrite existing custom fields. Continue?"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Core/Activator.php:168
-#: includes/Core/Activator.php:168
+#: includes/Core/Activator.php:236
 msgid "Custom fields cloned successfully!"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Core/Plugin.php:291
 #: includes/Core/Plugin.php:291
 msgid "Settings"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Core/Plugin.php:328
 #: includes/Core/Plugin.php:328
 msgid "Configure ACF field cloning options and preferences."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Core/Plugin.php:331
 #: includes/Core/Plugin.php:331
 msgid "Settings integration is being developed. Check back soon for configuration options."
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Services/FieldCloner.php:819
 #: includes/Services/FieldCloner.php:819
 msgid "Invalid backup ID format"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Services/FieldCloner.php:834
 #: includes/Services/FieldCloner.php:834
 msgid "Backup not found"
 msgstr ""
 
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Services/FieldCloner.php:843
 #: includes/Services/FieldCloner.php:843
 msgid "Invalid backup data"
 msgstr ""
 
 #. translators: %s: field label
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Services/FieldCloner.php:859
 #: includes/Services/FieldCloner.php:859
 #, php-format
 msgid "Field not found: %s"
 msgstr ""
 
 #. translators: %s: field label
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Services/FieldCloner.php:874
 #: includes/Services/FieldCloner.php:874
 #, php-format
 msgid "Failed to restore field: %s"
 msgstr ""
 
 #. translators: %d: number of restored fields
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Services/FieldCloner.php:902
 #: includes/Services/FieldCloner.php:902
 #, php-format
 msgid "Successfully restored %d field(s)"
 msgstr ""
 
 #. translators: 1: number of restored fields, 2: number of errors
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/includes/Services/FieldCloner.php:907
 #: includes/Services/FieldCloner.php:907
 #, php-format
 msgid "Restored %1$d field(s) with %2$d error(s)"
 msgstr ""
 
 #. translators: %s: comma-separated list of required plugins
-#: build/ci-artifacts/release/silver-assist-acf-clone-fields/silver-assist-acf-clone-fields.php:110
 #: silver-assist-acf-clone-fields.php:110
 #, php-format
 msgid "Silver Assist - ACF Clone Fields requires the following plugins to be active: %s"
