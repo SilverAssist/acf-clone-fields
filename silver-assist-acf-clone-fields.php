@@ -35,7 +35,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Define plugin constants.
-define( 'SILVER_ACF_CLONE_VERSION', '1.1.0' );
+define( 'SILVER_ACF_CLONE_VERSION', '1.1.1' );
 define( 'SILVER_ACF_CLONE_FILE', __FILE__ );
 define( 'SILVER_ACF_CLONE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SILVER_ACF_CLONE_URL', plugin_dir_url( __FILE__ ) );

@@ -208,9 +208,9 @@ update_file "${PROJECT_ROOT}/silver-assist-acf-clone-fields.php" \
     "s/Version: [0-9]+\\.[0-9]+\\.[0-9]+/Version: ${NEW_VERSION}/g" \
     "plugin header"
 
-# Update constant - FIXED: Removed excessive escaping of single quotes
+# Update constant - FIXED: Corrected constant name to SILVER_ACF_CLONE_VERSION
 update_file "${PROJECT_ROOT}/silver-assist-acf-clone-fields.php" \
-    "s/define\\( 'SILVER_ASSIST_ACF_CLONE_FIELDS_VERSION', '[0-9]+\\.[0-9]+\\.[0-9]+' \\)/define( 'SILVER_ASSIST_ACF_CLONE_FIELDS_VERSION', '${NEW_VERSION}' )/g" \
+    "s/define\\( 'SILVER_ACF_CLONE_VERSION', '[0-9]+\\.[0-9]+\\.[0-9]+' \\)/define( 'SILVER_ACF_CLONE_VERSION', '${NEW_VERSION}' )/g" \
     "plugin constant"
 
 # Update @version tag
