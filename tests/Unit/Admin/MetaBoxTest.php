@@ -135,12 +135,18 @@ class MetaBoxTest extends TestCase {
 	 * @return void
 	 */
 	public function test_init(): void {
-		// Initialize the metabox
+		// Reset initialization flag using reflection (in case other tests initialized it).
+		$reflection = new \ReflectionClass( $this->metabox );
+		$initialized_property = $reflection->getProperty( 'initialized' );
+		$initialized_property->setAccessible( true );
+		$initialized_property->setValue( $this->metabox, false );
+
+		// Initialize the metabox.
 		$this->metabox->init();
 
-		// Check that hooks are registered
-		$this->assertGreaterThan( 0, \has_action( 'add_meta_boxes', [ $this->metabox, 'add_meta_boxes' ] ), 'Should register add_meta_boxes hook' );
-		$this->assertGreaterThan( 0, \has_filter( 'use_block_editor_for_post_type', [ $this->metabox, 'ensure_metabox_compatibility' ] ), 'Should register block editor filter' );
+		// Check that hooks are registered.
+		$this->assertNotFalse( \has_action( 'add_meta_boxes', [ $this->metabox, 'add_meta_boxes' ] ), 'Should register add_meta_boxes hook' );
+		$this->assertNotFalse( \has_filter( 'use_block_editor_for_post_type', [ $this->metabox, 'ensure_metabox_compatibility' ] ), 'Should register block editor filter' );
 	}
 
 	/**

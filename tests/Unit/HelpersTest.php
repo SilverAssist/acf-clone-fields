@@ -227,4 +227,231 @@ class HelpersTest extends TestCase {
 		$key3 = Helpers::get_cache_key( 'test_key', array( 'param' => 'value' ) );
 		$this->assertNotEquals( $key1, $key3 );
 	}
+
+	/**
+	 * Test get_enabled_post_types() returns array
+	 *
+	 * @return void
+	 */
+	public function test_get_enabled_post_types_returns_array(): void {
+		$post_types = Helpers::get_enabled_post_types();
+		
+		$this->assertIsArray( $post_types );
+		$this->assertNotEmpty( $post_types );
+	}
+
+	/**
+	 * Test get_enabled_post_types() respects settings
+	 *
+	 * @return void
+	 */
+	public function test_get_enabled_post_types_respects_settings(): void {
+		// Set custom post types.
+		\update_option(
+			'silver_acf_clone_settings',
+			[
+				'enabled_post_types' => [ 'custom_post', 'another_type' ],
+			]
+		);
+		
+		$post_types = Helpers::get_enabled_post_types();
+		
+		$this->assertContains( 'custom_post', $post_types );
+		$this->assertContains( 'another_type', $post_types );
+		
+		// Cleanup.
+		\delete_option( 'silver_acf_clone_settings' );
+	}
+
+	/**
+	 * Test is_post_type_enabled() validates post types
+	 *
+	 * @return void
+	 */
+	public function test_is_post_type_enabled_validates_post_types(): void {
+		\update_option(
+			'silver_acf_clone_settings',
+			[
+				'enabled_post_types' => [ 'post', 'page' ],
+			]
+		);
+		
+		$this->assertTrue( Helpers::is_post_type_enabled( 'post' ) );
+		$this->assertTrue( Helpers::is_post_type_enabled( 'page' ) );
+		$this->assertFalse( Helpers::is_post_type_enabled( 'custom_type' ) );
+		
+		// Cleanup.
+		\delete_option( 'silver_acf_clone_settings' );
+	}
+
+	/**
+	 * Test get_source_posts() returns posts
+	 *
+	 * @return void
+	 */
+	public function test_get_source_posts_returns_posts(): void {
+		// Create test posts.
+		$post1_id = static::factory()->post->create(
+			[
+				'post_title'  => 'Source Post 1',
+				'post_status' => 'publish',
+			]
+		);
+		$post2_id = static::factory()->post->create(
+			[
+				'post_title'  => 'Source Post 2',
+				'post_status' => 'publish',
+			]
+		);
+		$current_post_id = static::factory()->post->create(
+			[
+				'post_title'  => 'Current Post',
+				'post_status' => 'publish',
+			]
+		);
+		
+		$posts = Helpers::get_source_posts( $current_post_id, 'post' );
+		
+		$this->assertIsArray( $posts );
+		
+		// Verify current post is excluded.
+		$post_ids = \wp_list_pluck( $posts, 'ID' );
+		$this->assertNotContains( $current_post_id, $post_ids );
+		
+		// Cleanup.
+		\wp_delete_post( $post1_id, true );
+		\wp_delete_post( $post2_id, true );
+		\wp_delete_post( $current_post_id, true );
+	}
+
+	/**
+	 * Test post_has_acf_fields() handles missing ACF
+	 *
+	 * @return void
+	 */
+	public function test_post_has_acf_fields_handles_missing_acf(): void {
+		$post_id = static::factory()->post->create();
+		
+		// Should return false when get_fields() doesn't exist or no fields.
+		$result = Helpers::post_has_acf_fields( $post_id );
+		$this->assertIsBool( $result );
+		
+		// Cleanup.
+		\wp_delete_post( $post_id, true );
+	}
+
+	/**
+	 * Test validate_field_data() validates field data types
+	 *
+	 * @return void
+	 */
+	public function test_validate_field_data_validates_field_data(): void {
+		// Valid text data.
+		$field_config = [ 'type' => 'text' ];
+		$this->assertTrue( Helpers::validate_field_data( 'Valid text', $field_config ) );
+		
+		// Empty string is still valid string type.
+		$this->assertTrue( Helpers::validate_field_data( '', $field_config ) );
+		
+		// Number field.
+		$field_config = [ 'type' => 'number' ];
+		$this->assertTrue( Helpers::validate_field_data( 123, $field_config ) );
+		$this->assertTrue( Helpers::validate_field_data( '456', $field_config ) );
+		
+		// Array field types.
+		$field_config = [ 'type' => 'repeater' ];
+		$this->assertTrue( Helpers::validate_field_data( [], $field_config ) );
+		$this->assertTrue( Helpers::validate_field_data( [ 'item1', 'item2' ], $field_config ) );
+	}
+
+	/**
+	 * Test clear_cache() works
+	 *
+	 * @return void
+	 */
+	public function test_clear_cache_works(): void {
+		// Should not throw errors.
+		Helpers::clear_cache( 'test_key' );
+		Helpers::clear_cache();
+		
+		$this->assertTrue( true, 'clear_cache should execute without errors' );
+	}
+
+	/**
+	 * Test log() executes without errors
+	 *
+	 * @return void
+	 */
+	public function test_log_executes_without_errors(): void {
+		Helpers::log( 'Test message', 'info' );
+		Helpers::log( 'Error message', 'error', [ 'context' => 'test' ] );
+		
+		$this->assertTrue( true, 'log should execute without errors' );
+	}
+
+	/**
+	 * Test get_posts_by_type() returns array
+	 *
+	 * @return void
+	 */
+	public function test_get_posts_by_type_returns_posts(): void {
+		// Create test posts with current user as author.
+		$current_user_id = \get_current_user_id();
+		$post1_id = static::factory()->post->create(
+			[
+				'post_title'  => 'Test Post 1',
+				'post_status' => 'publish',
+				'post_author' => $current_user_id,
+			]
+		);
+		
+		$posts = Helpers::get_posts_by_type( 'post' );
+		
+		// Should return an array (may be empty depending on permissions).
+		$this->assertIsArray( $posts );
+		
+		// If posts returned, verify they are WP_Post objects.
+		if ( ! empty( $posts ) ) {
+			foreach ( $posts as $post ) {
+				$this->assertInstanceOf( \WP_Post::class, $post );
+			}
+		}
+		
+		// Cleanup.
+		\wp_delete_post( $post1_id, true );
+	}
+
+	/**
+	 * Test get_posts_by_type() respects custom args
+	 *
+	 * @return void
+	 */
+	public function test_get_posts_by_type_respects_custom_args(): void {
+		// Create test posts with current user as author.
+		$current_user_id = \get_current_user_id();
+		$post1_id = static::factory()->post->create(
+			[
+				'post_title'  => 'Alpha Post',
+				'post_status' => 'publish',
+				'post_author' => $current_user_id,
+			]
+		);
+		$post2_id = static::factory()->post->create(
+			[
+				'post_title'  => 'Beta Post',
+				'post_status' => 'publish',
+				'post_author' => $current_user_id,
+			]
+		);
+		
+		// Query with limit.
+		$posts = Helpers::get_posts_by_type( 'post', [ 'posts_per_page' => 1 ] );
+		
+		$this->assertIsArray( $posts );
+		$this->assertLessThanOrEqual( 1, count( $posts ), 'Should respect posts_per_page limit' );
+		
+		// Cleanup.
+		\wp_delete_post( $post1_id, true );
+		\wp_delete_post( $post2_id, true );
+	}
 }
