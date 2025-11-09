@@ -211,8 +211,9 @@ silver-assist-acf-clone-fields/
 
 #### **wp-github-updater Integration**
 - Enables native WordPress updates from GitHub repository
-- Configured in main plugin file header with `GitHub Plugin URI`
+- Configured programmatically via `UpdaterConfig` class (NOT via plugin headers)
 - Automatic update checks and notifications
+- Uses official WordPress `Update URI` header to prevent update conflicts
 
 #### **wp-settings-hub Integration**
 - Centralizes all SilverAssist plugins in unified admin menu

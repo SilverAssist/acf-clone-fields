@@ -14,8 +14,7 @@
  * Tested up to: 6.8.3
  * Requires PHP: 8.2
  * Network: false
- * Update Server: https://github.com/SilverAssist/acf-clone-fields
- * GitHub Plugin URI: SilverAssist/acf-clone-fields
+ * Update URI: https://github.com/SilverAssist/acf-clone-fields
  *
  * Silver Assist ACF Clone Fields
  * Copyright (c) 2025 Miguel Colmenares
