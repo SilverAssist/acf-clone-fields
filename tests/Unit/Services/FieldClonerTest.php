@@ -376,4 +376,40 @@ class FieldClonerTest extends TestCase {
 		$this->assertIsArray( $result, 'Should return array result for dry run' );
 		$this->assertArrayHasKey( 'success', $result, 'Should have success key' );
 	}
+
+	/**
+	 * Test delete_backup with invalid backup ID returns false
+	 *
+	 * @return void
+	 */
+	public function test_delete_backup_with_invalid_id(): void {
+		$result = $this->cloner->delete_backup( 'invalid-backup-id-12345' );
+
+		$this->assertFalse( $result, 'Should return false for invalid backup ID' );
+	}
+
+	/**
+	 * Test restore_backup with invalid backup ID fails gracefully
+	 *
+	 * @return void
+	 */
+	public function test_restore_backup_with_invalid_id(): void {
+		$result = $this->cloner->restore_backup( 'invalid-backup-id-12345' );
+
+		$this->assertIsArray( $result, 'Should return array result' );
+		$this->assertArrayHasKey( 'success', $result, 'Should have success key' );
+		$this->assertFalse( $result['success'], 'Should return success=false for invalid backup' );
+	}
+
+	/**
+	 * Test restore_backup with delete_after_restore option
+	 *
+	 * @return void
+	 */
+	public function test_restore_backup_with_delete_after_restore(): void {
+		$result = $this->cloner->restore_backup( 'test-backup-id', true );
+
+		$this->assertIsArray( $result, 'Should return array result' );
+		$this->assertArrayHasKey( 'success', $result, 'Should have success key' );
+	}
 }
