@@ -78,22 +78,23 @@ All contributions must pass:
 
 #### Test Base Class: WP_UnitTestCase
 
-All tests extend `TestCase` which conditionally extends `WP_UnitTestCase`:
+All tests extend `TestCase` which directly extends `WP_UnitTestCase`:
 
 ```php
 namespace SilverAssist\ACFCloneFields\Tests\Utils;
 
-// Extends WP_UnitTestCase when WordPress is available
-if (class_exists('WP_UnitTestCase')) {
-    abstract class TestCase extends \WP_UnitTestCase {
-        // Real WordPress environment
-    }
-} else {
-    abstract class TestCase extends \PHPUnit\Framework\TestCase {
-        // Fallback for static analysis
-    }
+/**
+ * Base test case using WordPress Test Suite
+ *
+ * All tests extend this class to have access to WordPress functions,
+ * factory methods, and proper database transaction rollback.
+ */
+abstract class TestCase extends \WP_UnitTestCase {
+    // Use Activator::create_tables() for database schema setup
 }
 ```
+
+**Note**: WordPress Test Suite must be installed for tests to run. See testing documentation for setup instructions.
 
 #### WordPress Factory Pattern (MANDATORY)
 
@@ -254,10 +255,17 @@ tests/
 ├── bootstrap.php          # Auto-detects WordPress availability
 ├── Unit/                  # Unit tests (isolated components)
 │   ├── Core/
+│   │   ├── ActivatorTest.php
 │   │   └── PluginTest.php
 │   ├── Services/
 │   │   ├── FieldClonerTest.php
 │   │   └── FieldDetectorTest.php
+│   ├── Admin/
+│   │   ├── AjaxTest.php
+│   │   ├── BackupManagerTest.php
+│   │   ├── LoaderTest.php
+│   │   ├── MetaBoxTest.php
+│   │   └── SettingsTest.php
 │   ├── BackupSystemTest.php
 │   ├── HelpersTest.php
 │   └── LoggerTest.php
@@ -265,9 +273,17 @@ tests/
 │   ├── AdminComponentsTest.php
 │   └── CloneOptionsTest.php
 └── Utils/                 # Testing utilities
-    ├── TestCase.php       # Base test class
+    ├── TestCase.php       # Base test class (extends WP_UnitTestCase)
     └── ACFTestHelpers.php # ACF-specific helpers
 ```
+
+**Test Counts**: 211 total tests (184 unit + 27 integration)
+
+**Coverage Areas**:
+- Core: Plugin initialization, activation, component loading
+- Services: Field detection, cloning, backup/restore operations
+- Admin: Meta box UI, settings, AJAX handlers, backup management
+- Integration: End-to-end cloning workflows with real WordPress environment
 
 ### Writing New Tests
 
