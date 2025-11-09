@@ -70,26 +70,26 @@ This document describes the exact data structures exchanged between the frontend
     success: boolean,
     data: {
         fields: Array<{
-            key: string,               // Clave del grupo de campos (ej: 'location_fields_group')
-            title: string,             // Título del grupo (ej: 'Location Information')
+            key: string,               // Field group key (e.g., 'location_fields_group')
+            title: string,             // Group title (e.g., 'Location Information')
             fields: Array<{
-                key: string,           // Clave única del campo
-                name: string,          // Nombre del campo (ej: 'phone')
-                label: string,         // Etiqueta visible (ej: 'Phone Number')
-                type: string,          // Tipo de campo (text, textarea, image, etc.)
-                has_value: boolean,    // Si el campo tiene valor en el post fuente
-                will_overwrite: boolean // Si va a sobrescribir un valor existente
+                key: string,           // Unique field key
+                name: string,          // Field name (e.g., 'phone')
+                label: string,         // Visible label (e.g., 'Phone Number')
+                type: string,          // Field type (text, textarea, image, etc.)
+                has_value: boolean,    // Whether field has value in source post
+                will_overwrite: boolean // Whether it will overwrite existing value
             }>
         }>,
         source_post: {
             id: number,
             title: string,
-            stats: { /* estructura de stats */ }
+            stats: { /* stats structure */ }
         },
         target_post: {
             id: number,
             title: string,
-            stats: { /* estructura de stats */ }
+            stats: { /* stats structure */ }
         },
         message?: string
     }
@@ -97,21 +97,22 @@ This document describes the exact data structures exchanged between the frontend
 ```
 
 ### 3. `acf_clone_execute_clone`
-**Propósito**: Ejecutar el clonado de campos seleccionados  
-**Trigger**: Al confirmar el clonado (Paso 3)
+
+**Purpose**: Execute cloning of selected fields  
+**Trigger**: When confirming the clone operation (Step 3)
 
 **Request Data**:
 ```javascript
 {
     action: 'acf_clone_execute_clone',
     nonce: string,
-    target_post_id: number,    // ID del post destino
-    source_post_id: number,    // ID del post fuente
-    field_keys: Array<string>, // Array de nombres de campos a clonar
+    target_post_id: number,    // Target post ID
+    source_post_id: number,    // Source post ID
+    field_keys: Array<string>, // Array of field names to clone
     options: {
-        create_backup: boolean,      // Si crear respaldo antes de clonar
-        preserve_empty: boolean,     // Si preservar valores vacíos
-        overwrite_existing: boolean  // Si sobrescribir valores existentes (true por defecto)
+        create_backup: boolean,      // Whether to create backup before cloning
+        preserve_empty: boolean,     // Whether to preserve empty values
+        overwrite_existing: boolean  // Whether to overwrite existing values (default: true)
     }
 }
 ```
@@ -121,10 +122,10 @@ This document describes the exact data structures exchanged between the frontend
 {
     success: boolean,
     data: {
-        cloned_count: number,              // Número de campos clonados exitosamente
-        skipped_count: number,             // Número de campos omitidos
-        cloned_fields: Array<string>,      // Nombres de campos clonados
-        skipped_fields: Array<string>,     // Nombres de campos omitidos
+        cloned_count: number,              // Number of successfully cloned fields
+        skipped_count: number,             // Number of skipped fields
+        cloned_fields: Array<string>,      // Names of cloned fields
+        skipped_fields: Array<string>,     // Names of skipped fields
         source_post: {
             id: number,
             title: string
@@ -133,63 +134,63 @@ This document describes the exact data structures exchanged between the frontend
             id: number,
             title: string
         },
-        backup_info?: {                    // Solo si create_backup = true
-            backup_id: string,             // Identificador del respaldo
-            created_at: string             // Timestamp de creación
+        backup_info?: {                    // Only if create_backup = true
+            backup_id: string,             // Backup identifier
+            created_at: string             // Creation timestamp
         },
         operation_summary: {
-            total_requested: number,       // Total de campos solicitados
-            successful: number,            // Operaciones exitosas
-            failed: number                 // Operaciones fallidas
+            total_requested: number,       // Total requested fields
+            successful: number,            // Successful operations
+            failed: number                 // Failed operations
         },
-        message?: string                   // Mensaje descriptivo del resultado
+        message?: string                   // Descriptive result message
     }
 }
 ```
 
-## Manejo de Errores
+## Error Handling
 
-Todos los endpoints pueden devolver errores en el siguiente formato:
+All endpoints can return errors in the following format:
 
 ```javascript
 {
     success: false,
     data: {
-        message: string,              // Mensaje de error descriptivo
-        error_code?: string,          // Código de error opcional
-        details?: Object              // Detalles adicionales del error
+        message: string,              // Descriptive error message
+        error_code?: string,          // Optional error code
+        details?: Object              // Additional error details
     }
 }
 ```
 
-## Errores AJAX Comunes
+## Common AJAX Errors
 
-Si el request AJAX falla completamente (problemas de red, servidor caído, etc.), jQuery llamará el callback de error con:
+If the AJAX request fails completely (network issues, server down, etc.), jQuery will call the error callback with:
 
 ```javascript
-// Parámetros del callback onAjaxError
+// onAjaxError callback parameters
 xhr: {
-    status: number,               // Código HTTP (404, 500, etc.)
-    statusText: string,           // Texto del estado HTTP
-    responseText: string,         // Respuesta cruda del servidor
-    responseJSON?: Object         // Respuesta parseada si es JSON válido
+    status: number,               // HTTP status code (404, 500, etc.)
+    statusText: string,           // HTTP status text
+    responseText: string,         // Raw server response
+    responseJSON?: Object         // Parsed response if valid JSON
 },
 status: string,                   // 'error', 'timeout', 'abort', etc.
-error: string                     // Mensaje de error
+error: string                     // Error message
 ```
 
-## Notas de Desarrollo
+## Development Notes
 
-1. **Validación de Datos**: Siempre verifica `response.success` antes de acceder a `response.data`
-2. **Estructura Anidada**: Los campos están organizados en grupos, accede como `response.data.fields[i].fields[j]`
-3. **Estados de Campo**: Usa `has_value` y `will_overwrite` para mostrar indicadores visuales
-4. **Manejo de Arrays**: `response.data.fields` es un array, no un objeto con claves
-5. **Debugging**: Todos los console.log incluyen la estructura completa de response para debugging
+1. **Data Validation**: Always check `response.success` before accessing `response.data`
+2. **Nested Structure**: Fields are organized in groups, access as `response.data.fields[i].fields[j]`
+3. **Field States**: Use `has_value` and `will_overwrite` to show visual indicators
+4. **Array Handling**: `response.data.fields` is an array, not an object with keys
+5. **Debugging**: All console.log statements include the complete response structure for debugging
 
-## Ejemplo de Uso
+## Usage Example
 
 ```javascript
-// Cargar campos del post fuente
+// Load fields from source post
 $.ajax({
     url: ajaxurl,
     data: {
@@ -203,18 +204,65 @@ $.ajax({
             return;
         }
         
-        // Iterar sobre grupos de campos
+        // Iterate over field groups
         response.data.fields.forEach(group => {
-            console.log('Grupo:', group.title);
+            console.log('Group:', group.title);
             
-            // Iterar sobre campos individuales
+            // Iterate over individual fields
             group.fields.forEach(field => {
                 console.log(`- ${field.label} (${field.type})`);
                 if (field.will_overwrite) {
-                    console.warn('  ⚠️ Sobrescribirá valor existente');
+                    console.warn('  ⚠️ Will overwrite existing value');
                 }
             });
         });
     }
 });
 ```
+
+## JavaScript Testing
+
+### QUnit Test Suite (Future Implementation)
+
+For comprehensive JavaScript testing coverage, the plugin can integrate QUnit tests following WordPress core standards.
+
+**Recommended Setup**:
+
+1. **Test Directory Structure**:
+   ```
+   tests/
+   ├── qunit/
+   │   ├── index.html           # QUnit test runner
+   │   ├── tests/
+   │   │   ├── admin.test.js    # Tests for admin.js
+   │   │   └── utils.test.js    # Tests for utility functions
+   │   └── fixtures/
+   │       └── ajax-responses.js # Mock AJAX responses
+   ```
+
+2. **Test Coverage Goals**:
+   - Modal state management and transitions
+   - AJAX request/response handling
+   - Field selection and validation logic
+   - Error handling and user feedback
+   - Backup option processing
+
+3. **Running QUnit Tests**:
+   ```bash
+   # Via browser (recommended for development)
+   open tests/qunit/index.html
+   
+   # Or navigate to:
+   http://localhost/wp-content/plugins/silver-assist-acf-clone-fields/tests/qunit/index.html
+   ```
+
+4. **Key Testing Areas**:
+   - **Modal Functionality**: Step transitions, data persistence
+   - **AJAX Handlers**: Request formatting, response parsing, error handling
+   - **Field Selection**: Checkbox logic, group selection, conflict detection
+   - **Data Validation**: Field key validation, option processing
+   - **UI State**: Loading indicators, error messages, success feedback
+
+**Reference**: [WordPress QUnit Testing Handbook](https://make.wordpress.org/core/handbook/testing/automated-testing/qunit/)
+
+**Note**: QUnit implementation is planned for future releases to achieve comprehensive JavaScript test coverage alongside the existing PHPUnit test suite.
