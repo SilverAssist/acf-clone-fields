@@ -19,6 +19,29 @@ define( 'SILVER_ACF_CLONE_TESTS_DIR', __DIR__ );
 define( 'SILVER_ACF_CLONE_PLUGIN_DIR', dirname( __DIR__ ) );
 define( 'SILVER_ACF_CLONE_PLUGIN_FILE', SILVER_ACF_CLONE_PLUGIN_DIR . '/silver-assist-acf-clone-fields.php' );
 
+// Define plugin constants (normally defined in main plugin file).
+if ( ! defined( 'SILVER_ACF_CLONE_VERSION' ) ) {
+	define( 'SILVER_ACF_CLONE_VERSION', '1.1.0' );
+}
+if ( ! defined( 'SILVER_ACF_CLONE_FILE' ) ) {
+	define( 'SILVER_ACF_CLONE_FILE', SILVER_ACF_CLONE_PLUGIN_FILE );
+}
+if ( ! defined( 'SILVER_ACF_CLONE_PATH' ) ) {
+	define( 'SILVER_ACF_CLONE_PATH', SILVER_ACF_CLONE_PLUGIN_DIR . '/' );
+}
+if ( ! defined( 'SILVER_ACF_CLONE_URL' ) ) {
+	define( 'SILVER_ACF_CLONE_URL', 'http://example.org/wp-content/plugins/silver-assist-acf-clone-fields/' );
+}
+if ( ! defined( 'SILVER_ACF_CLONE_BASENAME' ) ) {
+	define( 'SILVER_ACF_CLONE_BASENAME', 'silver-assist-acf-clone-fields/silver-assist-acf-clone-fields.php' );
+}
+if ( ! defined( 'SILVER_ACF_CLONE_SLUG' ) ) {
+	define( 'SILVER_ACF_CLONE_SLUG', 'silver-assist-acf-clone-fields' );
+}
+if ( ! defined( 'SILVER_ACF_CLONE_TEXT_DOMAIN' ) ) {
+	define( 'SILVER_ACF_CLONE_TEXT_DOMAIN', 'silver-assist-acf-clone-fields' );
+}
+
 // WordPress test environment check.
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 if ( ! $_tests_dir ) {

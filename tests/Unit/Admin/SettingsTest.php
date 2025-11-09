@@ -46,6 +46,9 @@ class SettingsTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 
+		// Set admin screen context (needed for is_admin() to return true in tests)
+		set_current_screen( 'settings_page_silver-assist-acf-clone-fields' );
+
 		// Create admin user
 		$this->admin_user_id = static::factory()->user->create(
 			[

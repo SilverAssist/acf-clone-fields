@@ -60,6 +60,9 @@ class MetaBoxTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 
+		// Set admin screen context (needed for is_admin() to return true in tests)
+		set_current_screen( 'edit-post' );
+
 		// Create admin user
 		$this->admin_user_id = static::factory()->user->create(
 			[
