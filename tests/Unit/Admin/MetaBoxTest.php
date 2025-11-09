@@ -289,7 +289,7 @@ class MetaBoxTest extends TestCase {
 
 		// Verify scripts and styles are enqueued
 		$this->assertTrue( \wp_script_is( 'acf-clone-fields-admin', 'enqueued' ), 'Admin script should be enqueued' );
-		$this->assertTrue( \wp_style_is( 'acf-clone-fields-admin', 'enqueued' ), 'Admin style should be enqueued' );
+		$this->assertTrue( \wp_style_is( 'silver-acf-clone-fields-admin', 'enqueued' ), 'Admin style should be enqueued' );
 	}
 
 	/**
