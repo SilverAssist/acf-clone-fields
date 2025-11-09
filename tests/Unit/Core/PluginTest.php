@@ -52,10 +52,7 @@ class PluginTest extends TestCase {
 			define( 'SILVER_ACF_CLONE_BASENAME', 'silver-assist-acf-clone-fields/silver-assist-acf-clone-fields.php' );
 		}
 		if ( ! defined( 'SILVER_ACF_CLONE_VERSION' ) ) {
-			define( 'SILVER_ACF_CLONE_VERSION', '1.1.0' );
-		}
-		if ( ! defined( 'SILVER_ACF_CLONE_TEXT_DOMAIN' ) ) {
-			define( 'SILVER_ACF_CLONE_TEXT_DOMAIN', 'silver-assist-acf-clone-fields' );
+			define( 'SILVER_ACF_CLONE_VERSION', '1.1.1' );
 		}
 		
 		// Get fresh plugin instance using reflection to reset singleton

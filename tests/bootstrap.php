@@ -29,17 +29,8 @@ if ( ! defined( 'SILVER_ACF_CLONE_FILE' ) ) {
 if ( ! defined( 'SILVER_ACF_CLONE_PATH' ) ) {
 	define( 'SILVER_ACF_CLONE_PATH', SILVER_ACF_CLONE_PLUGIN_DIR . '/' );
 }
-if ( ! defined( 'SILVER_ACF_CLONE_URL' ) ) {
-	define( 'SILVER_ACF_CLONE_URL', 'http://example.org/wp-content/plugins/silver-assist-acf-clone-fields/' );
-}
 if ( ! defined( 'SILVER_ACF_CLONE_BASENAME' ) ) {
 	define( 'SILVER_ACF_CLONE_BASENAME', 'silver-assist-acf-clone-fields/silver-assist-acf-clone-fields.php' );
-}
-if ( ! defined( 'SILVER_ACF_CLONE_SLUG' ) ) {
-	define( 'SILVER_ACF_CLONE_SLUG', 'silver-assist-acf-clone-fields' );
-}
-if ( ! defined( 'SILVER_ACF_CLONE_TEXT_DOMAIN' ) ) {
-	define( 'SILVER_ACF_CLONE_TEXT_DOMAIN', 'silver-assist-acf-clone-fields' );
 }
 
 // WordPress test environment check.

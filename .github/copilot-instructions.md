@@ -607,7 +607,7 @@ class MetaBox implements LoadableInterface {
         foreach ($enabled_post_types as $post_type) {
             add_meta_box(
                 'silver-acf-clone-fields',
-                __('Clone Custom Fields', SILVER_ACF_CLONE_TEXT_DOMAIN),
+                __('Clone Custom Fields', 'silver-assist-acf-clone-fields'),
                 [$this, 'render_meta_box'],
                 $post_type,
                 'side',
@@ -626,7 +626,7 @@ public function handle_clone_request(): void {
     
     // Check capabilities
     if (!current_user_can('edit_posts')) {
-        wp_die(__('Insufficient permissions.', SILVER_ACF_CLONE_TEXT_DOMAIN));
+        wp_die(__('Insufficient permissions.', 'silver-assist-acf-clone-fields'));
     }
     
     // Sanitize input
@@ -637,7 +637,7 @@ public function handle_clone_request(): void {
     // Execute cloning
     $result = $this->field_cloner->cloneFields($source_id, $target_id, $field_keys);
     
-    wp_send_json_success(['message' => __('Fields cloned successfully!', SILVER_ACF_CLONE_TEXT_DOMAIN)]);
+    wp_send_json_success(['message' => __('Fields cloned successfully!', 'silver-assist-acf-clone-fields')]);
 }
 ```
 
@@ -652,9 +652,9 @@ public function handle_clone_request(): void {
 
 ### **String Examples**
 ```php
-__('Clone Custom Fields', SILVER_ACF_CLONE_TEXT_DOMAIN)
-_e('Select source post:', SILVER_ACF_CLONE_TEXT_DOMAIN)
-_n('%s field cloned', '%s fields cloned', $count, SILVER_ACF_CLONE_TEXT_DOMAIN)
+__('Clone Custom Fields', 'silver-assist-acf-clone-fields')
+_e('Select source post:', 'silver-assist-acf-clone-fields')
+_n('%s field cloned', '%s fields cloned', $count, 'silver-assist-acf-clone-fields')
 ```
 
 ## 📊 Performance Considerations
