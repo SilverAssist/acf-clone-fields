@@ -184,11 +184,14 @@ class MetaBoxTest extends TestCase {
 		// Set enabled post types (only 'post')
 		\update_option( 'silver_assist_acf_clone_fields_enabled_post_types', [ 'post' ] );
 
+		// Use reflection to update enabled_post_types since init() has a guard against re-initialization
+		$reflection = new \ReflectionClass( $this->metabox );
+		$property   = $reflection->getProperty( 'enabled_post_types' );
+		$property->setAccessible( true );
+		$property->setValue( $this->metabox, [ 'post' ] );
+
 		// Reset meta boxes
 		$wp_meta_boxes = [];
-
-		// Initialize first
-		$this->metabox->init();
 
 		// Register meta boxes
 		$this->metabox->add_meta_boxes();
@@ -291,15 +294,18 @@ class MetaBoxTest extends TestCase {
 	public function test_enqueue_admin_assets_not_loaded_on_other_screens(): void {
 		global $post;
 
+		// Dequeue any previously enqueued scripts/styles from other tests
+		\wp_dequeue_script( 'acf-clone-fields-admin' );
+		\wp_dequeue_style( 'acf-clone-fields-admin' );
+
 		// Set up global post
 		$post = \get_post( $this->test_post_id );
 
-		// Set enabled post types
-		\update_option( 'silver_assist_acf_clone_fields_enabled_post_types', [ 'post' ] );
-
-		// Reinitialize
-		$this->metabox = MetaBox::instance();
-		$this->metabox->init();
+		// Use reflection to set enabled_post_types (avoids re-init guard)
+		$reflection = new \ReflectionClass( $this->metabox );
+		$property   = $reflection->getProperty( 'enabled_post_types' );
+		$property->setAccessible( true );
+		$property->setValue( $this->metabox, [ 'post' ] );
 
 		// Simulate other screen (not post.php or post-new.php)
 		$this->metabox->enqueue_admin_assets( 'index.php' );
@@ -317,6 +323,10 @@ class MetaBoxTest extends TestCase {
 	public function test_enqueue_admin_assets_not_loaded_for_disabled_post_types(): void {
 		global $post;
 
+		// Dequeue any previously enqueued scripts/styles from other tests
+		\wp_dequeue_script( 'acf-clone-fields-admin' );
+		\wp_dequeue_style( 'acf-clone-fields-admin' );
+
 		// Create a page post
 		$page_id = static::factory()->post->create(
 			[
@@ -325,12 +335,11 @@ class MetaBoxTest extends TestCase {
 		);
 		$post    = \get_post( $page_id );
 
-		// Set enabled post types (only 'post', not 'page')
-		\update_option( 'silver_assist_acf_clone_fields_enabled_post_types', [ 'post' ] );
-
-		// Reinitialize
-		$this->metabox = MetaBox::instance();
-		$this->metabox->init();
+		// Use reflection to set enabled_post_types (only 'post', not 'page')
+		$reflection = new \ReflectionClass( $this->metabox );
+		$property   = $reflection->getProperty( 'enabled_post_types' );
+		$property->setAccessible( true );
+		$property->setValue( $this->metabox, [ 'post' ] );
 
 		// Simulate post.php screen with page post type
 		$this->metabox->enqueue_admin_assets( 'post.php' );

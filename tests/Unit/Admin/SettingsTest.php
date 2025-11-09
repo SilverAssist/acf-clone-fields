@@ -319,8 +319,15 @@ class SettingsTest extends TestCase {
 	 * @return void
 	 */
 	public function test_render_backup_field(): void {
-		// Set option
-		\update_option( 'silver_assist_acf_clone_fields_create_backup', false );
+		// Clean the option first
+		\delete_option( 'silver_assist_acf_clone_fields_create_backup' );
+		
+		// Set option explicitly to false (0 in database)
+		\update_option( 'silver_assist_acf_clone_fields_create_backup', 0 );
+		
+		// Verify it was saved correctly
+		$saved_value = \get_option( 'silver_assist_acf_clone_fields_create_backup', 'NOT_SET' );
+		$this->assertEquals( 0, $saved_value, 'Option should be saved as 0' );
 
 		// Capture output
 		ob_start();
@@ -403,6 +410,9 @@ class SettingsTest extends TestCase {
 	 * @return void
 	 */
 	public function test_enqueue_settings_assets_not_loaded_on_other_pages(): void {
+		// Dequeue any previously enqueued styles from other tests
+		\wp_dequeue_style( 'acf-clone-fields-admin' );
+
 		// Simulate other page
 		$this->settings->enqueue_settings_assets( 'index.php' );
 
