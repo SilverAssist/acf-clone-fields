@@ -10,9 +10,10 @@
 
 namespace SilverAssist\ACFCloneFields\Tests\Integration;
 
-use SilverAssist\ACFCloneFields\Tests\Utils\TestCase;
 use SilverAssist\ACFCloneFields\Admin\Ajax;
+use SilverAssist\ACFCloneFields\Core\Activator;
 use SilverAssist\ACFCloneFields\Services\FieldCloner;
+use SilverAssist\ACFCloneFields\Tests\Utils\TestCase;
 
 /**
  * Test clone options processing
@@ -74,8 +75,8 @@ class CloneOptionsTest extends TestCase {
 		);
 		wp_set_current_user( $this->test_user_id );
 
-		// Create backup table.
-		$this->create_backup_table();
+		// Create backup table using Activator.
+		Activator::create_tables();
 
 		// Create test posts with admin author.
 		$this->source_post_id = wp_insert_post(
@@ -146,32 +147,6 @@ class CloneOptionsTest extends TestCase {
 				]
 			);
 		}
-	}
-
-	/**
-	 * Create backup table for testing
-	 */
-	protected function create_backup_table(): void {
-		global $wpdb;
-
-		$table_name      = $wpdb->prefix . 'acf_field_backups';
-		$charset_collate = $wpdb->get_charset_collate();
-
-		$sql = "CREATE TABLE IF NOT EXISTS $table_name (
-			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-			backup_id varchar(255) NOT NULL,
-			post_id bigint(20) unsigned NOT NULL,
-			user_id bigint(20) unsigned NOT NULL,
-			backup_data longtext NOT NULL,
-			created_at datetime NOT NULL,
-			PRIMARY KEY  (id),
-			KEY backup_id (backup_id),
-			KEY post_id (post_id),
-			KEY created_at (created_at)
-		) $charset_collate;";
-
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-		dbDelta( $sql );
 	}
 
 	/**

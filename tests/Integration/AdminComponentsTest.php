@@ -14,10 +14,11 @@ namespace SilverAssist\ACFCloneFields\Tests\Integration;
 
 defined('ABSPATH') || exit;
 
-use SilverAssist\ACFCloneFields\Tests\Utils\TestCase;
 use SilverAssist\ACFCloneFields\Admin\Ajax;
 use SilverAssist\ACFCloneFields\Admin\MetaBox;
 use SilverAssist\ACFCloneFields\Admin\Settings;
+use SilverAssist\ACFCloneFields\Core\Activator;
+use SilverAssist\ACFCloneFields\Tests\Utils\TestCase;
 
 /**
  * Test Admin components with real WordPress
@@ -65,8 +66,8 @@ class AdminComponentsTest extends TestCase
       )
     );
 
-    // Create backup table.
-    $this->create_backup_table();
+    // Create backup table using Activator.
+    Activator::create_tables();
   }
 
   /**
@@ -139,10 +140,15 @@ class AdminComponentsTest extends TestCase
   public function test_metabox_hooks_registered(): void
   {
     $metabox = MetaBox::instance();
+    
+    // Initialize metabox (may already be initialized by other tests).
     $metabox->init();
 
-    // Check if meta box action is registered.
-    $this->assertTrue(has_action('add_meta_boxes') !== false);
+    // Check if meta box action is registered with specific callback.
+    $this->assertNotFalse(
+      has_action('add_meta_boxes', [$metabox, 'add_meta_boxes']),
+      'MetaBox should register add_meta_boxes action'
+    );
   }
 
   /**
