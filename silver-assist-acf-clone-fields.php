@@ -42,16 +42,16 @@ define( 'SILVER_ACF_CLONE_BASENAME', plugin_basename( __FILE__ ) );
 /**
  * Composer autoloader
  */
-$autoload_path = SILVER_ACF_CLONE_PATH . 'vendor/autoload.php';
-$real_autoload_path = realpath( $autoload_path );
-$plugin_real_path = realpath( SILVER_ACF_CLONE_PATH );
-// Validate: both paths resolve, autoloader is inside plugin directory
+$silver_acf_clone_autoload_path      = SILVER_ACF_CLONE_PATH . 'vendor/autoload.php';
+$silver_acf_clone_real_autoload_path = realpath( $silver_acf_clone_autoload_path );
+$silver_acf_clone_plugin_real_path   = realpath( SILVER_ACF_CLONE_PATH );
+// Validate: both paths resolve, autoloader is inside plugin directory.
 if (
-	$real_autoload_path &&
-	$plugin_real_path &&
-	strpos( $real_autoload_path, $plugin_real_path ) === 0
+	$silver_acf_clone_real_autoload_path &&
+	$silver_acf_clone_plugin_real_path &&
+	strpos( $silver_acf_clone_real_autoload_path, $silver_acf_clone_plugin_real_path ) === 0
 ) {
-	require_once $real_autoload_path;
+	require_once $silver_acf_clone_real_autoload_path;
 }
 
 /**
