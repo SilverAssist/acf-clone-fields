@@ -1,4 +1,6 @@
 name: Quality Checks (Reusable)
+permissions:
+  contents: read
 
 on:
   workflow_call:
