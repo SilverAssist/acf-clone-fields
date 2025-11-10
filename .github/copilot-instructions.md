@@ -201,6 +201,46 @@ silver-assist-acf-clone-fields/
 - **WordPress Standards**: Follow WPCS, escape outputs, sanitize inputs
 - **Security First**: Nonces for forms, capability checks, data validation
 
+### **WordPress Naming Conventions (CRITICAL)**
+
+**Plugin Prefix**: `silver_acf_clone_`
+
+#### **Global Variables**
+ALL global variables MUST be prefixed with `silver_acf_clone_` to comply with WordPress.NamingConventions.PrefixAllGlobals:
+
+```php
+// ✅ CORRECT: Prefixed global variables
+$silver_acf_clone_autoload_path      = SILVER_ACF_CLONE_PATH . 'vendor/autoload.php';
+$silver_acf_clone_real_autoload_path = realpath( $silver_acf_clone_autoload_path );
+$silver_acf_clone_plugin_real_path   = realpath( SILVER_ACF_CLONE_PATH );
+
+// ❌ INCORRECT: Non-prefixed global variables (WPCS violation)
+$autoload_path      = SILVER_ACF_CLONE_PATH . 'vendor/autoload.php';
+$real_autoload_path = realpath( $autoload_path );
+$plugin_real_path   = realpath( SILVER_ACF_CLONE_PATH );
+```
+
+#### **Inline Comments**
+ALL inline comments MUST end with proper punctuation (`.`, `!`, or `?`) to comply with Squiz.Commenting.InlineComment:
+
+```php
+// ✅ CORRECT: Comment ends with period.
+// Validate: both paths resolve, autoloader is inside plugin directory.
+
+// ❌ INCORRECT: Comment missing punctuation (WPCS violation)
+// Validate: both paths resolve, autoloader is inside plugin directory
+```
+
+#### **Naming Convention Rules Summary**
+1. **Global variables**: Prefix with `silver_acf_clone_`
+2. **Functions**: Prefix with `silver_acf_clone_`
+3. **Constants**: Prefix with `SILVER_ACF_CLONE_`
+4. **Classes**: Use namespaced classes (no prefix needed due to PSR-4)
+5. **Inline comments**: Always end with `.`, `!`, or `?`
+6. **PHPDoc blocks**: Follow WordPress documentation standards
+
+**Reference**: These rules prevent conflicts with other plugins/themes and ensure WPCS compliance.
+
 ### **PSR-4 Implementation Rules**
 1. **Namespace Root**: `SilverAssist\ACFCloneFields\` maps to `includes/`
 2. **Class Files**: PascalCase matching class names exactly
