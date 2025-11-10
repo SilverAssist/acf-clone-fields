@@ -259,7 +259,6 @@
         positionModal: function() {
             // CSS handles positioning, but we can add scroll handling if needed
             const modal = $('.acf-clone-modal');
-            const overlay = this.state.modal;
             
             if (modal.height() > $(window).height() * 0.9) {
                 modal.css({
