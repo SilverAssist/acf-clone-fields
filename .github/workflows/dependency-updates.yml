@@ -1,4 +1,6 @@
 name: Dependency Updates Check
+permissions:
+  contents: read
 
 on:
   # Run every Monday at 9:00 AM Mexico City time
