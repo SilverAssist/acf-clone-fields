@@ -1,6 +1,6 @@
 name: 🚀 Release
 permissions:
-    contents: read
+  contents: read
 
 on:
     push:
