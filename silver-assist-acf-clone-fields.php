@@ -42,8 +42,16 @@ define( 'SILVER_ACF_CLONE_BASENAME', plugin_basename( __FILE__ ) );
 /**
  * Composer autoloader
  */
-if ( file_exists( SILVER_ACF_CLONE_PATH . 'vendor/autoload.php' ) ) {
-	require_once SILVER_ACF_CLONE_PATH . 'vendor/autoload.php';
+$silver_acf_clone_autoload_path      = SILVER_ACF_CLONE_PATH . 'vendor/autoload.php';
+$silver_acf_clone_real_autoload_path = realpath( $silver_acf_clone_autoload_path );
+$silver_acf_clone_plugin_real_path   = realpath( SILVER_ACF_CLONE_PATH );
+// Validate: both paths resolve, autoloader is inside plugin directory.
+if (
+	$silver_acf_clone_real_autoload_path &&
+	$silver_acf_clone_plugin_real_path &&
+	strpos( $silver_acf_clone_real_autoload_path, $silver_acf_clone_plugin_real_path ) === 0
+) {
+	require_once $silver_acf_clone_real_autoload_path;
 }
 
 /**
@@ -150,24 +158,19 @@ function silver_acf_clone_deactivate(): void {
 register_activation_hook( __FILE__, 'silver_acf_clone_activate' );
 register_deactivation_hook( __FILE__, 'silver_acf_clone_deactivate' );
 
-// Global flag to prevent multiple initialization.
-$GLOBALS['silver_acf_clone_initialized'] = $GLOBALS['silver_acf_clone_initialized'] ?? false;
-
 // Initialize plugin after WordPress loads.
 add_action(
 	'plugins_loaded',
 	function () {
 		// Prevent multiple initialization.
-		static $already_initialized = false;
-
-		if ( $already_initialized ) {
+		if ( ! empty( $GLOBALS['silver_acf_clone_initialized'] ) ) {
 			return;
 		}
 
 		$result = silver_acf_clone_init();
 
 		if ( $result ) {
-			$already_initialized = true;
+			$GLOBALS['silver_acf_clone_initialized'] = true;
 		}
 	},
 	10
