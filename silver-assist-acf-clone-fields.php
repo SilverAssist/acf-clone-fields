@@ -44,11 +44,13 @@ define( 'SILVER_ACF_CLONE_BASENAME', plugin_basename( __FILE__ ) );
  */
 $autoload_path = SILVER_ACF_CLONE_PATH . 'vendor/autoload.php';
 $real_autoload_path = realpath( $autoload_path );
-// Validate: file exists, realpath resolves, path inside plugin directory
+$plugin_real_path = realpath( SILVER_ACF_CLONE_PATH );
+// Validate: both paths resolve, file exists, autoloader is inside plugin directory
 if (
 	$real_autoload_path &&
+	$plugin_real_path &&
 	file_exists( $real_autoload_path ) &&
-	strpos( $real_autoload_path, realpath( SILVER_ACF_CLONE_PATH ) ) === 0
+	strpos( $real_autoload_path, $plugin_real_path ) === 0
 ) {
 	require_once $real_autoload_path;
 }
