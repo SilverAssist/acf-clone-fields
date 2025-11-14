@@ -81,7 +81,7 @@ jobs:
           
       - name: 📤 Upload coverage to Codecov
         if: ${{ inputs.upload-coverage }}
-        uses: codecov/codecov-action@15f2f7e17dd86d28c85d4e863424cd7b0e8f7435 # v5.1.2
+        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
         with:
           files: ./coverage.xml
           flags: unittests
