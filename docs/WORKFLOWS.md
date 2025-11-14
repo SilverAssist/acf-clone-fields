@@ -4,7 +4,7 @@
 
 This document describes the CI/CD workflow architecture for Silver Assist ACF Clone Fields plugin.
 
-**Version**: 1.2.0  
+**Version**: 1.3.0  
 **Strategy**: WordPress Integration Testing
 
 ## Quick Reference
@@ -14,6 +14,7 @@ This document describes the CI/CD workflow architecture for Silver Assist ACF Cl
 | `ci.yml` | ✅ Yes | ~8-10 min | Full integration testing |
 | `release.yml` | ✅ Yes | ~10-12 min | Exhaustive pre-release validation |
 | `dependency-updates.yml` | ❌ No | ~2-3 min | Fast Composer validation |
+| `codeql.yml` | ❌ No | ~5-10 min | Security scanning (CodeQL) |
 
 ## Workflow Files
 
@@ -69,6 +70,27 @@ This document describes the CI/CD workflow architecture for Silver Assist ACF Cl
 - `auto-merge-dependabot`: Auto-merge safe updates
 
 **Why no WordPress**: Composer packages don't require WordPress validation
+
+### 5. codeql.yml (Security Scanning)
+
+**Trigger**: Push to `main`/`develop`, Pull Requests to `main`, Weekly (Mondays 2:30 AM UTC)
+
+**Jobs**:
+- `analyze`: CodeQL security scanning for multiple languages
+
+**Languages**:
+- `javascript-typescript`: JavaScript and TypeScript files
+- `actions`: GitHub Actions workflows
+- `php`: PHP source code
+
+**Features**:
+- Matrix strategy with 3 parallel jobs (one per language)
+- Build mode: `none` (no compilation needed)
+- Results uploaded to GitHub Security tab
+- Weekly scheduled scans for continuous monitoring
+- Pinned action versions for security
+
+**Why no WordPress**: CodeQL analyzes source code statically
 
 ## Scripts
 
@@ -205,6 +227,12 @@ quality-checks-85:
 ```
 
 ## Changelog
+
+### v1.3.0 (2025-11-14)
+- Added codeql.yml for automated security scanning
+- CodeQL scans JavaScript/TypeScript, GitHub Actions, and PHP
+- Weekly scheduled scans every Monday at 2:30 AM UTC
+- Integration with GitHub Security tab
 
 ### v1.2.0 (2025-01-07)
 - Changed ci.yml to use WordPress integration
