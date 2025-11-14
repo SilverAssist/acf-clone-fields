@@ -28,10 +28,10 @@ jobs:
     
     steps:
       - name: 📥 Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v5.2.2
         
       - name: 🐘 Setup PHP ${{ inputs.php-version }}
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@0622dbe4675e0a51c4f8b9b0b6e7a6f6d3e6c3e3 # v2.31.1
         with:
           php-version: ${{ inputs.php-version }}
           extensions: mbstring, intl, mysql, pdo_mysql
@@ -39,7 +39,7 @@ jobs:
           tools: composer:v2
           
       - name: 📦 Cache Composer dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.2.0
         with:
           path: vendor
           key: composer-${{ inputs.php-version }}-${{ hashFiles('**/composer.lock') }}
@@ -81,7 +81,7 @@ jobs:
           
       - name: 📤 Upload coverage to Codecov
         if: ${{ inputs.upload-coverage }}
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@15f2f7e17dd86d28c85d4e863424cd7b0e8f7435 # v5.1.2
         with:
           files: ./coverage.xml
           flags: unittests

@@ -59,3 +59,11 @@ updates:
     commit-message:
       prefix: "ci"
       include: "scope"
+    # Group all GitHub Actions updates together
+    groups:
+      github-actions-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
