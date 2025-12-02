@@ -67,9 +67,3 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    # Ignore major version updates for critical actions (manual review required)
-    ignore:
-      # actions/upload-artifact v5+ has breaking changes (different artifact storage)
-      # Keep at v4.x until ready for migration
-      - dependency-name: "actions/upload-artifact"
-        update-types: ["version-update:semver-major"]
