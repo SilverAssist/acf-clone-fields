@@ -24,7 +24,7 @@ jobs:
 
         steps:
             - name: 📥 Checkout code
-              uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v5.2.2
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5.2.2
               with:
                   fetch-depth: 0
 
@@ -94,7 +94,7 @@ jobs:
 
         steps:
             - name: 📥 Checkout code for testing
-              uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v5.2.2
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5.2.2
 
             - name: 🐘 Setup PHP ${{ matrix.php }}
               uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # v2.36.0
@@ -176,7 +176,7 @@ jobs:
 
         steps:
             - name: 📥 Checkout code
-              uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v5.2.2
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5.2.2
 
             - name: 🐘 Setup PHP
               uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # v2.36.0
