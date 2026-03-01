@@ -506,14 +506,12 @@ class Helpers implements LoadableInterface {
 
 		$posts = get_posts( $query_args );
 
-		// Ensure we have WP_Post objects (not IDs) and filter by permissions.
-		$wp_posts = [];
-		foreach ( $posts as $post ) {
-			if ( $post instanceof \WP_Post && current_user_can( 'edit_post', $post->ID ) ) {
-				$wp_posts[] = $post;
-			}
-		}
-
-		return $wp_posts;
+		// Filter posts by user permissions and re-index array.
+		return array_values(
+			array_filter(
+				$posts,
+				static fn( \WP_Post $post ): bool => current_user_can( 'edit_post', $post->ID )
+			)
+		);
 	}
 }
