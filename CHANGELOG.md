@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-03-02
+
+### Changed
+- **Admin UI Refactoring**: Align admin dashboard UI with card-based design system for better visual consistency
+- **Code Quality**: Remove redundant `instanceof` check in `get_posts_by_type` method (PHPStan improvement)
+- **Dependencies**: Update Composer dependencies to latest versions
+
+### Security
+- **CodeQL Integration**: Add CodeQL security scanning workflow for automated vulnerability detection
+- **GitHub Actions Pinning**: Pin all GitHub Actions to specific commit SHAs for supply chain security
+- **Workflow Permissions**: Add explicit `contents: write` permissions to release workflow
+- **Code Scanning Fixes**: Address multiple code scanning alerts for workflow permissions
+
+### Fixed
+- **WPCS Compliance**: Prefix global variables with `silver_acf_clone_` and fix inline comment punctuation
+- **Autoloader Validation**: Remove redundant `file_exists()` check from autoloader validation
+- **Codecov Action**: Pin codecov-action to stable v5.5.1 SHA
+
+### CI/CD
+- **GitHub Actions Updates**: Bump actions to latest versions with SHA pinning:
+  - `actions/upload-artifact`: 5.0.0 → 7.0.0
+  - `actions/cache`: 4.3.0 → 5.0.3
+  - `actions/checkout`: 4.2.2 → 6.0.0
+  - `actions/github-script`: 7.0.1 → 8.0.0
+  - `dependabot/fetch-metadata`: Updated to latest
+  - `codecov/codecov-action`: Updated with SHA pinning
+
 ## [1.1.1] - 2025-11-09
 
 ### Added
