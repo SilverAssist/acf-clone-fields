@@ -174,6 +174,7 @@ class Settings implements LoadableInterface {
 				'description' => __( 'Advanced ACF field cloning system that allows selective copying of custom fields between posts of the same type. Features granular field selection, sidebar interface, and intelligent repeater field cloning.', 'silver-assist-acf-clone-fields' ),
 				'version'     => SILVER_ACF_CLONE_VERSION,
 				'tab_title'   => __( 'ACF Clone Fields', 'silver-assist-acf-clone-fields' ),
+				'plugin_file' => SILVER_ACF_CLONE_FILE,
 				'actions'     => $actions,
 			]
 		);
@@ -195,7 +196,7 @@ class Settings implements LoadableInterface {
 			$actions[] = [
 				'label'    => __( 'Check Updates', 'silver-assist-acf-clone-fields' ),
 				'callback' => [ $this, 'render_check_updates_script' ],
-				'class'    => 'button button-primary',
+				'class'    => 'button',
 			];
 		}
 
@@ -368,60 +369,96 @@ class Settings implements LoadableInterface {
 		if ( isset( $_POST['submit'] ) && wp_verify_nonce( $_POST['_wpnonce'], $this->settings_group . '-options' ) ) {
 			$this->save_settings();
 		}
+
+		$acf_active       = function_exists( 'acf_get_field_groups' );
+		$enabled_types     = get_option( 'silver_assist_acf_clone_fields_enabled_post_types', [] );
+		$enabled_count     = count( $enabled_types );
+		$backup_enabled    = get_option( 'silver_assist_acf_clone_fields_create_backup', true );
+		$validation_enabled = get_option( 'silver_assist_acf_clone_fields_validate_data', true );
+		$logging_enabled   = get_option( 'silver_assist_acf_clone_fields_log_operations', true );
+		$copy_attachments  = get_option( 'silver_assist_acf_clone_fields_copy_attachments', true );
 		?>
 		<div class="wrap">
-			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
 			<?php settings_errors(); ?>
 
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=' . $this->page_slug ) ); ?>">
-				<?php
-				wp_nonce_field( $this->settings_group . '-options' );
-				do_settings_sections( $this->page_slug );
-				submit_button();
-				?>
-			</form>
+			<!-- Plugin Status & Info Cards -->
+			<div class="silver-acf-stats-grid">
 
-			<!-- Plugin Information Card -->
-			<div class="card">
-				<h2><?php esc_html_e( 'How It Works', 'silver-assist-acf-clone-fields' ); ?></h2>
-				<p><?php esc_html_e( 'This plugin provides advanced ACF field cloning capabilities for:', 'silver-assist-acf-clone-fields' ); ?></p>
-				<ul style="list-style: disc; margin-left: 20px;">
-					<li><?php esc_html_e( 'Selective field cloning with granular control', 'silver-assist-acf-clone-fields' ); ?></li>
-					<li><?php esc_html_e( 'Support for all ACF field types including repeaters', 'silver-assist-acf-clone-fields' ); ?></li>
-					<li><?php esc_html_e( 'Backup and restore functionality', 'silver-assist-acf-clone-fields' ); ?></li>
-					<li><?php esc_html_e( 'Batch operations with progress tracking', 'silver-assist-acf-clone-fields' ); ?></li>
-					<li><?php esc_html_e( 'Integration with WordPress post edit screens', 'silver-assist-acf-clone-fields' ); ?></li>
-				</ul>
-				<p>
-					<?php esc_html_e( 'The plugin adds a metabox to your enabled post types, allowing you to clone ACF fields from other posts of the same type with intelligent field detection and validation.', 'silver-assist-acf-clone-fields' ); ?>
-				</p>
+				<!-- Features Overview Card -->
+				<div class="status-card">
+					<div class="card-header">
+						<span class="dashicons dashicons-admin-settings"></span>
+						<h3><?php esc_html_e( 'Features', 'silver-assist-acf-clone-fields' ); ?></h3>
+					</div>
+					<div class="card-content">
+						<div class="feature-status">
+							<span class="feature-name"><?php esc_html_e( 'Auto Backup', 'silver-assist-acf-clone-fields' ); ?></span>
+							<span class="feature-value <?php echo $backup_enabled ? 'enabled' : 'disabled'; ?>">
+								<?php echo $backup_enabled ? esc_html__( 'Enabled', 'silver-assist-acf-clone-fields' ) : esc_html__( 'Disabled', 'silver-assist-acf-clone-fields' ); ?>
+							</span>
+						</div>
+						<div class="feature-status">
+							<span class="feature-name"><?php esc_html_e( 'Data Validation', 'silver-assist-acf-clone-fields' ); ?></span>
+							<span class="feature-value <?php echo $validation_enabled ? 'enabled' : 'disabled'; ?>">
+								<?php echo $validation_enabled ? esc_html__( 'Enabled', 'silver-assist-acf-clone-fields' ) : esc_html__( 'Disabled', 'silver-assist-acf-clone-fields' ); ?>
+							</span>
+						</div>
+						<div class="feature-status">
+							<span class="feature-name"><?php esc_html_e( 'Operation Logging', 'silver-assist-acf-clone-fields' ); ?></span>
+							<span class="feature-value <?php echo $logging_enabled ? 'enabled' : 'disabled'; ?>">
+								<?php echo $logging_enabled ? esc_html__( 'Enabled', 'silver-assist-acf-clone-fields' ) : esc_html__( 'Disabled', 'silver-assist-acf-clone-fields' ); ?>
+							</span>
+						</div>
+						<div class="feature-status">
+							<span class="feature-name"><?php esc_html_e( 'Copy Attachments', 'silver-assist-acf-clone-fields' ); ?></span>
+							<span class="feature-value <?php echo $copy_attachments ? 'enabled' : 'disabled'; ?>">
+								<?php echo $copy_attachments ? esc_html__( 'Enabled', 'silver-assist-acf-clone-fields' ) : esc_html__( 'Disabled', 'silver-assist-acf-clone-fields' ); ?>
+							</span>
+						</div>
+					</div>
+				</div>
+
 			</div>
 
-			<!-- Plugin Status Card -->
-			<div class="card">
-				<h2><?php esc_html_e( 'Plugin Status', 'silver-assist-acf-clone-fields' ); ?></h2>
-				<table class="form-table">
-					<tr>
-						<th scope="row"><?php esc_html_e( 'Version', 'silver-assist-acf-clone-fields' ); ?></th>
-						<td><strong><?php echo esc_html( SILVER_ACF_CLONE_VERSION ); ?></strong></td>
-					</tr>
-					<tr>
-						<th scope="row"><?php esc_html_e( 'ACF Pro Status', 'silver-assist-acf-clone-fields' ); ?></th>
-						<td>
-							<?php if ( function_exists( 'acf_get_field_groups' ) ) : ?>
-								<span class="acf-status-active" style="color: #46b450; font-weight: bold;">✓ <?php esc_html_e( 'Active', 'silver-assist-acf-clone-fields' ); ?></span>
-							<?php else : ?>
-								<span class="acf-status-inactive" style="color: #dc3232; font-weight: bold;">✗ <?php esc_html_e( 'Not Active', 'silver-assist-acf-clone-fields' ); ?></span>
-							<?php endif; ?>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"><?php esc_html_e( 'Enabled Post Types', 'silver-assist-acf-clone-fields' ); ?></th>
-						<td><strong><?php echo esc_html( (string) count( get_option( 'silver_assist_acf_clone_fields_enabled_post_types', [] ) ) ); ?></strong> <?php esc_html_e( 'post types configured', 'silver-assist-acf-clone-fields' ); ?></td>
-					</tr>
-				</table>
+			<!-- Settings Form Card -->
+			<div class="status-card">
+				<div class="card-header">
+					<span class="dashicons dashicons-admin-generic"></span>
+					<h3><?php esc_html_e( 'Configuration', 'silver-assist-acf-clone-fields' ); ?></h3>
+				</div>
+				<div class="card-content">
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=' . $this->page_slug ) ); ?>">
+						<?php
+						wp_nonce_field( $this->settings_group . '-options' );
+						do_settings_sections( $this->page_slug );
+						submit_button();
+						?>
+					</form>
+				</div>
 			</div>
+
+			<!-- How It Works Card -->
+			<div class="status-card">
+				<div class="card-header">
+					<span class="dashicons dashicons-info-outline"></span>
+					<h3><?php esc_html_e( 'How It Works', 'silver-assist-acf-clone-fields' ); ?></h3>
+				</div>
+				<div class="card-content">
+					<p><?php esc_html_e( 'This plugin provides advanced ACF field cloning capabilities:', 'silver-assist-acf-clone-fields' ); ?></p>
+					<ul class="acf-info-list">
+						<li><?php esc_html_e( 'Selective field cloning with granular control', 'silver-assist-acf-clone-fields' ); ?></li>
+						<li><?php esc_html_e( 'Support for all ACF field types including repeaters', 'silver-assist-acf-clone-fields' ); ?></li>
+						<li><?php esc_html_e( 'Backup and restore functionality', 'silver-assist-acf-clone-fields' ); ?></li>
+						<li><?php esc_html_e( 'Batch operations with progress tracking', 'silver-assist-acf-clone-fields' ); ?></li>
+						<li><?php esc_html_e( 'Integration with WordPress post edit screens', 'silver-assist-acf-clone-fields' ); ?></li>
+					</ul>
+					<p>
+						<?php esc_html_e( 'The plugin adds a metabox to your enabled post types, allowing you to clone ACF fields from other posts of the same type with intelligent field detection and validation.', 'silver-assist-acf-clone-fields' ); ?>
+					</p>
+				</div>
+			</div>
+
 		</div>
 		<?php
 	}
@@ -691,7 +728,7 @@ class Settings implements LoadableInterface {
 		// Only load on settings page.
 		$settings_pages = [
 			'settings_page_' . $this->page_slug,
-			'silverassist-settings_page_' . $this->page_slug,
+			'silver-assist_page_' . $this->page_slug,
 		];
 
 		if ( ! in_array( $hook_suffix, $settings_pages, true ) ) {
@@ -703,7 +740,7 @@ class Settings implements LoadableInterface {
 			'acf-clone-fields-admin',
 			plugin_dir_url( dirname( __DIR__ ) ) . 'assets/css/silver-acf-clone-fields.css',
 			[],
-			'1.0.0'
+			SILVER_ACF_CLONE_VERSION
 		);
 	}
 
@@ -727,6 +764,10 @@ class Settings implements LoadableInterface {
 	/**
 	 * Render check updates script for Settings Hub
 	 *
+	 * Delegates to wp-github-updater's built-in enqueueCheckUpdatesScript() which
+	 * provides centralized JS, AJAX handling, admin notices, and auto-redirect.
+	 *
+	 * @since 1.1.2
 	 * @return void
 	 */
 	public function render_check_updates_script(): void {
@@ -737,37 +778,8 @@ class Settings implements LoadableInterface {
 			return;
 		}
 
-		// Enqueue external JavaScript file.
-		wp_enqueue_script(
-			'acf-clone-fields-check-updates',
-			plugin_dir_url( dirname( __DIR__ ) ) . 'assets/js/admin-check-updates.js',
-			[ 'jquery' ],
-			SILVER_ACF_CLONE_VERSION,
-			true
-		);
-
-		// Localize script with configuration data.
-		wp_localize_script(
-			'acf-clone-fields-check-updates',
-			'silverAssistACFCloneCheckUpdatesData',
-			[
-				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
-				'nonce'     => wp_create_nonce( 'silver_acf_clone_version_nonce' ),
-				'updateUrl' => admin_url( 'update-core.php' ),
-				'strings'   => [
-					'checking'        => __( 'Checking for updates...', 'silver-assist-acf-clone-fields' ),
-					'updateAvailable' => __( 'Update available! Redirecting to Updates page...', 'silver-assist-acf-clone-fields' ),
-					'upToDate'        => __( "You're up to date!", 'silver-assist-acf-clone-fields' ),
-					'checkError'      => __( 'Error checking updates. Please try again.', 'silver-assist-acf-clone-fields' ),
-					'connectError'    => __( 'Error connecting to update server.', 'silver-assist-acf-clone-fields' ),
-				],
-			]
-		);
-
-		// Echo JavaScript that will be executed by Settings Hub action button.
-		// Settings Hub injects this into onclick="" attribute.
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inline JavaScript function call
-		echo 'silverAssistACFCloneCheckUpdates(); return false;';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inline JavaScript function call from wp-github-updater
+		echo $updater->enqueueCheckUpdatesScript();
 	}
 
 	/**
