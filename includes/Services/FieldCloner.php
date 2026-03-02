@@ -8,7 +8,7 @@
  * @package SilverAssist\ACFCloneFields
  * @subpackage Services
  * @since 1.0.0
- * @version 1.1.1
+ * @version 1.1.2
  * @author Silver Assist
  */
 
