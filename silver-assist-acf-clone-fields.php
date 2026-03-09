@@ -3,7 +3,7 @@
  * Plugin Name: ACF Clone Fields
  * Plugin URI: https://github.com/SilverAssist/acf-clone-fields
  * Description: Clone Advanced Custom Fields between posts with precision. Compatible with ACF free (basic fields) and ACF Pro (repeater, group, flexible content). Automatic backups and smart conflict detection included.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Silver Assist
  * Author URI: https://silverassist.com
  * License: PolyForm-Noncommercial-1.0.0
@@ -27,14 +27,14 @@
  * @author Miguel Colmenares
  * @license PolyForm-Noncommercial-1.0.0
  * @since 1.0.0
- * @version 1.2.0
+ * @version 1.2.1
  */
 
 // Prevent direct access.
 defined( 'ABSPATH' ) || exit;
 
 // Define plugin constants.
-define( 'SILVER_ACF_CLONE_VERSION', '1.2.0' );
+define( 'SILVER_ACF_CLONE_VERSION', '1.2.1' );
 define( 'SILVER_ACF_CLONE_FILE', __FILE__ );
 define( 'SILVER_ACF_CLONE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SILVER_ACF_CLONE_BASENAME', plugin_basename( __FILE__ ) );
