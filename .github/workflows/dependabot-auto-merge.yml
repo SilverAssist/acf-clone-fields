@@ -18,23 +18,35 @@ jobs:
     name: Dependabot Auto-merge
     runs-on: ubuntu-latest
     
-    # Only run on Dependabot PRs
-    if: github.actor == 'dependabot[bot]'
-    
     steps:
+      - name: Check if Dependabot PR
+        id: check-actor
+        run: |
+          if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
+            echo "is_dependabot=true" >> $GITHUB_OUTPUT
+            echo "✅ This is a Dependabot PR, proceeding with auto-merge checks."
+          else
+            echo "is_dependabot=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ Not a Dependabot PR, skipping auto-merge steps."
+          fi
+      
       - name: Checkout code
+        if: steps.check-actor.outputs.is_dependabot == 'true'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5.2.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Dependabot metadata
+        if: steps.check-actor.outputs.is_dependabot == 'true'
         id: metadata
         uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a # v2.5.0
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           
       - name: Auto-approve for Silver Assist packages
-        if: contains(steps.metadata.outputs.dependency-names, 'silverassist/')
+        if: |
+          steps.check-actor.outputs.is_dependabot == 'true' &&
+          contains(steps.metadata.outputs.dependency-names, 'silverassist/')
         run: |
           echo "🔍 Silver Assist package update detected"
           echo "📦 Dependencies: ${{ steps.metadata.outputs.dependency-names }}"
@@ -50,8 +62,10 @@ jobs:
           
       - name: Auto-merge patch and minor updates
         if: |
-          steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
-          steps.metadata.outputs.update-type == 'version-update:semver-minor'
+          steps.check-actor.outputs.is_dependabot == 'true' && (
+            steps.metadata.outputs.update-type == 'version-update:semver-patch' || 
+            steps.metadata.outputs.update-type == 'version-update:semver-minor'
+          )
         run: |
           echo "🔍 Patch or minor update detected"
           echo "📦 Dependencies: ${{ steps.metadata.outputs.dependency-names }}"
@@ -83,7 +97,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Handle major updates
-        if: steps.metadata.outputs.update-type == 'version-update:semver-major'
+        if: |
+          steps.check-actor.outputs.is_dependabot == 'true' &&
+          steps.metadata.outputs.update-type == 'version-update:semver-major'
         run: |
           echo "🔍 Major update detected - requires manual review"
           echo "📦 Dependencies: ${{ steps.metadata.outputs.dependency-names }}"
@@ -112,22 +128,34 @@ jobs:
     name: Security Updates Handler
     runs-on: ubuntu-latest
     
-    # Only run on Dependabot security PRs
-    if: |
-      github.actor == 'dependabot[bot]' && 
-      contains(github.event.pull_request.labels.*.name, 'security')
+    # Run for all PRs with security label, check actor in steps
+    if: contains(github.event.pull_request.labels.*.name, 'security')
       
     steps:
+      - name: Check if Dependabot PR
+        id: check-actor
+        run: |
+          if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
+            echo "is_dependabot=true" >> $GITHUB_OUTPUT
+            echo "✅ This is a Dependabot security PR."
+          else
+            echo "is_dependabot=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ Not a Dependabot PR, skipping security auto-merge steps."
+          fi
+      
       - name: Checkout code
+        if: steps.check-actor.outputs.is_dependabot == 'true'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5.2.2
         
       - name: Dependabot metadata
+        if: steps.check-actor.outputs.is_dependabot == 'true'
         id: metadata
         uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a # v2.5.0
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           
       - name: Handle security updates
+        if: steps.check-actor.outputs.is_dependabot == 'true'
         run: |
           echo "🔒 Security update detected"
           echo "📦 Dependencies: ${{ steps.metadata.outputs.dependency-names }}"
