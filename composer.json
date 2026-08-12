@@ -17,6 +17,8 @@
 		"silverassist/wp-settings-hub": "^1.2"
     },
     "require-dev": {
+        "silverassist/coding-standards": "^1.0",
+        "silverassist/wp-coding-standards": "^1.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "php-stubs/wordpress-stubs": "^6.6",
         "php-stubs/wordpress-tests-stubs": "^7.0",
@@ -49,6 +51,9 @@
         "allow-plugins": {
             "composer/installers": true,
             "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "platform": {
+            "php": "8.2.0"
         }
     }
 }
