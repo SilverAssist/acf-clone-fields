@@ -14,7 +14,7 @@
 
 namespace SilverAssist\ACFCloneFields\Admin;
 
-use SilverAssist\ACFCloneFields\Core\Interfaces\LoadableInterface;
+use SilverAssist\PluginKernel\Interfaces\LoadableInterface;
 use SilverAssist\ACFCloneFields\Services\FieldDetector;
 use SilverAssist\ACFCloneFields\Services\FieldCloner;
 use SilverAssist\ACFCloneFields\Utils\Helpers;

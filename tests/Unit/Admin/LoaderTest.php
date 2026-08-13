@@ -62,7 +62,7 @@ class LoaderTest extends TestCase {
 	public function test_implements_loadable_interface(): void {
 		$loader = Loader::instance();
 
-		$this->assertInstanceOf( \SilverAssist\ACFCloneFields\Core\Interfaces\LoadableInterface::class, $loader );
+		$this->assertInstanceOf( \SilverAssist\PluginKernel\Interfaces\LoadableInterface::class, $loader );
 	}
 
 	/**
