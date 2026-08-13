@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-08-12
+
+### Changed
+- **Bootstrap**: Adopt `silverassist/wp-plugin-kernel`'s `AbstractPlugin`/`LoadableInterface` for the
+  core plugin bootstrap, replacing the plugin's own hand-rolled singleton-plus-component-loader
+  implementation with the shared package used across the SilverAssist WordPress plugin portfolio
+  - `Core\Plugin` now extends `AbstractPlugin`; singleton access (`instance()`), the priority-ordered
+    component loading loop, and per-component error isolation are inherited rather than re-implemented
+  - `Services\Loader` and `Admin\Loader` (and every component they load) now implement
+    `SilverAssist\PluginKernel\Interfaces\LoadableInterface` instead of the plugin's local copy of the
+    same contract, which has been removed
+  - `Plugin::get_components()` is now `protected` per `AbstractPlugin`'s contract and returns the list
+    of loader class-strings (`Services\Loader::class`, `Admin\Loader::class`) rather than the loaded
+    instances; the new public `Plugin::get_loaded_components()` preserves the old public behavior
+    (loaded instances) for any external code still calling the old method expecting that shape
+
+### Added
+- `Plugin::get_loaded_components()` — public accessor preserving the pre-1.3.0 public
+  `get_components()` behavior (loaded, `should_load()`-filtered component instances), since that
+  method's name now has different (protected, class-string) semantics per `AbstractPlugin`'s contract
+
 ## [1.2.1] - 2026-03-09
 
 ### Changed

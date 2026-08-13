@@ -100,7 +100,7 @@ class AjaxTest extends TestCase {
 	 */
 	public function test_implements_loadable_interface(): void {
 		$this->assertInstanceOf(
-			\SilverAssist\ACFCloneFields\Core\Interfaces\LoadableInterface::class,
+			\SilverAssist\PluginKernel\Interfaces\LoadableInterface::class,
 			$this->ajax,
 			'Ajax should implement LoadableInterface'
 		);

@@ -8,37 +8,27 @@
  * @package SilverAssist\ACFCloneFields
  * @subpackage Core
  * @since 1.0.0
- * @version 1.1.2
+ * @version 1.3.0
  * @author Silver Assist
  */
 
 namespace SilverAssist\ACFCloneFields\Core;
 
-use SilverAssist\ACFCloneFields\Core\Interfaces\LoadableInterface;
+use SilverAssist\ACFCloneFields\Admin\Loader as AdminLoader;
+use SilverAssist\ACFCloneFields\Services\Loader as ServicesLoader;
+use SilverAssist\PluginKernel\AbstractPlugin;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Class Plugin
  *
- * Main plugin controller implementing singleton pattern and LoadableInterface
- * for consistent initialization and component management.
+ * Singleton access (instance()) and the priority-ordered component loading
+ * loop are inherited from AbstractPlugin (silverassist/wp-plugin-kernel) —
+ * this class only declares which components to load (get_components()) and
+ * the plugin-specific setup that runs alongside them (init_hooks()).
  */
-class Plugin implements LoadableInterface {
-	/**
-	 * Plugin instance
-	 *
-	 * @var Plugin|null
-	 */
-	private static ?Plugin $instance = null;
-
-	/**
-	 * Loaded components
-	 *
-	 * @var LoadableInterface[]
-	 */
-	private array $components = [];
-
+class Plugin extends AbstractPlugin {
 	/**
 	 * Plugin settings
 	 *
@@ -54,71 +44,13 @@ class Plugin implements LoadableInterface {
 	private ?\SilverAssist\WpGithubUpdater\Updater $updater = null;
 
 	/**
-	 * Get singleton instance
-	 *
-	 * @return Plugin
-	 */
-	public static function instance(): Plugin {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
-
-	/**
 	 * Private constructor to prevent direct instantiation
 	 */
-	private function __construct() {
+	protected function __construct() {
+		parent::__construct();
+
 		// Initialize settings.
 		$this->settings = get_option( 'silver_acf_clone_settings', [] );
-	}
-
-	/**
-	 * Plugin initialization flag
-	 *
-	 * @var bool
-	 */
-	private bool $initialized = false;
-
-	/**
-	 * Initialize the plugin
-	 *
-	 * @return void
-	 */
-	public function init(): void {
-		// Prevent multiple initialization.
-		if ( $this->initialized ) {
-			return;
-		}
-
-		// Initialize GitHub updater integration.
-		$this->init_github_updater();
-
-		// Settings Hub integration is handled by Admin\Settings class.
-
-		// Load plugin components.
-		$this->load_components();
-
-		// Initialize WordPress hooks.
-		$this->init_hooks();
-
-		// Load plugin textdomain.
-		$this->load_textdomain();
-
-		// Admin assets are handled by Admin\MetaBox class.
-		// No need to initialize them here to prevent duplication.
-
-		// Mark as initialized.
-		$this->initialized = true;
-	}
-
-	/**
-	 * Get loading priority
-	 *
-	 * @return int
-	 */
-	public function get_priority(): int {
-		return 10; // High priority for core plugin.
 	}
 
 	/**
@@ -142,47 +74,50 @@ class Plugin implements LoadableInterface {
 	}
 
 	/**
-	 * Load plugin components
+	 * List the component classes this plugin loads
 	 *
-	 * @return void
+	 * Both are sub-loaders (each a small LoadableInterface implementer in
+	 * their own right) that in turn manually require/init their own
+	 * component files — kept as-is rather than flattened into a single
+	 * list, to avoid changing the load-order/gating semantics of the
+	 * individual Admin/Services classes as part of this migration.
+	 *
+	 * @return array<class-string>
 	 */
-	private function load_components(): void {
-		// Load component loaders in priority order.
-		$loaders = [
-			// Services loader (priority 20).
-			'SilverAssist\\ACFCloneFields\\Services\\Loader',
-
-			// Admin loader (priority 30).
-			'SilverAssist\\ACFCloneFields\\Admin\\Loader',
+	protected function get_components(): array {
+		return [
+			ServicesLoader::class,
+			AdminLoader::class,
 		];
-
-		foreach ( $loaders as $loader_class ) {
-			if ( class_exists( $loader_class ) ) {
-				try {
-					$loader = $loader_class::instance();
-					if ( $loader->should_load() ) {
-						$loader->init();
-						$this->components[] = $loader;
-					}
-				} catch ( \Exception $e ) {
-					// Log error using proper logger system.
-					if ( class_exists( 'SilverAssist\\ACFCloneFields\\Utils\\Logger' ) ) {
-						\SilverAssist\ACFCloneFields\Utils\Logger::instance()->error(
-							sprintf( 'Failed to load component %s', $loader_class ),
-							[ 'exception' => $e->getMessage() ]
-						);
-					}
-				}
-			}
-		}
 	}
 
 	/**
-	 * Initialize WordPress hooks
+	 * Get the loaded (should_load()-filtered, init()'d) component instances
+	 *
+	 * Pre-1.3.0, the public get_components() returned this same data. As of
+	 * 1.3.0, get_components() is protected per AbstractPlugin's contract and
+	 * returns the class-string list instead (see above) — this method
+	 * preserves the old public behavior under a new name for any external
+	 * code still calling Plugin::instance()->get_components() expecting
+	 * loaded instances.
+	 *
+	 * @deprecated 1.3.0 Use this method instead of the old public get_components().
+	 * @return \SilverAssist\PluginKernel\Interfaces\LoadableInterface[]
+	 */
+	public function get_loaded_components(): array {
+		return $this->loaded_components();
+	}
+
+	/**
+	 * Plugin-level setup that isn't itself a LoadableInterface component
+	 *
+	 * Runs after all components have loaded.
 	 *
 	 * @return void
 	 */
-	private function init_hooks(): void {
+	protected function init_hooks(): void {
+		$this->init_github_updater();
+
 		// Plugin lifecycle hooks.
 		add_action( 'init', [ $this, 'handle_init' ], 20 );
 		add_action( 'admin_init', [ $this, 'handle_admin_init' ] );
@@ -198,6 +133,8 @@ class Plugin implements LoadableInterface {
 
 		// Add plugin action links.
 		add_filter( 'plugin_action_links_' . SILVER_ACF_CLONE_BASENAME, [ $this, 'add_action_links' ] );
+
+		$this->load_textdomain();
 	}
 
 	/**
@@ -228,8 +165,6 @@ class Plugin implements LoadableInterface {
 			$this->updater = new \SilverAssist\WpGithubUpdater\Updater( $config );
 		}
 	}
-
-
 
 	/**
 	 * Handle WordPress init action
@@ -263,10 +198,6 @@ class Plugin implements LoadableInterface {
 			dirname( (string) SILVER_ACF_CLONE_BASENAME ) . '/languages'
 		);
 	}
-
-
-
-
 
 	/**
 	 * Enqueue frontend assets (if needed)
@@ -325,15 +256,13 @@ class Plugin implements LoadableInterface {
 		<div class="silverassist-plugin-settings">
 			<h2><?php esc_html_e( 'ACF Clone Fields Settings', 'silver-assist-acf-clone-fields' ); ?></h2>
 			<p><?php esc_html_e( 'Configure ACF field cloning options and preferences.', 'silver-assist-acf-clone-fields' ); ?></p>
-			
+
 			<div class="notice notice-info">
 				<p><?php esc_html_e( 'Settings integration is being developed. Check back soon for configuration options.', 'silver-assist-acf-clone-fields' ); ?></p>
 			</div>
 		</div>
 		<?php
 	}
-
-
 
 	/**
 	 * Update plugin settings
@@ -344,15 +273,6 @@ class Plugin implements LoadableInterface {
 	public function update_settings( array $settings ): bool {
 		$this->settings = array_merge( $this->settings, $settings );
 		return update_option( 'silver_acf_clone_settings', $this->settings );
-	}
-
-	/**
-	 * Get loaded components
-	 *
-	 * @return LoadableInterface[]
-	 */
-	public function get_components(): array {
-		return $this->components;
 	}
 
 	/**

@@ -363,10 +363,8 @@ Namespace: `SilverAssist\ACFCloneFields\` → `includes/`
 ```
 includes/
 ├── Core/
-│   ├── Plugin.php          # Main plugin controller
-│   ├── Activator.php       # Plugin activation/deactivation
-│   └── Interfaces/
-│       └── LoadableInterface.php
+│   ├── Plugin.php          # Main plugin controller (extends AbstractPlugin)
+│   └── Activator.php       # Plugin activation/deactivation
 ├── Services/
 │   ├── Loader.php          # Services component loader
 │   ├── FieldDetector.php   # ACF field analysis
@@ -383,7 +381,8 @@ includes/
 
 ### LoadableInterface Pattern
 
-All components implement `LoadableInterface` for priority-based loading:
+All components implement `SilverAssist\PluginKernel\Interfaces\LoadableInterface` (from the shared
+`silverassist/wp-plugin-kernel` package) for priority-based loading:
 
 ```php
 interface LoadableInterface {
@@ -407,7 +406,7 @@ defined('ABSPATH') || exit;
 
 namespace SilverAssist\ACFCloneFields\ComponentName;
 
-use SilverAssist\ACFCloneFields\Core\Interfaces\LoadableInterface;
+use SilverAssist\PluginKernel\Interfaces\LoadableInterface;
 
 class YourComponent implements LoadableInterface {
     private static ?YourComponent $instance = null;

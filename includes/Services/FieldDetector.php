@@ -14,7 +14,7 @@
 
 namespace SilverAssist\ACFCloneFields\Services;
 
-use SilverAssist\ACFCloneFields\Core\Interfaces\LoadableInterface;
+use SilverAssist\PluginKernel\Interfaces\LoadableInterface;
 use SilverAssist\ACFCloneFields\Utils\Helpers;
 
 defined( 'ABSPATH' ) || exit;

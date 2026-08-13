@@ -55,13 +55,29 @@ class PluginTest extends TestCase {
 			define( 'SILVER_ACF_CLONE_VERSION', '1.1.1' );
 		}
 		
-		// Get fresh plugin instance using reflection to reset singleton
-		$reflection = new \ReflectionClass( Plugin::class );
-		$instance_property = $reflection->getProperty( 'instance' );
-		$instance_property->setAccessible( true );
-		$instance_property->setValue( null, null );
-		
+		// Get fresh plugin instance by resetting AbstractPlugin's per-class singleton registry.
+		self::reset_plugin_singleton();
+
 		$this->plugin = Plugin::instance();
+	}
+
+	/**
+	 * Reset the AbstractPlugin-managed singleton for Plugin::class
+	 *
+	 * AbstractPlugin keys its singleton registry by static::class rather than
+	 * declaring a per-subclass $instance property, so resetting it requires
+	 * reflecting on the parent class instead of Plugin itself.
+	 *
+	 * @return void
+	 */
+	private static function reset_plugin_singleton(): void {
+		$reflection = new \ReflectionClass( \SilverAssist\PluginKernel\AbstractPlugin::class );
+		$instances_property = $reflection->getProperty( 'instances' );
+		$instances_property->setAccessible( true );
+
+		$instances = $instances_property->getValue();
+		unset( $instances[ Plugin::class ] );
+		$instances_property->setValue( null, $instances );
 	}
 
 	/**
@@ -96,7 +112,7 @@ class PluginTest extends TestCase {
 	 */
 	public function test_implements_loadable_interface(): void {
 		$this->assertInstanceOf(
-			\SilverAssist\ACFCloneFields\Core\Interfaces\LoadableInterface::class,
+			\SilverAssist\PluginKernel\Interfaces\LoadableInterface::class,
 			$this->plugin,
 			'Plugin should implement LoadableInterface'
 		);
@@ -235,10 +251,7 @@ class PluginTest extends TestCase {
 		\update_option( 'silver_acf_clone_settings', [ 'test_key' => 'test_value' ] );
 
 		// Create new instance to load settings
-		$reflection = new \ReflectionClass( Plugin::class );
-		$instance_property = $reflection->getProperty( 'instance' );
-		$instance_property->setAccessible( true );
-		$instance_property->setValue( null, null );
+		self::reset_plugin_singleton();
 		$plugin = Plugin::instance();
 
 		$settings = $plugin->get_setting();
@@ -258,10 +271,7 @@ class PluginTest extends TestCase {
 		\update_option( 'silver_acf_clone_settings', [ 'enabled' => true, 'mode' => 'advanced' ] );
 
 		// Create new instance
-		$reflection = new \ReflectionClass( Plugin::class );
-		$instance_property = $reflection->getProperty( 'instance' );
-		$instance_property->setAccessible( true );
-		$instance_property->setValue( null, null );
+		self::reset_plugin_singleton();
 		$plugin = Plugin::instance();
 
 		$this->assertTrue( $plugin->get_setting( 'enabled' ), 'Should return true for enabled' );
@@ -310,36 +320,71 @@ class PluginTest extends TestCase {
 	}
 
 	/**
-	 * Test get_components returns array
+	 * Test get_components lists the Services and Admin sub-loaders
+	 *
+	 * get_components() is protected (declared by AbstractPlugin's contract as
+	 * a list of class-strings, not loaded instances), so it's invoked via
+	 * Reflection here.
 	 *
 	 * @return void
 	 */
 	public function test_get_components_returns_array(): void {
-		$components = $this->plugin->get_components();
+		$method = new \ReflectionMethod( Plugin::class, 'get_components' );
+		$method->setAccessible( true );
+		$components = $method->invoke( $this->plugin );
 
 		$this->assertIsArray( $components, 'Should return array' );
+		$this->assertContains( \SilverAssist\ACFCloneFields\Services\Loader::class, $components );
+		$this->assertContains( \SilverAssist\ACFCloneFields\Admin\Loader::class, $components );
 	}
 
 	/**
-	 * Test get_components after initialization
+	 * Test loaded_components() after initialization
+	 *
+	 * loaded_components() (also protected, from AbstractPlugin) exposes the
+	 * actual should_load()-filtered, init()'d instances — as opposed to
+	 * get_components()'s class-string list.
 	 *
 	 * @return void
 	 */
 	public function test_get_components_after_init(): void {
 		$this->plugin->init();
 
-		$components = $this->plugin->get_components();
+		$method = new \ReflectionMethod( \SilverAssist\PluginKernel\AbstractPlugin::class, 'loaded_components' );
+		$method->setAccessible( true );
+		$components = $method->invoke( $this->plugin );
 
 		$this->assertIsArray( $components, 'Should return array after init' );
-		
-		// Verify components implement LoadableInterface
+
+		// Loaders gate on should_load() (ACF functions / is_admin()), neither
+		// guaranteed true in this test environment, so the array may be
+		// legitimately empty here — just verify anything that did load
+		// implements LoadableInterface.
 		foreach ( $components as $component ) {
 			$this->assertInstanceOf(
-				\SilverAssist\ACFCloneFields\Core\Interfaces\LoadableInterface::class,
+				\SilverAssist\PluginKernel\Interfaces\LoadableInterface::class,
 				$component,
 				'Each component should implement LoadableInterface'
 			);
 		}
+	}
+
+	/**
+	 * Test get_loaded_components() matches the protected loaded_components()
+	 *
+	 * Regression coverage for the deprecated public accessor that preserves
+	 * the pre-1.3.0 public get_components() behavior.
+	 *
+	 * @return void
+	 */
+	public function test_get_loaded_components_matches_inherited_loaded_components(): void {
+		$this->plugin->init();
+
+		$method = new \ReflectionMethod( \SilverAssist\PluginKernel\AbstractPlugin::class, 'loaded_components' );
+		$method->setAccessible( true );
+		$expected = $method->invoke( $this->plugin );
+
+		$this->assertSame( $expected, $this->plugin->get_loaded_components() );
 	}
 
 	/**
