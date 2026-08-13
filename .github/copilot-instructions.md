@@ -17,11 +17,15 @@ ACF field cloning system with granular per-field selection, real-time conflict d
 
 ## Architecture
 
+Built on `silverassist/wp-plugin-kernel`'s `AbstractPlugin`/`LoadableInterface`
+pattern — singleton access (`instance()`), priority-ordered component
+loading, and per-component error isolation are inherited from
+`AbstractPlugin`; `Plugin` only declares `get_components()`.
+
 ```
 includes/
 ├── Core/
-│   ├── Interfaces/LoadableInterface.php
-│   └── Plugin.php                  # Bootstrap, loads components via Loader classes
+│   └── Plugin.php                  # extends AbstractPlugin — get_components() returns the two sub-loaders below
 ├── Services/
 │   ├── FieldDetector.php          # Detects ACF fields/groups/sub-fields for a post
 │   └── FieldCloner.php            # Clones fields between posts, validates compatibility
@@ -48,7 +52,16 @@ assets/   # No build step — used as-is
 
 ### Component Loading
 
-Components register via `Loader` classes (`Services\Loader`, `Admin\Loader`) discovered by `Plugin::load_components()`. Priorities: Core (10), Services (20), Admin (30), Assets (40).
+Components register via two sub-loader classes (`Services\Loader`,
+`Admin\Loader`), each a small `LoadableInterface` implementer returned by
+`Plugin::get_components()`. Kept as two sub-loaders (not flattened into one
+list) to preserve existing load-order/gating semantics from before the
+kernel migration. Priorities: Core (10), Services (20), Admin (30), Assets (40).
+
+A pre-1.3.0-back-compat method, `Plugin::get_loaded_components()`, forwards
+to the inherited `loaded_components()` for any external code still calling
+the old public `get_components()` (now protected per `AbstractPlugin`'s
+contract, returning class-strings instead of loaded instances).
 
 ### Package Integration
 
