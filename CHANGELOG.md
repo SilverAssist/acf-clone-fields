@@ -20,8 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     same contract, which has been removed
   - `Plugin::get_components()` is now `protected` per `AbstractPlugin`'s contract and returns the list
     of loader class-strings (`Services\Loader::class`, `Admin\Loader::class`) rather than the loaded
-    instances; the previous public behavior (loaded instances) is now `loaded_components()`, inherited
-    from `AbstractPlugin` and also `protected`
+    instances; the new public `Plugin::get_loaded_components()` preserves the old public behavior
+    (loaded instances) for any external code still calling the old method expecting that shape
+
+### Added
+- `Plugin::get_loaded_components()` — public accessor preserving the pre-1.3.0 public
+  `get_components()` behavior (loaded, `should_load()`-filtered component instances), since that
+  method's name now has different (protected, class-string) semantics per `AbstractPlugin`'s contract
 
 ## [1.2.1] - 2026-03-09
 

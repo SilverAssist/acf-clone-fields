@@ -370,6 +370,24 @@ class PluginTest extends TestCase {
 	}
 
 	/**
+	 * Test get_loaded_components() matches the protected loaded_components()
+	 *
+	 * Regression coverage for the deprecated public accessor that preserves
+	 * the pre-1.3.0 public get_components() behavior.
+	 *
+	 * @return void
+	 */
+	public function test_get_loaded_components_matches_inherited_loaded_components(): void {
+		$this->plugin->init();
+
+		$method = new \ReflectionMethod( \SilverAssist\PluginKernel\AbstractPlugin::class, 'loaded_components' );
+		$method->setAccessible( true );
+		$expected = $method->invoke( $this->plugin );
+
+		$this->assertSame( $expected, $this->plugin->get_loaded_components() );
+	}
+
+	/**
 	 * Test add_action_links adds settings link
 	 *
 	 * @return void

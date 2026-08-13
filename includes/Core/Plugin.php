@@ -92,6 +92,23 @@ class Plugin extends AbstractPlugin {
 	}
 
 	/**
+	 * Get the loaded (should_load()-filtered, init()'d) component instances
+	 *
+	 * Pre-1.3.0, the public get_components() returned this same data. As of
+	 * 1.3.0, get_components() is protected per AbstractPlugin's contract and
+	 * returns the class-string list instead (see above) — this method
+	 * preserves the old public behavior under a new name for any external
+	 * code still calling Plugin::instance()->get_components() expecting
+	 * loaded instances.
+	 *
+	 * @deprecated 1.3.0 Use this method instead of the old public get_components().
+	 * @return \SilverAssist\PluginKernel\Interfaces\LoadableInterface[]
+	 */
+	public function get_loaded_components(): array {
+		return $this->loaded_components();
+	}
+
+	/**
 	 * Plugin-level setup that isn't itself a LoadableInterface component
 	 *
 	 * Runs after all components have loaded.
