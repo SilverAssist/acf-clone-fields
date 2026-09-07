@@ -506,11 +506,15 @@ class Helpers implements LoadableInterface {
 
 		$posts = get_posts( $query_args );
 
+		// get_posts() returns int[] instead of WP_Post[] when $args overrides
+		// 'fields' — guard against that before the WP_Post-only checks below.
 		// Filter posts by user permissions and re-index array.
 		return array_values(
 			array_filter(
 				$posts,
-				static fn( \WP_Post $post ): bool => current_user_can( 'edit_post', $post->ID )
+				static function ( $post ): bool {
+					return $post instanceof \WP_Post && current_user_can( 'edit_post', $post->ID );
+				}
 			)
 		);
 	}
