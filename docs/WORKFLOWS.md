@@ -4,7 +4,7 @@
 
 This document describes the CI/CD workflow architecture for Silver Assist ACF Clone Fields plugin.
 
-**Version**: 1.3.0  
+**Version**: 1.3.1  
 **Strategy**: WordPress Integration Testing
 
 ## Quick Reference

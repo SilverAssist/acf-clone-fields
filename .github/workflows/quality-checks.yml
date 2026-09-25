@@ -49,6 +49,8 @@ jobs:
             
       - name: 📦 Install Composer dependencies
         run: composer install --no-interaction --no-progress --optimize-autoloader
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
         
       - name: 🗄️ Setup MySQL (if needed)
         if: ${{ !inputs.skip-wp-setup }}
