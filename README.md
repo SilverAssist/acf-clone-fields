@@ -181,6 +181,17 @@ Maintain template posts and clone their structure to new content
 
 The plugin includes automatic update functionality via GitHub releases. When new versions are published, you'll see update notifications in your WordPress admin dashboard just like any other plugin.
 
+## Composer authentication (private packages)
+
+The SilverAssist packages this plugin uses (`wp-github-updater`, `wp-plugin-kernel`, `wp-settings-hub`, `coding-standards` and `wp-coding-standards`) are installed from their GitHub repositories through Composer `vcs` repositories declared in `composer.json`, not from Packagist.org. Those repositories can require authentication, so configure a token before running `composer install`:
+
+- **Locally:** `composer config --global github-oauth.github.com <token>`
+- **CI:** store `{"github-oauth":{"github.com":"<token>"}}` as the repository secret `COMPOSER_AUTH`. The workflows already pass it to `composer install`.
+
+Never commit a token or an `auth.json`.
+
+**Updating from a private repository:** when the plugin's repository is private, the site needs a read-only token in the `SILVER_GITHUB_TOKEN` constant or environment variable so the updater can read the releases. A public repository needs no token.
+
 ## 📄 License
 
 Licensed under the [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0/).

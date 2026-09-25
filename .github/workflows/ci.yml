@@ -14,6 +14,7 @@ jobs:
   quality-checks-82:
     name: Quality Checks (PHP 8.2)
     uses: ./.github/workflows/quality-checks.yml
+    secrets: inherit
     with:
       php-version: '8.2'
       skip-wp-setup: false
@@ -23,6 +24,7 @@ jobs:
   quality-checks-83:
     name: Quality Checks (PHP 8.3)
     uses: ./.github/workflows/quality-checks.yml
+    secrets: inherit
     with:
       php-version: '8.3'
       skip-wp-setup: false
@@ -32,6 +34,7 @@ jobs:
   quality-checks-84:
     name: Quality Checks (PHP 8.4)
     uses: ./.github/workflows/quality-checks.yml
+    secrets: inherit
     with:
       php-version: '8.4'
       skip-wp-setup: false
@@ -54,6 +57,8 @@ jobs:
           
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-progress --optimize-autoloader
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
         
       - name: Security audit with composer
         run: composer audit
@@ -141,6 +146,8 @@ jobs:
           
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-progress --optimize-autoloader
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
         
       - name: Setup WordPress ${{ matrix.wordpress-version }}
         run: |
@@ -217,6 +224,8 @@ jobs:
           
       - name: Install production dependencies
         run: composer install --no-dev --no-interaction --optimize-autoloader
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
         
       - name: Test build process
         run: |
