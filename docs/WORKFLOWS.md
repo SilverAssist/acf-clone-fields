@@ -67,9 +67,10 @@ This document describes the CI/CD workflow architecture for Silver Assist ACF Cl
 **Jobs**:
 - `check-composer-updates`: Check outdated packages
 - `security-audit`: CVE detection
-- `auto-merge-dependabot`: Auto-merge safe updates
 
 **Why no WordPress**: Composer packages don't require WordPress validation
+
+Dependabot pull requests are approved and auto-merged by `auto-merge-dependabot.yml`, a thin caller of the shared `SilverAssist/workflows/dependabot-auto-merge@v1` action (patch and minor only, after a 3 and 7 day release-age cooldown).
 
 ### 5. codeql.yml (Security Scanning)
 
