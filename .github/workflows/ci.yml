@@ -165,8 +165,12 @@ jobs:
           export WP_TESTS_DIR=/tmp/wordpress-tests-lib
           export WP_CORE_DIR=/tmp/wordpress
           
-          # Download test library
-          git clone --depth=1 https://github.com/WordPress/wordpress-develop.git $WP_TESTS_DIR
+          # Download the test library at the tag of the installed core. Trunk's
+          # library references classes the released core does not have yet,
+          # such as WP_Secrets_Store, and the bootstrap fails on them.
+          INSTALLED_WP=$(php -r "include '/tmp/wordpress/wp-includes/version.php'; echo \$wp_version;")
+          echo "WordPress core installed: $INSTALLED_WP"
+          git clone --depth=1 --branch "$INSTALLED_WP" https://github.com/WordPress/wordpress-develop.git $WP_TESTS_DIR
           
           # Configure WordPress database
           cp $WP_CORE_DIR/wp-config-sample.php $WP_CORE_DIR/wp-config.php

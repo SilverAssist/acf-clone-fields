@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- CI installs the WordPress test library at the tag of the installed core, not from `wordpress-develop` trunk. Trunk's library references classes the released core does not have yet (`WP_Secrets_Store`), so the WordPress compatibility jobs failed in the bootstrap.
+
 ## [1.3.1] - 2026-09-25
 
 ### Changed
